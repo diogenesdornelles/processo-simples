@@ -15,8 +15,8 @@ class EventRequest extends FormRequest
     {
         return [
             'name' => 'required|in:Criação do Processo,Atualização de Dados,Anexação de Documento,Mudança de Status,Comentário Adicionado',
-            'user_id' => 'required|exists:user,id',
-            'proc_id' => 'required|exists:processo,id',
+            'user_id' => 'required|exists:users,id',
+            'proc_id' => 'required|exists:procs,id',
             'active' => 'boolean',
         ];
     }

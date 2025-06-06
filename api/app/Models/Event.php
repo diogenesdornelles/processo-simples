@@ -16,14 +16,15 @@ class Event extends Model
 
     protected $fillable = [
         'active',
+        'name',
+        'user_id',
+        'proc_id',
     ];
 
     protected $guarded = [
         'id',
-        'name',
-        'user_id',
-        'proc_id',
         'created_at',
+        'updated_at'
     ];
 
     protected function casts(): array
@@ -40,12 +41,12 @@ class Event extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function processo()
+    public function proc()
     {
-        return $this->belongsTo(Proc::class, 'proc_id');
+        return $this->belongsTo(Proc::class);
     }
 
-    public function documents()
+    public function docs()
     {
         return $this->hasMany(Doc::class, 'event_id');
     }

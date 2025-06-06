@@ -219,13 +219,21 @@ php artisan make:request DocRequest
 
 
 # 🏗️ Migrations: Estrutura do banco de dados
-php artisan make:migration create_events_table
 php artisan make:migration create_procs_table
+php artisan make:migration create_events_table  
 php artisan make:migration create_docs_table
 
 
-php artisan migrate                              
+php artisan migrate      
 
+composer require laravel/sanctum
+php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+
+php artisan migrate
+
+php artisan make:seeder UserSeeder
+
+php artisan db:seed
 
 # 📁 Documentos públicos (uploads)
 php artisan storage:link                         

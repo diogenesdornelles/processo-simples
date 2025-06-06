@@ -10,7 +10,7 @@ class EventsController extends Controller
 {
     public function index()
     {
-        return Event::with(['user', 'processo', 'documents'])
+        return Event::with(['user', 'proc', 'docs'])
                     ->where('active', true)
                     ->get();
     }
@@ -19,24 +19,24 @@ class EventsController extends Controller
     {
         $data = $request->validated();
         $event = Event::create($data);
-        return response()->json($event->load(['user', 'processo']), 201);
+        return response()->json($event->load(['user', 'proc']), 201);
     }
 
     public function show(Event $event)
     {
-        return $event->load(['user', 'processo', 'documents']);
+        return $event->load(['user', 'proc', 'docs']);
     }
 
     public function update(EventRequest $request, Event $event)
     {
         $data = $request->validated();
         $event->update($data);
-        return response()->json($event->load(['user', 'processo']));
+        return response()->json($event->load(['user', 'proc']));
     }
 
-    public function destroy(Event $event)
+   public function destroy(Event $event)
     {
-        $event->delete();
-        return response()->json(null, 204);
+        $event->update(['active' => false]);
+        return response()->json(['message' => 'Evento desativado com sucesso']);
     }
 }

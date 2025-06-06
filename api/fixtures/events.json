@@ -1,0 +1,207 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2025-06-05T23:55:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2023.5.8",
+  "resources": [
+    {
+      "_id": "wrk_events_api",
+      "_type": "workspace",
+      "name": "Events API - Processo Fácil",
+      "description": "Collection para testar a API de eventos"
+    },
+    {
+      "_id": "env_events",
+      "_type": "environment",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:8000/api",
+        "token": "",
+        "event_id": "1",
+        "user_id": 1,
+        "proc_id": 3
+      },
+      "parentId": "wrk_events_api"
+    },
+    {
+      "_id": "req_login_admin",
+      "_type": "request",
+      "name": "1. Login Admin",
+      "url": "{{ _.base_url }}/login",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password\"\n}"
+      },
+      "parentId": "wrk_events_api"
+    },
+    {
+      "_id": "req_events_list",
+      "_type": "request",
+      "name": "2. List All Events",
+      "url": "{{ _.base_url }}/events",
+      "method": "GET",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "wrk_events_api"
+    },
+    {
+      "_id": "req_events_create_criacao",
+      "_type": "request",
+      "name": "3. Create Event - Criação do Processo",
+      "url": "{{ _.base_url }}/events",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Criação do Processo\",\n  \"user_id\": 1,\n  \"proc_id\": 3,\n  \"active\": true\n}"
+      },
+      "parentId": "wrk_events_api"
+    },
+    {
+      "_id": "req_events_create_atualizacao",
+      "_type": "request",
+      "name": "4. Create Event - Atualização de Dados",
+      "url": "{{ _.base_url }}/events",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Atualização de Dados\",\n  \"user_id\": 1,\n  \"proc_id\": 3,\n  \"active\": true\n}"
+      },
+      "parentId": "wrk_events_api"
+    },
+    {
+      "_id": "req_events_create_anexacao",
+      "_type": "request",
+      "name": "5. Create Event - Anexação de Documento",
+      "url": "{{ _.base_url }}/events",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Anexação de Documento\",\n  \"user_id\": 1,\n  \"proc_id\": 3,\n  \"active\": true\n}"
+      },
+      "parentId": "wrk_events_api"
+    },
+    {
+      "_id": "req_events_show",
+      "_type": "request",
+      "name": "6. Get Event by ID",
+      "url": "{{ _.base_url }}/events/{{ _.event_id }}",
+      "method": "GET",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "wrk_events_api"
+    },
+    {
+      "_id": "req_events_update",
+      "_type": "request",
+      "name": "7. Update Event",
+      "url": "{{ _.base_url }}/events/{{ _.event_id }}",
+      "method": "PUT",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Evento Atualizado\",\n  \"user_id\": 1,\n  \"proc_id\": 3,\n  \"active\": true\n}"
+      },
+      "parentId": "wrk_events_api"
+    },
+    {
+      "_id": "req_events_delete",
+      "_type": "request",
+      "name": "8. Delete Event",
+      "url": "{{ _.base_url }}/events/{{ _.event_id }}",
+      "method": "DELETE",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "wrk_events_api"
+    }
+  ]
+}

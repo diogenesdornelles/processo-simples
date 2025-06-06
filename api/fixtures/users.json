@@ -1,0 +1,223 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2025-06-05T23:45:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2023.5.8",
+  "resources": [
+    {
+      "_id": "wrk_users_api",
+      "_type": "workspace",
+      "name": "Users API - Processo Fácil",
+      "description": "Collection para testar a API de usuários"
+    },
+    {
+      "_id": "env_users",
+      "_type": "environment",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:8000/api",
+        "token": "",
+        "user_id": "1"
+      },
+      "parentId": "wrk_users_api"
+    },
+    {
+      "_id": "req_login_admin",
+      "_type": "request",
+      "name": "1. Login Admin",
+      "url": "{{ _.base_url }}/login",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password\"\n}"
+      },
+      "parentId": "wrk_users_api"
+    },
+    {
+      "_id": "req_users_list",
+      "_type": "request",
+      "name": "2. List All Users",
+      "url": "{{ _.base_url }}/users",
+      "method": "GET",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "wrk_users_api"
+    },
+    {
+      "_id": "req_users_create",
+      "_type": "request",
+      "name": "3. Create User",
+      "url": "{{ _.base_url }}/users",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Maria Silva\",\n  \"email\": \"maria@example.com\",\n  \"password\": \"123456\",\n  \"role\": \"Comum\",\n  \"cpf\": \"98765432100\",\n  \"sigle\": \"MARIA\",\n  \"active\": true\n}"
+      },
+      "parentId": "wrk_users_api"
+    },
+    {
+      "_id": "req_users_show",
+      "_type": "request",
+      "name": "4. Get User by ID",
+      "url": "{{ _.base_url }}/users/{{ _.user_id }}",
+      "method": "GET",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "wrk_users_api"
+    },
+    {
+      "_id": "req_users_update",
+      "_type": "request",
+      "name": "5. Update User",
+      "url": "{{ _.base_url }}/users/{{ _.user_id }}",
+      "method": "PUT",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Maria Silva Santos\",\n  \"email\": \"maria.santos@example.com\",\n  \"role\": \"Admin\",\n  \"cpf\": \"98765432100\",\n  \"sigle\": \"MARIS\",\n  \"active\": true\n}"
+      },
+      "parentId": "wrk_users_api"
+    },
+    {
+      "_id": "req_users_update_password",
+      "_type": "request",
+      "name": "6. Update User with Password",
+      "url": "{{ _.base_url }}/users/{{ _.user_id }}",
+      "method": "PUT",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Maria Silva Santos\",\n  \"email\": \"maria.santos@example.com\",\n  \"password\": \"nova_senha_123\",\n  \"role\": \"Admin\",\n  \"cpf\": \"98765432100\",\n  \"sigle\": \"MARIS\",\n  \"active\": true\n}"
+      },
+      "parentId": "wrk_users_api"
+    },
+    {
+      "_id": "req_users_deactivate",
+      "_type": "request",
+      "name": "7. Deactivate User",
+      "url": "{{ _.base_url }}/users/{{ _.user_id }}",
+      "method": "DELETE",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "wrk_users_api"
+    },
+    {
+      "_id": "req_users_create_invalid_email",
+      "_type": "request",
+      "name": "8. Create User - Invalid Email (Test Validation)",
+      "url": "{{ _.base_url }}/users",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Teste Erro\",\n  \"email\": \"admin@example.com\",\n  \"password\": \"123\",\n  \"role\": \"InvalidRole\",\n  \"cpf\": \"123\",\n  \"sigle\": \"TOOLONG\",\n  \"active\": true\n}"
+      },
+      "parentId": "wrk_users_api"
+    },
+    {
+      "_id": "req_logout",
+      "_type": "request",
+      "name": "9. Logout",
+      "url": "{{ _.base_url }}/logout",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "wrk_users_api"
+    }
+  ]
+}

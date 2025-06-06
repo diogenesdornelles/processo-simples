@@ -9,13 +9,14 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Criar o tipo ENUM primeiro
         DB::statement("CREATE TYPE role_user AS ENUM ('Comum', 'Admin')");
         
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name', 128);
             $table->string('password', 128);
-            $table->string('role')->default('Comum');
+            $table->string('role');
             $table->string('email', 128)->unique();
             $table->string('cpf', 11)->unique();
             $table->string('sigle', 5)->unique();
@@ -23,7 +24,8 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        DB::statement('ALTER TABLE "user" ALTER COLUMN role TYPE role_user USING role::role_user');
+        DB::statement('ALTER TABLE "users" ALTER COLUMN role TYPE role_user USING role::role_user');
+        DB::statement('ALTER TABLE "users" ALTER COLUMN role SET DEFAULT \'Comum\'');
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();

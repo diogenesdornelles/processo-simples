@@ -1,0 +1,368 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2025-06-06T00:00:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2023.5.8",
+  "resources": [
+    {
+      "_id": "wrk_docs_api",
+      "_type": "workspace",
+      "name": "Docs API - Processo Fácil",
+      "description": "Collection para testar a API de documentos"
+    },
+    {
+      "_id": "env_docs",
+      "_type": "environment",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:8000/api",
+        "token": "",
+        "doc_id": "1",
+        "event_id": "1"
+      },
+      "parentId": "wrk_docs_api"
+    },
+    {
+      "_id": "req_login_admin",
+      "_type": "request",
+      "name": "1. Login Admin",
+      "url": "{{ _.base_url }}/login",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password\"\n}"
+      },
+      "parentId": "wrk_docs_api"
+    },
+    {
+      "_id": "req_docs_list",
+      "_type": "request",
+      "name": "2. List All Docs",
+      "url": "{{ _.base_url }}/docs",
+      "method": "GET",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "wrk_docs_api"
+    },
+    {
+      "_id": "req_docs_create_pdf",
+      "_type": "request",
+      "name": "3. Create Doc - PDF File",
+      "url": "{{ _.base_url }}/docs",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "multipart/form-data",
+        "params": [
+          {
+            "name": "name",
+            "value": "Contrato de Prestação de Serviços"
+          },
+          {
+            "name": "description",
+            "value": "Contrato assinado entre as partes"
+          },
+          {
+            "name": "event_id",
+            "value": "1"
+          },
+          {
+            "name": "file",
+            "type": "file",
+            "fileName": ""
+          }
+        ]
+      },
+      "parentId": "wrk_docs_api"
+    },
+    {
+      "_id": "req_docs_create_image",
+      "_type": "request",
+      "name": "4. Create Doc - Image File",
+      "url": "{{ _.base_url }}/docs",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "multipart/form-data",
+        "params": [
+          {
+            "name": "name",
+            "value": "Foto do Local"
+          },
+          {
+            "name": "description",
+            "value": "Evidência fotográfica do local visitado"
+          },
+          {
+            "name": "event_id",
+            "value": "1"
+          },
+          {
+            "name": "file",
+            "type": "file",
+            "fileName": ""
+          }
+        ]
+      },
+      "parentId": "wrk_docs_api"
+    },
+    {
+      "_id": "req_docs_create_doc",
+      "_type": "request",
+      "name": "5. Create Doc - Word Document",
+      "url": "{{ _.base_url }}/docs",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "multipart/form-data",
+        "params": [
+          {
+            "name": "name",
+            "value": "Relatório Técnico"
+          },
+          {
+            "name": "description",
+            "value": "Relatório detalhado da análise técnica"
+          },
+          {
+            "name": "event_id",
+            "value": "1"
+          },
+          {
+            "name": "file",
+            "type": "file",
+            "fileName": ""
+          }
+        ]
+      },
+      "parentId": "wrk_docs_api"
+    },
+    {
+      "_id": "req_docs_show",
+      "_type": "request",
+      "name": "6. Get Doc by ID",
+      "url": "{{ _.base_url }}/docs/1",
+      "method": "GET",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "wrk_docs_api"
+    },
+    {
+      "_id": "req_docs_update_no_file",
+      "_type": "request",
+      "name": "7. Update Doc - Only Metadata",
+      "url": "{{ _.base_url }}/docs/1",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "multipart/form-data",
+        "params": [
+          {
+            "name": "_method",
+            "value": "PUT"
+          },
+          {
+            "name": "name",
+            "value": "Contrato Atualizado"
+          },
+          {
+            "name": "description",
+            "value": "Descrição atualizada do contrato"
+          },
+          {
+            "name": "event_id",
+            "value": "1"
+          }
+        ]
+      },
+      "parentId": "wrk_docs_api"
+    },
+    {
+      "_id": "req_docs_update_with_file",
+      "_type": "request",
+      "name": "8. Update Doc - With New File",
+      "url": "{{ _.base_url }}/docs/1",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "multipart/form-data",
+        "params": [
+          {
+            "name": "_method",
+            "value": "PUT"
+          },
+          {
+            "name": "name",
+            "value": "Documento Substituído"
+          },
+          {
+            "name": "description",
+            "value": "Arquivo foi substituído por uma nova versão"
+          },
+          {
+            "name": "event_id",
+            "value": "1"
+          },
+          {
+            "name": "file",
+            "type": "file",
+            "fileName": ""
+          }
+        ]
+      },
+      "parentId": "wrk_docs_api"
+    },
+    {
+      "_id": "req_docs_delete",
+      "_type": "request",
+      "name": "9. Delete Doc",
+      "url": "{{ _.base_url }}/docs/1",
+      "method": "DELETE",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "wrk_docs_api"
+    },
+    {
+      "_id": "req_docs_validation_error",
+      "_type": "request",
+      "name": "10. Test Validation - Missing File",
+      "url": "{{ _.base_url }}/docs",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "multipart/form-data",
+        "params": [
+          {
+            "name": "name",
+            "value": ""
+          },
+          {
+            "name": "event_id",
+            "value": "999"
+          }
+        ]
+      },
+      "parentId": "wrk_docs_api"
+    },
+    {
+      "_id": "req_download_file",
+      "_type": "request",
+      "name": "11. Download File (Manual URL)",
+      "url": "http://localhost:8000/uploads/[FILENAME_FROM_RESPONSE]",
+      "method": "GET",
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "*/*"
+        }
+      ],
+      "parentId": "wrk_docs_api"
+    },
+    {
+      "_id": "req_logout",
+      "_type": "request",
+      "name": "12. Logout",
+      "url": "{{ _.base_url }}/logout",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "wrk_docs_api"
+    }
+  ]
+}

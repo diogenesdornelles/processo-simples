@@ -34,7 +34,7 @@ class UsersController extends Controller
 
     public function destroy(User $user)
     {
-        $user->delete();
-        return response()->json(null, 204);
+        $user->update(['active' => false]);
+        return response()->json(['message' => 'Usuário desativado com sucesso']);
     }
 }

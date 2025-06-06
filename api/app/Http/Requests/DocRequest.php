@@ -16,7 +16,7 @@ class DocRequest extends FormRequest
         $rules = [
             'name' => 'required|string|max:128',
             'description' => 'nullable|string',
-            'event_id' => 'required|exists:event,id',
+            'event_id' => 'required|exists:events,id',
         ];
 
         if ($this->isMethod('POST')) {

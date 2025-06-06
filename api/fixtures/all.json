@@ -1,0 +1,749 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2025-06-06T00:10:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2023.5.8",
+  "resources": [
+    {
+      "_id": "wrk_processo_facil_complete",
+      "_type": "workspace",
+      "name": "Processo Fácil - API Completa",
+      "description": "Collection completa para testar toda a API do sistema Processo Fácil"
+    },
+    {
+      "_id": "env_complete",
+      "_type": "environment",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:8000/api",
+        "token": "",
+        "user_id": "1",
+        "proc_id": "3",
+        "event_id": "1",
+        "doc_id": "1"
+      },
+      "parentId": "wrk_processo_facil_complete"
+    },
+    {
+      "_id": "fld_auth",
+      "_type": "request_group",
+      "name": "🔐 Authentication",
+      "parentId": "wrk_processo_facil_complete"
+    },
+    {
+      "_id": "req_login_admin",
+      "_type": "request",
+      "name": "Login Admin",
+      "url": "{{ _.base_url }}/login",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password\"\n}"
+      },
+      "parentId": "fld_auth"
+    },
+    {
+      "_id": "req_login_user",
+      "_type": "request",
+      "name": "Login User",
+      "url": "{{ _.base_url }}/login",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password\"\n}"
+      },
+      "parentId": "fld_auth"
+    },
+    {
+      "_id": "req_me",
+      "_type": "request",
+      "name": "Get Profile",
+      "url": "{{ _.base_url }}/me",
+      "method": "GET",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "fld_auth"
+    },
+    {
+      "_id": "req_logout",
+      "_type": "request",
+      "name": "Logout",
+      "url": "{{ _.base_url }}/logout",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "fld_auth"
+    },
+    {
+      "_id": "fld_users",
+      "_type": "request_group",
+      "name": "👥 Users",
+      "parentId": "wrk_processo_facil_complete"
+    },
+    {
+      "_id": "req_users_list",
+      "_type": "request",
+      "name": "List Users",
+      "url": "{{ _.base_url }}/users",
+      "method": "GET",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "fld_users"
+    },
+    {
+      "_id": "req_users_create",
+      "_type": "request",
+      "name": "Create User",
+      "url": "{{ _.base_url }}/users",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Maria Silva\",\n  \"email\": \"maria@example.com\",\n  \"password\": \"123456\",\n  \"role\": \"Comum\",\n  \"cpf\": \"98765432100\",\n  \"sigle\": \"MARIA\",\n  \"active\": true\n}"
+      },
+      "parentId": "fld_users"
+    },
+    {
+      "_id": "req_users_show",
+      "_type": "request",
+      "name": "Get User by ID",
+      "url": "{{ _.base_url }}/users/{{ _.user_id }}",
+      "method": "GET",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "fld_users"
+    },
+    {
+      "_id": "req_users_update",
+      "_type": "request",
+      "name": "Update User",
+      "url": "{{ _.base_url }}/users/{{ _.user_id }}",
+      "method": "PUT",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Maria Silva Santos\",\n  \"email\": \"maria.santos@example.com\",\n  \"role\": \"Admin\",\n  \"cpf\": \"98765432100\",\n  \"sigle\": \"MARIS\",\n  \"active\": true\n}"
+      },
+      "parentId": "fld_users"
+    },
+    {
+      "_id": "req_users_delete",
+      "_type": "request",
+      "name": "Delete User",
+      "url": "{{ _.base_url }}/users/{{ _.user_id }}",
+      "method": "DELETE",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "fld_users"
+    },
+    {
+      "_id": "fld_procs",
+      "_type": "request_group",
+      "name": "📋 Processes",
+      "parentId": "wrk_processo_facil_complete"
+    },
+    {
+      "_id": "req_procs_list",
+      "_type": "request",
+      "name": "List Procs",
+      "url": "{{ _.base_url }}/procs",
+      "method": "GET",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "fld_procs"
+    },
+    {
+      "_id": "req_procs_create",
+      "_type": "request",
+      "name": "Create Proc",
+      "url": "{{ _.base_url }}/procs",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"user_id\": 1,\n  \"owner\": \"João Silva\",\n  \"description\": \"Processo de exemplo para teste\",\n  \"status\": \"Aberto\",\n  \"priority\": \"Alta\",\n  \"term\": \"2025-12-31T23:59:59\",\n  \"active\": true\n}"
+      },
+      "parentId": "fld_procs"
+    },
+    {
+      "_id": "req_procs_show",
+      "_type": "request",
+      "name": "Get Proc by ID",
+      "url": "{{ _.base_url }}/procs/{{ _.proc_id }}",
+      "method": "GET",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "fld_procs"
+    },
+    {
+      "_id": "req_procs_update",
+      "_type": "request",
+      "name": "Update Proc",
+      "url": "{{ _.base_url }}/procs/{{ _.proc_id }}",
+      "method": "PUT",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"user_id\": 1,\n  \"owner\": \"João Silva Atualizado\",\n  \"description\": \"Processo atualizado via API\",\n  \"status\": \"Em Andamento\",\n  \"priority\": \"Média\",\n  \"term\": \"2025-12-31T23:59:59\",\n  \"active\": true\n}"
+      },
+      "parentId": "fld_procs"
+    },
+    {
+      "_id": "req_procs_delete",
+      "_type": "request",
+      "name": "Delete Proc",
+      "url": "{{ _.base_url }}/procs/{{ _.proc_id }}",
+      "method": "DELETE",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "fld_procs"
+    },
+    {
+      "_id": "fld_events",
+      "_type": "request_group",
+      "name": "📅 Events",
+      "parentId": "wrk_processo_facil_complete"
+    },
+    {
+      "_id": "req_events_list",
+      "_type": "request",
+      "name": "List Events",
+      "url": "{{ _.base_url }}/events",
+      "method": "GET",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "fld_events"
+    },
+    {
+      "_id": "req_events_create_criacao",
+      "_type": "request",
+      "name": "Create Event - Criação",
+      "url": "{{ _.base_url }}/events",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Criação do Processo\",\n  \"user_id\": 1,\n  \"proc_id\": 3,\n  \"active\": true\n}"
+      },
+      "parentId": "fld_events"
+    },
+    {
+      "_id": "req_events_create_anexacao",
+      "_type": "request",
+      "name": "Create Event - Anexação",
+      "url": "{{ _.base_url }}/events",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Anexação de Documento\",\n  \"user_id\": 1,\n  \"proc_id\": 3,\n  \"active\": true\n}"
+      },
+      "parentId": "fld_events"
+    },
+    {
+      "_id": "req_events_show",
+      "_type": "request",
+      "name": "Get Event by ID",
+      "url": "{{ _.base_url }}/events/{{ _.event_id }}",
+      "method": "GET",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "fld_events"
+    },
+    {
+      "_id": "req_events_update",
+      "_type": "request",
+      "name": "Update Event",
+      "url": "{{ _.base_url }}/events/{{ _.event_id }}",
+      "method": "PUT",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Evento Atualizado\",\n  \"user_id\": 1,\n  \"proc_id\": 3,\n  \"active\": true\n}"
+      },
+      "parentId": "fld_events"
+    },
+    {
+      "_id": "req_events_delete",
+      "_type": "request",
+      "name": "Delete Event",
+      "url": "{{ _.base_url }}/events/{{ _.event_id }}",
+      "method": "DELETE",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "fld_events"
+    },
+    {
+      "_id": "fld_docs",
+      "_type": "request_group",
+      "name": "📄 Documents",
+      "parentId": "wrk_processo_facil_complete"
+    },
+    {
+      "_id": "req_docs_list",
+      "_type": "request",
+      "name": "List Docs",
+      "url": "{{ _.base_url }}/docs",
+      "method": "GET",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "fld_docs"
+    },
+    {
+      "_id": "req_docs_create_pdf",
+      "_type": "request",
+      "name": "Create Doc - PDF",
+      "url": "{{ _.base_url }}/docs",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "multipart/form-data",
+        "params": [
+          {
+            "name": "name",
+            "value": "Contrato de Prestação de Serviços"
+          },
+          {
+            "name": "description",
+            "value": "Contrato assinado entre as partes"
+          },
+          {
+            "name": "event_id",
+            "value": "1"
+          },
+          {
+            "name": "file",
+            "type": "file",
+            "fileName": ""
+          }
+        ]
+      },
+      "parentId": "fld_docs"
+    },
+    {
+      "_id": "req_docs_create_image",
+      "_type": "request",
+      "name": "Create Doc - Image",
+      "url": "{{ _.base_url }}/docs",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "multipart/form-data",
+        "params": [
+          {
+            "name": "name",
+            "value": "Foto do Local"
+          },
+          {
+            "name": "description",
+            "value": "Evidência fotográfica"
+          },
+          {
+            "name": "event_id",
+            "value": "1"
+          },
+          {
+            "name": "file",
+            "type": "file",
+            "fileName": ""
+          }
+        ]
+      },
+      "parentId": "fld_docs"
+    },
+    {
+      "_id": "req_docs_show",
+      "_type": "request",
+      "name": "Get Doc by ID",
+      "url": "{{ _.base_url }}/docs/{{ _.doc_id }}",
+      "method": "GET",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "fld_docs"
+    },
+    {
+      "_id": "req_docs_update",
+      "_type": "request",
+      "name": "Update Doc",
+      "url": "{{ _.base_url }}/docs/{{ _.doc_id }}",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "multipart/form-data",
+        "params": [
+          {
+            "name": "_method",
+            "value": "PUT"
+          },
+          {
+            "name": "name",
+            "value": "Documento Atualizado"
+          },
+          {
+            "name": "description",
+            "value": "Descrição atualizada"
+          },
+          {
+            "name": "event_id",
+            "value": "1"
+          },
+          {
+            "name": "file",
+            "type": "file",
+            "fileName": ""
+          }
+        ]
+      },
+      "parentId": "fld_docs"
+    },
+    {
+      "_id": "req_docs_delete",
+      "_type": "request",
+      "name": "Delete Doc",
+      "url": "{{ _.base_url }}/docs/{{ _.doc_id }}",
+      "method": "DELETE",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "parentId": "fld_docs"
+    },
+    {
+      "_id": "fld_tests",
+      "_type": "request_group",
+      "name": "🧪 Tests & Validations",
+      "parentId": "wrk_processo_facil_complete"
+    },
+    {
+      "_id": "req_test_validation_user",
+      "_type": "request",
+      "name": "Test User Validation",
+      "url": "{{ _.base_url }}/users",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"\",\n  \"email\": \"invalid-email\",\n  \"password\": \"123\",\n  \"role\": \"InvalidRole\",\n  \"cpf\": \"123\",\n  \"sigle\": \"TOOLONG\"\n}"
+      },
+      "parentId": "fld_tests"
+    },
+    {
+      "_id": "req_test_validation_event",
+      "_type": "request",
+      "name": "Test Event Validation",
+      "url": "{{ _.base_url }}/events",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Evento Inválido\",\n  \"user_id\": 999,\n  \"proc_id\": 999\n}"
+      },
+      "parentId": "fld_tests"
+    },
+    {
+      "_id": "req_test_validation_doc",
+      "_type": "request",
+      "name": "Test Doc Validation",
+      "url": "{{ _.base_url }}/docs",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.token }}"
+        },
+        {
+          "name": "Accept",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "multipart/form-data",
+        "params": [
+          {
+            "name": "name",
+            "value": ""
+          },
+          {
+            "name": "event_id",
+            "value": "999"
+          }
+        ]
+      },
+      "parentId": "fld_tests"
+    }
+  ]
+}

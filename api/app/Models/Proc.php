@@ -14,19 +14,20 @@ class Proc extends Model
     protected $table = 'procs';
 
     protected $fillable = [
+        'user_id',
         'owner',
         'description',
         'status',
         'priority',
         'term',
         'active',
+        'number',
     ];
 
     protected $guarded = [
         'id',
-        'number',
-        'user_id',
-        'created_at',
+        'created_at',    
+        'updated_at', 
     ];
 
     protected function casts(): array

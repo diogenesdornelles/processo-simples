@@ -14,7 +14,7 @@ class ProcRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|exists:user,id',
+            'user_id' => 'required|exists:users,id',
             'owner' => 'required|string',
             'description' => 'nullable|string',
             'status' => 'in:Aberto,Em Andamento,Pendente,Concluído,Cancelado',

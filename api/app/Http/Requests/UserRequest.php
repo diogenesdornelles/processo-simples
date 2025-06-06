@@ -24,19 +24,19 @@ class UserRequest extends FormRequest
                 'required',
                 'email',
                 'max:128',
-                Rule::unique('user', 'email')->ignore($userId)
+                Rule::unique('users', 'email')->ignore($userId)
             ],
             'cpf' => [
                 'required',
                 'string',
                 'size:11',
-                Rule::unique('user', 'cpf')->ignore($userId)
+                Rule::unique('users', 'cpf')->ignore($userId)
             ],
             'sigle' => [
                 'required',
                 'string',
                 'max:5',
-                Rule::unique('user', 'sigle')->ignore($userId)
+                Rule::unique('users', 'sigle')->ignore($userId)
             ],
             'active' => 'boolean',
         ];

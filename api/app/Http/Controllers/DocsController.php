@@ -18,22 +18,24 @@ class DocsController extends Controller
     {
         $data = $request->validated();
         
-        // Upload do arquivo
+        // Upload do arquivo usando Storage
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             
-            // Gerar nome único para o arquivo
-            $fileName = time() . '_' . $file->getClientOriginalName();
+            // Gerar nome único com hash
+            $extension = $file->getClientOriginalExtension();
+            $fileName = time() . '_' . uniqid() . '.' . $extension;
             
-            // Salvar na pasta public/uploads
-            $filePath = $file->move(public_path('uploads'), $fileName);
+            // Salvar no storage/app/public/docs
+            $path = $file->storeAs('docs', $fileName, 'public');
             
-            // Gerar URI pública
-            $data['uri'] = url('uploads/' . $fileName);
-            
-            // Obter extensão
-            $data['ext'] = $file->getClientOriginalExtension();
+            // Gerar URL correta
+            $data['uri'] = asset('storage/' . $path);
+            $data['ext'] = $extension;
         }
+        
+        // Remover 'file' dos dados
+        unset($data['file']);
         
         $doc = Doc::create($data);
         return response()->json($doc->load('event'), 201);
@@ -50,21 +52,24 @@ class DocsController extends Controller
         
         // Se enviou novo arquivo, substitui o anterior
         if ($request->hasFile('file')) {
-            // Remove arquivo anterior se existir
-            $oldFileName = basename($doc->uri);
-            $oldFilePath = public_path('uploads/' . $oldFileName);
-            if (file_exists($oldFilePath)) {
-                unlink($oldFilePath);
+            // Remove arquivo anterior
+            if ($doc->uri) {
+                $oldPath = str_replace(asset('storage/'), '', $doc->uri);
+                Storage::disk('public')->delete($oldPath);
             }
             
             // Upload do novo arquivo
             $file = $request->file('file');
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads'), $fileName);
+            $extension = $file->getClientOriginalExtension();
+            $fileName = time() . '_' . uniqid() . '.' . $extension;
             
-            $data['uri'] = url('uploads/' . $fileName);
-            $data['ext'] = $file->getClientOriginalExtension();
+            $path = $file->storeAs('docs', $fileName, 'public');
+            
+            $data['uri'] = asset('storage/' . $path);
+            $data['ext'] = $extension;
         }
+        
+        unset($data['file']);
         
         $doc->update($data);
         return response()->json($doc->load('event'));
@@ -72,14 +77,13 @@ class DocsController extends Controller
 
     public function destroy(Doc $doc)
     {
-        // Remove arquivo do disco
-        $fileName = basename($doc->uri);
-        $filePath = public_path('uploads/' . $fileName);
-        if (file_exists($filePath)) {
-            unlink($filePath);
+        // Remove arquivo do storage
+        if ($doc->uri) {
+            $path = str_replace(asset('storage/'), '', $doc->uri);
+            Storage::disk('public')->delete($path);
         }
         
         $doc->delete();
-        return response()->json(null, 204);
+        return response()->json(['message' => 'Documento removido com sucesso']);
     }
 }
