@@ -1,14 +1,14 @@
-import { UserProps } from "./user.interfaces";
+import { UserProps } from './user.interfaces';
 
 export interface LoginCredentials {
-    username: string,
-    password: string,
+  username: string;
+  password: string;
 }
 
 export interface LoginProps {
-    user: UserProps,
-    token: string,
-    token_type: string,
-    success?: boolean;
-    message?: string;
+  user: UserProps;
+  token: string;
+  token_type: string;
+  success?: boolean;
+  message?: string;
 }

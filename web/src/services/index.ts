@@ -3,7 +3,7 @@
 // GET hooks
 export * from './get';
 
-// POST hooks  
+// POST hooks
 export * from './post';
 
 // PUT hooks

@@ -1,12 +1,10 @@
-import { withAuth } from "@/components/withAuth";
+import { withAuth } from '@/components/withAuth';
 
 function RegistroPage() {
-  return (
-    <>Processos</>
-  );
+  return <>Processos</>;
 }
 
-export default withAuth(RegistroPage, { 
+export default withAuth(RegistroPage, {
   requireAdmin: true,
-  redirectTo: '/unauthorized' 
+  redirectTo: '/unauthorized',
 });

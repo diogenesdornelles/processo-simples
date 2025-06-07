@@ -1,30 +1,29 @@
-import { useRouter } from "next/router";
-import { removeTokenFromLs } from "./removeTokenFromLs";
-import { removeTokenFromCookies } from "./removeTokenFromCookies";
+import { useRouter } from 'next/router';
+import { manageToken } from './manageToken';
 
 export const useHandleUnauthorizedAccess = () => {
   const router = useRouter();
 
   return (message?: string) => {
-    if (typeof window !== "undefined") {
-      removeTokenFromCookies();
-      localStorage.removeItem("session");
-      removeTokenFromLs();
+    if (typeof window !== 'undefined') {
+      manageToken.cookies.remove();
+      localStorage.removeItem('session');
+      manageToken.ls.remove();
     }
 
-    alert(message || "Acesso não autorizado detectado. Encerrando sessão.");
+    alert(message || 'Acesso não autorizado detectado. Encerrando sessão.');
 
-    router.replace("/login");
+    router.replace('/login');
   };
 };
 
 export const handleUnauthorizedAccess = (message?: string) => {
-  if (typeof window !== "undefined") {
-    removeTokenFromCookies();
-    localStorage.removeItem("session");
-    removeTokenFromLs();
-    console.warn("Unauthorized access:", message);
-    alert(message || "Acesso não autorizado detectado. Encerrando sessão.");
-    window.location.replace("/login");
+  if (typeof window !== 'undefined') {
+    manageToken.cookies.remove();
+    localStorage.removeItem('session');
+    manageToken.ls.remove();
+    console.warn('Unauthorized access:', message);
+    alert(message || 'Acesso não autorizado detectado. Encerrando sessão.');
+    window.location.replace('/login');
   }
 };

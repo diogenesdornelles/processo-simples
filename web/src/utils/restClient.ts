@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getTokenFromLs } from './auth/getTokenFromLs';
+import { manageToken } from './auth/manageToken';
 import { handleUnauthorizedAccess } from './auth/handleUnauthorizedAccess';
 
 const restClient = axios.create({
@@ -7,70 +7,73 @@ const restClient = axios.create({
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json',
+    Accept: 'application/json',
   },
 });
 
 restClient.interceptors.request.use(
-  (config) => {
-    const token = getTokenFromLs();
+  config => {
+    const token = manageToken.ls.get() || manageToken.cookies.get();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
+
     if (process.env.NODE_ENV === 'development') {
       console.log(`${config.method?.toUpperCase()} ${config.url}`, {
         headers: config.headers,
         data: config.data,
       });
     }
-    
+
     return config;
   },
-  (error) => {
+  error => {
     console.error('Request error:', error);
     return Promise.reject(error);
-  },
+  }
 );
 
 restClient.interceptors.response.use(
-  (response) => {
+  response => {
     if (process.env.NODE_ENV === 'development') {
       console.log(`${response.status} ${response.config.url}`, response.data);
     }
-    
+
     return response;
   },
-  (error) => {
+  error => {
     if (error.response) {
       const { status, data } = error.response;
-      
+
       switch (status) {
         case 401:
           console.error('Unauthorized - redirecting to login');
           handleUnauthorizedAccess();
           break;
-          
+
         case 403:
           console.error('Forbidden - insufficient permissions');
           break;
-          
+
         case 404:
           console.error('Resource not found');
           break;
-          
+
         case 422:
           console.error('Validation error:', data.errors || data.message);
           break;
-          
+
         case 500:
           console.error('Server error');
           break;
-          
+
         default:
-          console.error(`Error ${status}:`, data.message || 'Erro desconhecido');
+          console.error(
+            `Error ${status}:`,
+            data.message || 'Erro desconhecido'
+          );
       }
-      
+
       return Promise.reject(data);
     } else if (error.request) {
       console.error('Network error:', error.message);
@@ -79,7 +82,7 @@ restClient.interceptors.response.use(
       console.error('Request setup error:', error.message);
       return Promise.reject(error);
     }
-  },
+  }
 );
 
 export { restClient };

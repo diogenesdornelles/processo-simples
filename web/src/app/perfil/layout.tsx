@@ -1,4 +1,4 @@
-export default function ProcessosLayout({
+export default function ProfileLayout({
   children,
 }: {
   children: React.ReactNode;

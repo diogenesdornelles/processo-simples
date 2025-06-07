@@ -12,11 +12,11 @@ interface ProtectedRouteProps {
   fallback?: ReactNode | ComponentType;
 }
 
-export function ProtectedRoute({ 
-  children, 
+export function ProtectedRoute({
+  children,
   requireAdmin = false,
   redirectTo,
-  fallback 
+  fallback,
 }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
   const router = useRouter();

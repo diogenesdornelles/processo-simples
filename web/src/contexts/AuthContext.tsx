@@ -1,15 +1,16 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { UserProps } from '@/domain/interfaces/user.interfaces';
-import { removeTokenFromCookies } from '@/utils/auth/removeTokenFromCookies';
-import { removeTokenFromLs } from '@/utils/auth/removeTokenFromLs';
+import { manageToken } from '@/utils/auth/manageToken';
 import { Api } from '@/api/Api';
-import { saveTokenOnCookies } from '@/utils/auth/saveTokenOnCookies';
-import { saveTokenOnLs } from '@/utils/auth/saveTokenOnLs';
-import { getTokenFromLs } from '@/utils/auth/getTokenFromLs';
-import { getTokenFromCookies } from '@/utils/auth/getTokenFromCookies';
 
 interface AuthContextType {
   user: UserProps | null;
@@ -28,68 +29,51 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [mounted, setMounted] = useState(false);
   const [hasToken, setHasToken] = useState(false);
-  
-  useEffect(() => {
-    const checkToken = () => {
-      if (typeof window === 'undefined') return false;
-      const cookieToken = getTokenFromCookies();
-      if (cookieToken) {
-        setHasToken(true);
-        setMounted(true);
-        return true;
-      }
-      const localToken = getTokenFromLs();
-      if (localToken) {
-        saveTokenOnCookies(localToken);
-        setHasToken(true);
-        setMounted(true);
-        return true;
-      }
-      
-      setHasToken(false);
-      setMounted(true);
-      return false;
-    };
+  const [isClient, setIsClient] = useState(false);
 
-    checkToken();
+  useEffect(() => {
+    setIsClient(true);
+    
+    if (typeof window !== 'undefined') {
+      const token = manageToken.ls.get() || manageToken.cookies.get();
+      setHasToken(!!token);
+    }
   }, []);
 
-  const { 
-    data: user, 
-    isLoading: loading, 
-    error, 
-    refetch 
+  const {
+    data: user,
+    isLoading: loading,
+    error,
+    refetch,
   } = useQuery({
     queryKey: ['auth', 'me'],
     queryFn: () => Api.auth.me(),
-    enabled: hasToken && mounted,
+    enabled: hasToken && isClient,
     retry: false,
     refetchOnWindowFocus: false,
   });
 
-
   const login = (token: string) => {
-    saveTokenOnCookies(token);
-    saveTokenOnLs(token);
-    refetch();
+    manageToken.ls.save(token);
+    manageToken.cookies.save(token);
     setHasToken(true);
-    localStorage.setItem('session', JSON.stringify(user));
+    refetch();
   };
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('session', JSON.stringify(user));
+    }
+  }, [user]);
 
   const logout = () => {
-    removeTokenFromCookies();
-    localStorage.removeItem("session");
-    removeTokenFromLs();
+    manageToken.ls.remove();
+    manageToken.cookies.remove();
+    localStorage.removeItem('session');
     setHasToken(false);
-
     window.location.href = '/login';
   };
-
-  if (!mounted) {
-    return <>Spinner CHAKRA</>;
-  }
 
   const value: AuthContextType = {
     user: user || null,

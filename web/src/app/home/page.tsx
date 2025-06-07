@@ -1,12 +1,10 @@
-import { withAuth } from "@/components/withAuth";
+import { withAuth } from '@/components/withAuth';
 
 function HomePage() {
-  return (
-    <>Home</>
-  );
+  return <>Home</>;
 }
 
-export default withAuth(HomePage, { 
+export default withAuth(HomePage, {
   requireAdmin: false,
-  redirectTo: '/login' 
+  redirectTo: '/login',
 });

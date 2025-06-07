@@ -1,1 +1,1 @@
-export type ProcPriority = "Baixa" | "Média" | "Alta";
+export type ProcPriority = 'Baixa' | 'Média' | 'Alta';

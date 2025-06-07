@@ -7,7 +7,7 @@ export function useUpdateDoc() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, doc }: { id: string; doc: UpdateDoc }) => 
+    mutationFn: ({ id, doc }: { id: string; doc: UpdateDoc }) =>
       Api.doc.update(id, doc),
     onSuccess: (data, variables) => {
       // Invalidate and refetch doc lists

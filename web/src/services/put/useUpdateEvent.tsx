@@ -7,13 +7,15 @@ export function useUpdateEvent() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, event }: { id: string; event: UpdateEvent }) => 
+    mutationFn: ({ id, event }: { id: string; event: UpdateEvent }) =>
       Api.event.update(id, event),
     onSuccess: (data, variables) => {
       // Invalidate and refetch event lists
       queryClient.invalidateQueries({ queryKey: ['event', 'getAll'] });
       // Update specific event cache
-      queryClient.invalidateQueries({ queryKey: ['event', 'get', variables.id] });
+      queryClient.invalidateQueries({
+        queryKey: ['event', 'get', variables.id],
+      });
     },
   });
 }

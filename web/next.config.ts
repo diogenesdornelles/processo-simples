@@ -1,21 +1,20 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
-const nextConfig: NextConfig = 
-
-{   experimental: {
-    optimizePackageImports: ["@chakra-ui/react"],
-    serverComponentsExternalPackages: ['axios'],
+const nextConfig: NextConfig = {
+  experimental: {
+    optimizePackageImports: ['@chakra-ui/react'],
   },
+  serverComponentsExternalPackages: ['axios'],
+  env: {
+    NEXT_PUBLIC_API_URL:
+      process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api',
+    NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME || 'Processo Fácil',
+    NEXT_PUBLIC_APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0',
 
-    env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api",
-    NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME || "Processo Fácil",
-    NEXT_PUBLIC_APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION || "1.0.0",
-    
     JWT_SECRET: process.env.JWT_SECRET,
-    API_URL: process.env.API_URL || "http://localhost:8000/api",
+    API_URL: process.env.API_URL || 'http://localhost:8000/api',
   },
-    async headers() {
+  async headers() {
     return [
       {
         source: '/(.*)',

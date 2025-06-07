@@ -13,9 +13,9 @@ export function withAuth<P extends object>(
   Component: ComponentType<P>,
   options: WithAuthOptions = {}
 ) {
-  const AuthenticatedComponent = function(props: P) {
+  const AuthenticatedComponent = function (props: P) {
     return (
-      <ProtectedRoute 
+      <ProtectedRoute
         requireAdmin={options.requireAdmin}
         redirectTo={options.redirectTo}
         fallback={options.fallback}

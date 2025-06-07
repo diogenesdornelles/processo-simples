@@ -2,46 +2,46 @@ import {
   CreateProc,
   ProcProps,
   UpdateProc,
-} from "@/domain/interfaces/proc.interfaces";
+} from '@/domain/interfaces/proc.interfaces';
 import {
   CreateUser,
   UserProps,
   UpdateUser,
-} from "@/domain/interfaces/user.interfaces";
+} from '@/domain/interfaces/user.interfaces';
 import {
   CreateEvent,
   EventProps,
   UpdateEvent,
-} from "@/domain/interfaces/event.interfaces";
+} from '@/domain/interfaces/event.interfaces';
 import {
   CreateDoc,
   DocProps,
   UpdateDoc,
-} from "@/domain/interfaces/doc.interfaces";
+} from '@/domain/interfaces/doc.interfaces';
 import {
   LoginCredentials,
   LoginProps,
-} from "@/domain/interfaces/login.interfaces";
-import { restClient } from "@/utils/restClient";
+} from '@/domain/interfaces/login.interfaces';
+import { restClient } from '@/utils/restClient';
 
 export const Api = {
   auth: {
     login: async (credentials: LoginCredentials): Promise<LoginProps> => {
-      const { data } = await restClient.post("login", credentials);
+      const { data } = await restClient.post('login', credentials);
       return data;
     },
     logout: async (): Promise<void> => {
-      await restClient.post("logout");
+      await restClient.post('logout');
     },
     me: async (): Promise<UserProps> => {
-      const { data } = await restClient.get("me");
+      const { data } = await restClient.get('me');
       return data;
     },
   },
 
   user: {
     getAll: async (): Promise<UserProps[]> => {
-      const { data } = await restClient.get("users");
+      const { data } = await restClient.get('users');
       return data;
     },
     get: async (id: string): Promise<UserProps> => {
@@ -49,7 +49,7 @@ export const Api = {
       return data;
     },
     create: async (user: CreateUser): Promise<UserProps> => {
-      const { data } = await restClient.post("users", user);
+      const { data } = await restClient.post('users', user);
       return data;
     },
     update: async (id: string, user: UpdateUser): Promise<UserProps> => {
@@ -63,7 +63,7 @@ export const Api = {
 
   proc: {
     getAll: async (): Promise<ProcProps[]> => {
-      const { data } = await restClient.get("procs");
+      const { data } = await restClient.get('procs');
       return data;
     },
     get: async (id: string): Promise<ProcProps> => {
@@ -71,7 +71,7 @@ export const Api = {
       return data;
     },
     create: async (proc: CreateProc): Promise<ProcProps> => {
-      const { data } = await restClient.post("procs", proc);
+      const { data } = await restClient.post('procs', proc);
       return data;
     },
     update: async (id: string, proc: UpdateProc): Promise<ProcProps> => {
@@ -85,7 +85,7 @@ export const Api = {
 
   event: {
     getAll: async (): Promise<EventProps[]> => {
-      const { data } = await restClient.get("events");
+      const { data } = await restClient.get('events');
       return data;
     },
     get: async (id: string): Promise<EventProps> => {
@@ -93,7 +93,7 @@ export const Api = {
       return data;
     },
     create: async (event: CreateEvent): Promise<EventProps> => {
-      const { data } = await restClient.post("events", event);
+      const { data } = await restClient.post('events', event);
       return data;
     },
     update: async (id: string, event: UpdateEvent): Promise<EventProps> => {
@@ -107,7 +107,7 @@ export const Api = {
 
   doc: {
     getAll: async (): Promise<DocProps[]> => {
-      const { data } = await restClient.get("docs");
+      const { data } = await restClient.get('docs');
       return data;
     },
     get: async (id: string): Promise<DocProps> => {
@@ -122,7 +122,7 @@ export const Api = {
         }
       });
 
-      const { data } = await restClient.post("docs", formData, {
+      const { data } = await restClient.post('docs', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -132,7 +132,7 @@ export const Api = {
     update: async (id: string, doc: UpdateDoc): Promise<DocProps> => {
       const formData = new FormData();
       formData.append('_method', 'PUT');
-      
+
       Object.entries(doc).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
           formData.append(key, value);

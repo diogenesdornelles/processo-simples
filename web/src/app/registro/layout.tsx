@@ -3,9 +3,5 @@ export default function RegistroLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <html suppressHydrationWarning>
-      <body>{children}</body>
-    </html>
-  );
+  return <div>{children}</div>;
 }

@@ -1,10 +1,10 @@
 import { withAuth } from '@/components/withAuth';
 
-function ProcessosPage() {
+function UsuarioPage() {
   return <>Processos</>;
 }
 
-export default withAuth(ProcessosPage, {
+export default withAuth(UsuarioPage, {
   requireAdmin: false,
   redirectTo: '/login',
 });
