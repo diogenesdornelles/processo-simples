@@ -4,6 +4,7 @@ import { ReactNode, ComponentType } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import CustomBackdrop from '@/components/ui/CustomBackdrop';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -18,20 +19,22 @@ export function ProtectedRoute({
   redirectTo,
   fallback,
 }: ProtectedRouteProps) {
-  const { user, loading } = useAuth();
+  const { user, loading, isAuthenticated } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push(redirectTo || '/login');
-      return;
-    }
+    if (!loading) {
+      if (!isAuthenticated) {
+        router.push(redirectTo || '/login');
+        return;
+      }
 
-    if (!loading && user && requireAdmin && user.role !== 'Admin') {
-      router.push(redirectTo || '/unauthorized');
-      return;
+      if (requireAdmin && user?.role !== 'Admin') {
+        router.push('/unauthorized');
+        return;
+      }
     }
-  }, [user, loading, router, requireAdmin, redirectTo]);
+  }, [isAuthenticated, user, loading, router, requireAdmin, redirectTo]);
 
   if (loading) {
     if (fallback) {
@@ -41,14 +44,14 @@ export function ProtectedRoute({
       }
       return <>{fallback}</>;
     }
-    return <>Loading usando CHAKRA</>;
+    return <CustomBackdrop isOpen={true} />;
   }
 
-  if (!user) {
+  if (!isAuthenticated) {
     return null;
   }
 
-  if (requireAdmin && user.role !== 'Admin') {
+  if (requireAdmin && user?.role !== 'Admin') {
     return null;
   }
 

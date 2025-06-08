@@ -1,3 +1,5 @@
+'use client';
+
 import { withAuth } from '@/components/withAuth';
 
 function HomePage() {

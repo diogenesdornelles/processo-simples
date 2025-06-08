@@ -10,9 +10,7 @@ export const useHandleUnauthorizedAccess = () => {
       localStorage.removeItem('session');
       manageToken.ls.remove();
     }
-
-    alert(message || 'Acesso não autorizado detectado. Encerrando sessão.');
-
+    console.warn('Unauthorized access:', message);
     router.replace('/login');
   };
 };
@@ -23,7 +21,6 @@ export const handleUnauthorizedAccess = (message?: string) => {
     localStorage.removeItem('session');
     manageToken.ls.remove();
     console.warn('Unauthorized access:', message);
-    alert(message || 'Acesso não autorizado detectado. Encerrando sessão.');
     window.location.replace('/login');
   }
 };

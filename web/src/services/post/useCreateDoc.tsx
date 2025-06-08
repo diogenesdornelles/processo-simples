@@ -9,7 +9,6 @@ export function useCreateDoc() {
   return useMutation({
     mutationFn: (doc: CreateDoc) => Api.doc.create(doc),
     onSuccess: () => {
-      // Invalidate and refetch doc lists
       queryClient.invalidateQueries({ queryKey: ['doc', 'getAll'] });
     },
   });

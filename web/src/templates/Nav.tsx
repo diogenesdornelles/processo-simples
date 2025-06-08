@@ -10,18 +10,15 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { Menu } from '@chakra-ui/react';
-import { ColorModeButton, useColorModeValue } from '@/components/ui/color-mode';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { FiChevronDown, FiSearch, FiUser, FiFileText } from 'react-icons/fi';
+import { useColorMode, ColorModeButton } from '@/components/ui/color-mode';
 
 export default function Nav() {
   const { user, logout, isAuthenticated } = useAuth();
   const router = useRouter();
-
-  const bgColor = useColorModeValue('purple.700', 'purple.900');
-  const textColor = 'white';
-  const hoverBg = useColorModeValue('purple.600', 'purple.800');
+  const { toggleColorMode } = useColorMode();
 
   const handleNavigation = (path: string) => {
     router.push(path);
@@ -36,8 +33,9 @@ export default function Nav() {
   return (
     <Flex
       suppressHydrationWarning
-      backgroundColor={bgColor}
+      backgroundColor="nav.bg"
       minHeight={16}
+      flex="0 0 auto"
       px={6}
       alignItems="center"
       justifyContent="space-between"
@@ -48,7 +46,7 @@ export default function Nav() {
         <Text
           fontSize="xl"
           fontWeight="bold"
-          color={textColor}
+          color="text.color"
           cursor="pointer"
           onClick={() => handleNavigation('/home')}
         >
@@ -61,9 +59,9 @@ export default function Nav() {
         <HStack gap={6}>
           {/* Processos */}
           <Link
-            color={textColor}
+            color="link.color"
             fontWeight="medium"
-            _hover={{ color: 'blue.200' }}
+            _hover={{ color: 'link.color.hover' }}
             onClick={() => handleNavigation('/processos')}
             cursor="pointer"
             display="flex"
@@ -76,9 +74,9 @@ export default function Nav() {
 
           {/* Pesquisar */}
           <Link
-            color={textColor}
+            color="link.color"
             fontWeight="medium"
-            _hover={{ color: 'blue.200' }}
+            _hover={{ color: 'link.color.hover' }}
             onClick={() => handleNavigation('/pesquisar')}
             cursor="pointer"
             display="flex"
@@ -92,9 +90,9 @@ export default function Nav() {
           {/* Registrar (se for admin) */}
           {user?.role === 'Admin' && (
             <Link
-              color={textColor}
+              color="link.color"
               fontWeight="medium"
-              _hover={{ color: 'blue.200' }}
+              _hover={{ color: 'link.color.hover' }}
               onClick={() => handleNavigation('/registrar')}
               cursor="pointer"
               display="flex"
@@ -111,7 +109,7 @@ export default function Nav() {
       {/* Right Side - User Menu & Theme Toggle */}
       <HStack gap={4}>
         {/* Theme Toggle */}
-        <ColorModeButton />
+        <ColorModeButton onClick={toggleColorMode} />
 
         {/* User Menu ou Login */}
         {isAuthenticated ? (
@@ -119,9 +117,9 @@ export default function Nav() {
             <Menu.Trigger asChild>
               <Button
                 variant="ghost"
-                color={textColor}
-                _hover={{ bg: hoverBg }}
-                _active={{ bg: hoverBg }}
+                color="button.color"
+                _hover={{ bg: 'button.bg.hover' }}
+                _active={{ bg: 'button.bg.hover' }}
               >
                 <HStack gap={2}>
                   <Avatar.Root>
@@ -138,12 +136,19 @@ export default function Nav() {
 
             <Menu.Positioner>
               <Menu.Content>
-                <Menu.Item value="" onClick={() => handleNavigation('/perfil')}>
+                <Menu.Item
+                  value=""
+                  onClick={() => handleNavigation('/perfil')}
+                  color="menuItem.color"
+                  _hover={{ bg: 'menuItem.color.hover' }}
+                >
                   Meu Perfil
                 </Menu.Item>
 
                 <Menu.Item
                   value=""
+                  color="menuItem.color"
+                  _hover={{ bg: 'menuItem.color.hover' }}
                   onClick={() => handleNavigation('/configuracoes')}
                 >
                   Configurações
@@ -154,8 +159,8 @@ export default function Nav() {
                 <Menu.Item
                   value=""
                   onClick={handleLogout}
-                  color="red.500"
-                  _hover={{ bg: 'red.50' }}
+                  color="menuItem.color"
+                  _hover={{ bg: 'menuItem.color.hover' }}
                 >
                   Sair
                 </Menu.Item>
@@ -165,9 +170,10 @@ export default function Nav() {
         ) : (
           <Button
             variant="outline"
-            color={textColor}
-            borderColor={textColor}
-            _hover={{ bg: 'whiteAlpha.200' }}
+            color="button.color"
+            bg="button.bg"
+            borderColor="button.borderColor"
+            _hover={{ bg: 'button.bg.hover' }}
             onClick={() => handleNavigation('/login')}
           >
             Login

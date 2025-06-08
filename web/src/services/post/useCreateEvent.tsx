@@ -9,7 +9,6 @@ export function useCreateEvent() {
   return useMutation({
     mutationFn: (event: CreateEvent) => Api.event.create(event),
     onSuccess: () => {
-      // Invalidate and refetch event lists
       queryClient.invalidateQueries({ queryKey: ['event', 'getAll'] });
     },
   });

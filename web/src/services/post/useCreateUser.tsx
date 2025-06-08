@@ -9,7 +9,6 @@ export function useCreateUser() {
   return useMutation({
     mutationFn: (user: CreateUser) => Api.user.create(user),
     onSuccess: () => {
-      // Invalidate and refetch user lists
       queryClient.invalidateQueries({ queryKey: ['user', 'getAll'] });
     },
   });

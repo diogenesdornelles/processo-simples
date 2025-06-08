@@ -7,20 +7,25 @@ import {
   useState,
   ReactNode,
 } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { UserProps } from '@/domain/interfaces/user.interfaces';
 import { manageToken } from '@/utils/auth/manageToken';
-import { Api } from '@/api/Api';
+import { LoginProps } from '@/domain/interfaces/login.interfaces';
 
-interface AuthContextType {
-  user: UserProps | null;
-  loading: boolean;
-  error: Error | null;
-  isAuthenticated: boolean;
-  login: (token: string) => void;
+interface AuthActions {
+  login: (result: LoginProps) => void;
   logout: () => void;
   refetch: () => void;
 }
+
+interface AuthValues {
+  user: UserProps | null;
+  loading: boolean;
+  token: string | null;
+  error: Error | null;
+  isAuthenticated: boolean;
+}
+
+interface AuthContextType extends AuthValues, AuthActions {}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -29,67 +34,110 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [hasToken, setHasToken] = useState(false);
+  const [user, setUser] = useState<UserProps | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
-    
     if (typeof window !== 'undefined') {
-      const token = manageToken.ls.get() || manageToken.cookies.get();
-      setHasToken(!!token);
+      setIsClient(true);
+
+      try {
+        const savedToken = manageToken.ls.get() || manageToken.cookies.get();
+
+        const sessionData = localStorage.getItem('session');
+        let savedUser: UserProps | null = null;
+
+        if (sessionData && sessionData !== '' && sessionData !== 'null') {
+          try {
+            savedUser = JSON.parse(sessionData);
+          } catch (parseError) {
+            console.warn('Erro ao fazer parse da sessão:', parseError);
+            localStorage.removeItem('session');
+          }
+        }
+        setToken(savedToken);
+        setUser(savedUser);
+      } catch (err) {
+        console.error('Erro na inicialização do auth:', err);
+        setError(err as Error);
+      } finally {
+        setLoading(false);
+      }
     }
   }, []);
 
-  const {
-    data: user,
-    isLoading: loading,
-    error,
-    refetch,
-  } = useQuery({
-    queryKey: ['auth', 'me'],
-    queryFn: () => Api.auth.me(),
-    enabled: hasToken && isClient,
-    retry: false,
-    refetchOnWindowFocus: false,
-  });
+  const login = (result: LoginProps) => {
+    try {
+      manageToken.ls.save(result.token);
+      manageToken.cookies.save(result.token);
 
-  const login = (token: string) => {
-    manageToken.ls.save(token);
-    manageToken.cookies.save(token);
-    setHasToken(true);
-    refetch();
-  };
+      localStorage.setItem('session', JSON.stringify(result.user));
 
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem('session', JSON.stringify(user));
+      setToken(result.token);
+      setUser(result.user);
+      setError(null);
+    } catch (err) {
+      console.error('Erro no login:', err);
+      setError(err as Error);
     }
-  }, [user]);
+  };
 
   const logout = () => {
-    manageToken.ls.remove();
-    manageToken.cookies.remove();
-    localStorage.removeItem('session');
-    setHasToken(false);
-    window.location.href = '/login';
+    try {
+      manageToken.ls.remove();
+      manageToken.cookies.remove();
+      localStorage.removeItem('session');
+
+      setToken(null);
+      setUser(null);
+      setError(null);
+
+      window.location.href = '/login';
+    } catch (err) {
+      console.error('Erro no logout:', err);
+    }
   };
 
+  const refetch = () => {
+    if (typeof window !== 'undefined') {
+      setLoading(true);
+
+      try {
+        const savedToken = manageToken.ls.get() || manageToken.cookies.get();
+        const sessionData = localStorage.getItem('session');
+        let savedUser: UserProps | null = null;
+
+        if (sessionData && sessionData !== '' && sessionData !== 'null') {
+          savedUser = JSON.parse(sessionData);
+        }
+
+        setToken(savedToken);
+        setUser(savedUser);
+      } catch (err) {
+        setError(err as Error);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const isAuthenticated = isClient && !!token && !!user;
+
   const value: AuthContextType = {
-    user: user || null,
-    loading: hasToken ? loading : false,
-    error: error as Error | null,
-    isAuthenticated: !!user && hasToken,
+    user,
+    token,
+    loading,
+    error,
+    isAuthenticated,
     login,
     logout,
     refetch,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

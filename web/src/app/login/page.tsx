@@ -1,3 +1,5 @@
+import Login from '@/pages/Login';
+
 export default function LoginPage() {
-  return <>Login</>;
+  return <Login />;
 }

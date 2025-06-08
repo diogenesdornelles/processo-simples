@@ -26,7 +26,7 @@
       "@/hooks/*": ["hooks/*"],
       "@/features/*": ["features/*"],
       "@/processos/*": ["processos/*"],
-      "@/pages/*": ["processo/*"],
+      "@/pages/*": ["pages/*"],
       "@/utils/*": ["utils/*"],
       "@/providers/*": ["providers/*"],
       "@/services/*": ["services/*"]

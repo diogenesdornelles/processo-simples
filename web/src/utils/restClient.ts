@@ -9,6 +9,9 @@ const restClient = axios.create({
     'Content-Type': 'application/json',
     Accept: 'application/json',
   },
+  validateStatus: function (status) {
+    return status < 500;
+  },
 });
 
 restClient.interceptors.request.use(

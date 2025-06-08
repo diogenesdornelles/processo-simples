@@ -8,7 +8,6 @@ export function useLogout() {
   return useMutation({
     mutationFn: () => Api.auth.logout(),
     onSuccess: () => {
-      // Clear all cached data after logout
       queryClient.clear();
     },
   });

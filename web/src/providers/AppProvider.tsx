@@ -1,48 +1,28 @@
 'use client';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import {
-  ColorModeProvider,
-  ColorModeProviderProps,
-} from '@/components/ui/color-mode';
-import { system } from '@/theme';
 import { ChakraProvider } from '@chakra-ui/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { system } from '@/theme';
+import { ToastProvider } from './ToasterProvider';
+import { ColorModeProvider } from '@/components/ui/color-mode';
 
-export const queryClient = new QueryClient({
+const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      retry: (failureCount, error: any) => {
-        if (
-          error?.response?.status === 401 ||
-          error?.response?.status === 403 ||
-          error?.response?.status === 404
-        ) {
-          return false;
-        }
-        return failureCount < 2;
-      },
-      staleTime: 5 * 60 * 1000,
-      refetchOnWindowFocus: false,
-    },
-    mutations: {
-      retry: false,
+      staleTime: 1000 * 60 * 5,
+      retry: 1,
     },
   },
 });
 
-interface AppProviderProps extends ColorModeProviderProps {
-  children: React.ReactNode;
-}
-
-export function AppProvider({ children, ...props }: AppProviderProps) {
+export function AppProvider({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ChakraProvider value={system}>
         <AuthProvider>
-          <ColorModeProvider {...props}>
-            {children}
+          <ColorModeProvider>
+            <ToastProvider>{children}</ToastProvider>
           </ColorModeProvider>
         </AuthProvider>
       </ChakraProvider>

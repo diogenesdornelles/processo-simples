@@ -9,7 +9,6 @@ export function useCreateProc() {
   return useMutation({
     mutationFn: (proc: CreateProc) => Api.proc.create(proc),
     onSuccess: () => {
-      // Invalidate and refetch proc lists
       queryClient.invalidateQueries({ queryKey: ['proc', 'getAll'] });
     },
   });
