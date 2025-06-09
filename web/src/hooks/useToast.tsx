@@ -1,73 +1,117 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import toast from 'react-hot-toast';
+import { toaster } from '@/components/ui/toaster';
 
 export function useToast() {
-  const success = (message: string, options?: any) => {
-    return toast.success(message, {
+  const success = (
+    title: string,
+    message: string,
+    label?: string,
+    cb?: () => void
+  ) => {
+    return toaster.success({
+      title: title,
+      description: message,
       duration: 3000,
-      position: 'top-center',
-      style: {
-        background: '#10B981',
-        color: '#ffffff',
-        fontWeight: '500',
-        padding: '16px 20px',
-        borderRadius: '8px',
+      action: {
+        label: label || 'OK',
+        onClick: () => {
+          if (cb) cb();
+        },
       },
-      icon: '✅',
-      ...options,
     });
   };
 
-  const error = (message: string, options?: any) => {
-    return toast.error(message, {
-      duration: 5000,
-      position: 'top-center',
-      style: {
-        background: '#EF4444',
-        color: '#ffffff',
-        fontWeight: '500',
-        padding: '16px 20px',
-        borderRadius: '8px',
-        maxWidth: '400px',
+  const dismiss = () => {
+    return toaster.dismiss();
+  };
+
+  const error = (
+    title: string,
+    message: string,
+    label?: string,
+    cb?: () => void
+  ) => {
+    return toaster.error({
+      title: title,
+      description: message,
+      duration: 3000,
+      action: {
+        label: label || 'OK',
+        onClick: () => {
+          if (cb) cb();
+        },
       },
-      icon: '❌',
-      ...options,
     });
   };
 
-  const loading = (message: string, options?: any) => {
-    return toast.loading(message, {
-      position: 'top-center',
-      style: {
-        background: '#3B82F6',
-        color: '#ffffff',
-        fontWeight: '500',
-        padding: '16px 20px',
-        borderRadius: '8px',
+  const loading = (
+    title: string,
+    message: string,
+    label?: string,
+    cb?: () => void
+  ) => {
+    toaster.loading({
+      title: title,
+      description: message,
+      duration: 3000,
+      action: {
+        label: label || 'OK',
+        onClick: () => {
+          if (cb) cb();
+        },
       },
-      ...options,
+    });
+  };
+
+  const info = (
+    title: string,
+    message: string,
+    label?: string,
+    cb?: () => void
+  ) => {
+    toaster.info({
+      title: title,
+      description: message,
+      duration: 3000,
+      action: {
+        label: label || 'OK',
+        onClick: () => {
+          if (cb) cb();
+        },
+      },
     });
   };
 
   const promise = (
     promise: Promise<any>,
-    messages: {
-      loading: string;
-      success: string;
-      error: string;
+    error: {
+      title: string;
+      description: string;
     },
-    options?: any
+    success: {
+      title: string;
+      description: string;
+    },
+    loading: {
+      title: string;
+      description: string;
+    }
   ) => {
-    return toast.promise(promise, messages, {
-      position: 'top-center',
-      style: {
-        fontWeight: '500',
-        padding: '16px 20px',
-        borderRadius: '8px',
+    toaster.promise(promise, {
+      success: {
+        title: success.title,
+        description: success.description,
       },
-      ...options,
+      error: {
+        title: error.title,
+        description: error.description,
+      },
+      loading: {
+        title: loading.title,
+        description: loading.description,
+      },
     });
   };
 
-  return { success, error, loading, promise };
+  return { success, error, loading, promise, info, dismiss };
 }

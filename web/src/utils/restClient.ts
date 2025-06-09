@@ -10,7 +10,7 @@ const restClient = axios.create({
     Accept: 'application/json',
   },
   validateStatus: function (status) {
-    return status < 500;
+    return status < 10000;
   },
 });
 

@@ -12,14 +12,13 @@ import {
   Button,
   Text,
   Fieldset,
-  Field, // ✅ Import do toaster
+  Field,
 } from '@chakra-ui/react';
 import { Formik, Form, Field as FormikField } from 'formik';
 import * as Yup from 'yup';
 import { useRouter } from 'next/navigation';
 import { useLogin } from '@/services';
 import { useAuth } from '@/contexts/AuthContext';
-import CustomBackdrop from '@/components/ui/CustomBackdrop';
 import { useToast } from '@/hooks/useToast';
 
 const LoginSchema = Yup.object().shape({
@@ -34,36 +33,36 @@ export default function Login() {
   const mutation = useLogin();
   const { login } = useAuth();
   const toast = useToast();
-
   const handleLoginSubmit = async (values: any) => {
-    try {
-      const result = await mutation.mutateAsync(values);
-
-      if (result && result.token_type) {
-        toast.success(
-          `Login realizado! Bem-vindo, ${result.user?.name || 'usuário'}!`
-        );
-        login(result);
-        setTimeout(() => router.push('/home'), 1000);
-      } else {
-        toast.error('Credenciais inválidas. Verifique email e senha.');
-      }
-    } catch (err: any) {
-      if (err?.response?.status === 401) {
-        toast.error('Email ou senha incorretos');
-      } else if (err?.response?.status === 403) {
-        toast.error('Usuário inativo. Contate o administrador.');
-      } else {
-        toast.error('Erro no servidor. Tente novamente.');
-      }
-    }
+    toast.loading('Aguarde', 'Processando login...');
+    mutation.mutate(values, {
+      onSuccess: response => {
+        if (response && response.token_type) {
+          toast.dismiss();
+          toast.success(
+            'Login realizado!',
+            `Bem-vindo, ${response.user?.name || 'usuário'}!`
+          );
+          login(response);
+          router.push('/home');
+        } else {
+          if (response?.message) {
+            toast.error('Erro ao fazer login', response.message);
+            return;
+          }
+          toast.error('Erro de conexão com o servidor', 'tente mais tarde.');
+        }
+      },
+      onError: error => {
+        console.log('Login error:', error);
+        toast.error('Erro de conexão com o servidor', 'Tente mais tarde.');
+      },
+    });
+    toast.dismiss();
   };
 
   return (
     <Container maxW="md" py={12} suppressHydrationWarning>
-      {/* Backdrop */}
-      <CustomBackdrop isOpen={mutation.isPending} />
-
       <Flex minHeight="60vh" align="center">
         <Box
           w="full"
