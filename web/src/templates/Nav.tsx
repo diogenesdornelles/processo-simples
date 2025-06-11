@@ -8,17 +8,20 @@ import {
   Button,
   Avatar,
   Text,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { Menu } from '@chakra-ui/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { FiChevronDown, FiSearch, FiUser, FiFileText } from 'react-icons/fi';
+import { FiChevronDown, FiSearch, FiFileText, FiUsers } from 'react-icons/fi';
 import { useColorMode, ColorModeButton } from '@/components/ui/color-mode';
+import { UserViewModal } from '@/components/modals/UserViewModal';
 
 export default function Nav() {
   const { user, logout, isAuthenticated } = useAuth();
   const router = useRouter();
   const { toggleColorMode } = useColorMode();
+  const viewModal = useDisclosure();
 
   const handleNavigation = (path: string) => {
     router.push(path);
@@ -28,6 +31,10 @@ export default function Nav() {
     if (confirm('Tem certeza que deseja sair?')) {
       logout();
     }
+  };
+
+  const handleView = () => {
+    viewModal.onOpen();
   };
 
   return (
@@ -46,6 +53,7 @@ export default function Nav() {
         <Text
           fontSize="xl"
           fontWeight="bold"
+          bg="text.bg"
           color="text.color"
           cursor="pointer"
           onClick={() => handleNavigation('/home')}
@@ -87,22 +95,19 @@ export default function Nav() {
             Pesquisar
           </Link>
 
-          {/* Registrar (se for admin) */}
-          {user?.role === 'Admin' && (
-            <Link
-              color="link.color"
-              fontWeight="medium"
-              _hover={{ color: 'link.color.hover' }}
-              onClick={() => handleNavigation('/registrar')}
-              cursor="pointer"
-              display="flex"
-              alignItems="center"
-              gap={2}
-            >
-              <FiUser />
-              Registrar
-            </Link>
-          )}
+          <Link
+            color="link.color"
+            fontWeight="medium"
+            _hover={{ color: 'link.color.hover' }}
+            onClick={() => handleNavigation('/perfis')}
+            cursor="pointer"
+            display="flex"
+            alignItems="center"
+            gap={2}
+          >
+            <FiUsers />
+            Perfis
+          </Link>
         </HStack>
       )}
 
@@ -126,7 +131,11 @@ export default function Nav() {
                     <Avatar.Fallback name={user?.name} />
                     <Avatar.Image src="https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/user-profile-icon.png" />
                   </Avatar.Root>
-                  <Text display={{ base: 'none', md: 'block' }}>
+                  <Text
+                    display={{ base: 'none', md: 'block' }}
+                    bg="text.bg"
+                    color="text.color"
+                  >
                     {user?.name}
                   </Text>
                   <FiChevronDown />
@@ -138,20 +147,11 @@ export default function Nav() {
               <Menu.Content>
                 <Menu.Item
                   value=""
-                  onClick={() => handleNavigation('/perfil')}
+                  onClick={() => handleView()}
                   color="menuItem.color"
                   _hover={{ bg: 'menuItem.color.hover' }}
                 >
                   Meu Perfil
-                </Menu.Item>
-
-                <Menu.Item
-                  value=""
-                  color="menuItem.color"
-                  _hover={{ bg: 'menuItem.color.hover' }}
-                  onClick={() => handleNavigation('/configuracoes')}
-                >
-                  Configurações
                 </Menu.Item>
 
                 <Menu.Separator />
@@ -180,6 +180,13 @@ export default function Nav() {
           </Button>
         )}
       </HStack>
+      {user && (
+        <UserViewModal
+          isOpen={viewModal.open}
+          onClose={viewModal.onClose}
+          user={user}
+        />
+      )}
     </Flex>
   );
 }

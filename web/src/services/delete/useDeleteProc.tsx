@@ -6,7 +6,7 @@ export function useDeleteProc() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => Api.proc.delete(id),
+    mutationFn: (id: number) => Api.proc.delete(id),
     onSuccess: (data, variables) => {
       // Invalidate and refetch proc lists
       queryClient.invalidateQueries({ queryKey: ['proc', 'getAll'] });

@@ -6,7 +6,7 @@ export function useDeleteDoc() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => Api.doc.delete(id),
+    mutationFn: (id: number) => Api.doc.delete(id),
     onSuccess: (data, variables) => {
       // Invalidate and refetch doc lists
       queryClient.invalidateQueries({ queryKey: ['doc', 'getAll'] });

@@ -85,7 +85,7 @@ export default function Login() {
                     <Heading size="lg" color="headingLg.color">
                       Processo Fácil
                     </Heading>
-                    <Text color="form.color.muted">
+                    <Text bg="text.bg" color="text.color">
                       Faça login em sua conta
                     </Text>
                   </VStack>
@@ -93,7 +93,11 @@ export default function Login() {
                   {/* Campos do formulário */}
                   <Fieldset.Root>
                     <Fieldset.Legend>
-                      <Text color="form.color" fontWeight="semibold">
+                      <Text
+                        bg="text.bg"
+                        color="text.color"
+                        fontWeight="semibold"
+                      >
                         Credenciais de Acesso
                       </Text>
                     </Fieldset.Legend>
@@ -113,7 +117,7 @@ export default function Login() {
                                 placeholder="admin@example.com"
                                 type="email"
                                 bg="input.bg"
-                                color="form.color"
+                                color="input.color"
                                 suppressHydrationWarning
                               />
                               <Field.ErrorText>
@@ -138,7 +142,7 @@ export default function Login() {
                                 placeholder="password"
                                 type="password"
                                 bg="input.bg"
-                                color="form.color"
+                                color="input.color"
                                 suppressHydrationWarning
                               />
                               <Field.ErrorText>
@@ -172,7 +176,8 @@ export default function Login() {
                     </Text>
                     <Text
                       fontSize="sm"
-                      color="link.color"
+                      bg="text.bg"
+                      color="text.color"
                       cursor="pointer"
                       _hover={{ color: 'link.color.hover' }}
                     >

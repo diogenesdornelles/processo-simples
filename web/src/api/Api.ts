@@ -44,7 +44,7 @@ export const Api = {
       const { data } = await restClient.get('users');
       return data;
     },
-    get: async (id: string): Promise<UserProps> => {
+    get: async (id: number): Promise<UserProps> => {
       const { data } = await restClient.get(`users/${id}`);
       return data;
     },
@@ -52,11 +52,11 @@ export const Api = {
       const { data } = await restClient.post('users', user);
       return data;
     },
-    update: async (id: string, user: UpdateUser): Promise<UserProps> => {
+    update: async (id: number, user: UpdateUser): Promise<UserProps> => {
       const { data } = await restClient.put(`users/${id}`, user);
       return data;
     },
-    delete: async (id: string): Promise<void> => {
+    delete: async (id: number): Promise<void> => {
       await restClient.delete(`users/${id}`);
     },
   },
@@ -66,7 +66,7 @@ export const Api = {
       const { data } = await restClient.get('procs');
       return data;
     },
-    get: async (id: string): Promise<ProcProps> => {
+    get: async (id: number): Promise<ProcProps> => {
       const { data } = await restClient.get(`procs/${id}`);
       return data;
     },
@@ -74,11 +74,11 @@ export const Api = {
       const { data } = await restClient.post('procs', proc);
       return data;
     },
-    update: async (id: string, proc: UpdateProc): Promise<ProcProps> => {
+    update: async (id: number, proc: UpdateProc): Promise<ProcProps> => {
       const { data } = await restClient.put(`procs/${id}`, proc);
       return data;
     },
-    delete: async (id: string): Promise<void> => {
+    delete: async (id: number): Promise<void> => {
       await restClient.delete(`procs/${id}`);
     },
   },
@@ -88,7 +88,7 @@ export const Api = {
       const { data } = await restClient.get('events');
       return data;
     },
-    get: async (id: string): Promise<EventProps> => {
+    get: async (id: number): Promise<EventProps> => {
       const { data } = await restClient.get(`events/${id}`);
       return data;
     },
@@ -96,11 +96,11 @@ export const Api = {
       const { data } = await restClient.post('events', event);
       return data;
     },
-    update: async (id: string, event: UpdateEvent): Promise<EventProps> => {
+    update: async (id: number, event: UpdateEvent): Promise<EventProps> => {
       const { data } = await restClient.put(`events/${id}`, event);
       return data;
     },
-    delete: async (id: string): Promise<void> => {
+    delete: async (id: number): Promise<void> => {
       await restClient.delete(`events/${id}`);
     },
   },
@@ -110,7 +110,7 @@ export const Api = {
       const { data } = await restClient.get('docs');
       return data;
     },
-    get: async (id: string): Promise<DocProps> => {
+    get: async (id: number): Promise<DocProps> => {
       const { data } = await restClient.get(`docs/${id}`);
       return data;
     },
@@ -129,7 +129,7 @@ export const Api = {
       });
       return data;
     },
-    update: async (id: string, doc: UpdateDoc): Promise<DocProps> => {
+    update: async (id: number, doc: UpdateDoc): Promise<DocProps> => {
       const formData = new FormData();
       formData.append('_method', 'PUT');
 
@@ -146,7 +146,7 @@ export const Api = {
       });
       return data;
     },
-    delete: async (id: string): Promise<void> => {
+    delete: async (id: number): Promise<void> => {
       await restClient.delete(`docs/${id}`);
     },
   },

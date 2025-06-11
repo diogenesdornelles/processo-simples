@@ -7,7 +7,7 @@ export function useUpdateProc() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, proc }: { id: string; proc: UpdateProc }) =>
+    mutationFn: ({ id, proc }: { id: number; proc: UpdateProc }) =>
       Api.proc.update(id, proc),
     onSuccess: (data, variables) => {
       // Invalidate and refetch proc lists

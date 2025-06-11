@@ -37,7 +37,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/app/registro"
+    "src/app/perfis/novo-perfil"
   ],
   "exclude": ["node_modules"]
 }

@@ -1,5 +1,5 @@
 'use client';
-export default function RegistroLayout({
+export default function PerfisLayout({
   children,
 }: {
   children: React.ReactNode;

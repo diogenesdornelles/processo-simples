@@ -34,4 +34,15 @@ export const manageToken = {
       return tokenCookie ? tokenCookie.split('=')[1] : null;
     },
   },
+  get: () => {
+    return manageToken.ls.get() || manageToken.cookies.get();
+  },
+  set: (token: string) => {
+    manageToken.ls.save(token);
+    manageToken.cookies.save(token);
+  },
+  remove: () => {
+    manageToken.ls.remove();
+    manageToken.cookies.remove();
+  },
 };

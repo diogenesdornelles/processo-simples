@@ -15,7 +15,7 @@ export default function Footer() {
       alignItems="center"
       justifyContent="center"
     >
-      <Text fontSize="sm" color="text.color" textAlign="center">
+      <Text fontSize="sm" bg="text.bg" color="text.color" textAlign="center">
         © {currentYear} Processo Fácil - Todos os direitos reservados
       </Text>
     </Flex>

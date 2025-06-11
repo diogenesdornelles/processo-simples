@@ -45,7 +45,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setIsClient(true);
 
       try {
-        const savedToken = manageToken.ls.get() || manageToken.cookies.get();
+        const savedToken = manageToken.get();
 
         const sessionData = localStorage.getItem('session');
         let savedUser: UserProps | null = null;
@@ -71,8 +71,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const login = (result: LoginProps) => {
     try {
-      manageToken.ls.save(result.token);
-      manageToken.cookies.save(result.token);
+      manageToken.set(result.token);
 
       localStorage.setItem('session', JSON.stringify(result.user));
 
@@ -87,8 +86,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const logout = () => {
     try {
-      manageToken.ls.remove();
-      manageToken.cookies.remove();
+      manageToken.remove();
       localStorage.removeItem('session');
 
       setToken(null);

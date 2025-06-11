@@ -6,7 +6,7 @@ export function useDeleteEvent() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => Api.event.delete(id),
+    mutationFn: (id: number) => Api.event.delete(id),
     onSuccess: (data, variables) => {
       // Invalidate and refetch event lists
       queryClient.invalidateQueries({ queryKey: ['event', 'getAll'] });

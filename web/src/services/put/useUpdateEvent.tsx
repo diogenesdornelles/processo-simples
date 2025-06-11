@@ -7,7 +7,7 @@ export function useUpdateEvent() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, event }: { id: string; event: UpdateEvent }) =>
+    mutationFn: ({ id, event }: { id: number; event: UpdateEvent }) =>
       Api.event.update(id, event),
     onSuccess: (data, variables) => {
       // Invalidate and refetch event lists

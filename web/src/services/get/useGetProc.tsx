@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { Api } from '@/api/Api';
 
-export function useGetProc(id: string, enabled = true) {
+export function useGetProc(id: number, enabled = true) {
   return useQuery({
     queryFn: () => Api.proc.get(id),
     queryKey: ['proc', 'get', id],

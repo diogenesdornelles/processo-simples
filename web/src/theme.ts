@@ -57,8 +57,11 @@ const config = defineConfig({
         'input.bg': {
           value: { base: '{colors.gray.100}', _dark: '{colors.gray.700}' },
         },
+        'input.color': {
+          value: { base: '{colors.gray.900}', _dark: '{colors.gray.50}' },
+        },
         'text.color': {
-          value: { base: '{colors.white}', _dark: '{colors.white}' },
+          value: { base: '{colors.gray.900}', _dark: '{colors.white}' },
         },
         'button.bg': {
           value: { base: '{colors.purple.700}', _dark: '{colors.purple.900}' },
@@ -76,10 +79,10 @@ const config = defineConfig({
           value: { base: '{colors.purple.700}', _dark: '{colors.purple.900}' },
         },
         'link.color': {
-          value: { base: '{colors.purple.500}', _dark: '{colors.purple.300}' },
+          value: { base: '{colors.purple.50}', _dark: '{colors.purple.300}' },
         },
         'link.color.hover': {
-          value: { base: '{colors.purple.600}', _dark: '{colors.purple.200}' },
+          value: { base: '{colors.purple.200}', _dark: '{colors.purple.200}' },
         },
         'menuItem.color': {
           value: { base: '{colors.gray.800}', _dark: '{colors.gray.200}' },
@@ -87,8 +90,20 @@ const config = defineConfig({
         'menuItem.color.hover': {
           value: { base: '{colors.gray.900}', _dark: '{colors.gray.300}' },
         },
+        'box.bg': {
+          value: { base: '{colors.purple.700}', _dark: '{colors.purple.300}' },
+        },
+        'box.color': {
+          value: { base: '{colors.purple.700}', _dark: '{colors.purple.300}' },
+        },
         'headingLg.color': {
           value: { base: '{colors.purple.700}', _dark: '{colors.purple.300}' },
+        },
+        'icon.bg': {
+          value: { base: '{colors.blue.700}', _dark: '{colors.blue.100}' },
+        },
+        'modalItem.bg': {
+          value: { base: '{colors.blue.200}', _dark: '{colors.gray.900}' },
         },
       },
     },

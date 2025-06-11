@@ -7,7 +7,7 @@ export function useUpdateUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, user }: { id: string; user: UpdateUser }) =>
+    mutationFn: ({ id, user }: { id: number; user: UpdateUser }) =>
       Api.user.update(id, user),
     onSuccess: (data, variables) => {
       // Invalidate and refetch user lists
