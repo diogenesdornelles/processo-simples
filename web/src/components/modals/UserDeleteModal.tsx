@@ -16,7 +16,7 @@ import {
 import { UserProps } from '@/domain/interfaces/user.interfaces';
 import { useDeleteUser } from '@/services';
 import { useToast } from '@/hooks/useToast';
-import { HiTrash, HiExclamationTriangle } from 'react-icons/hi2';
+import { HiTrash, HiExclamationTriangle, HiXCircle } from 'react-icons/hi2';
 import { modalStyles } from '@/styles/modalStyles';
 import { FaWindowClose } from 'react-icons/fa';
 import { useColorMode } from '../ui/color-mode';
@@ -64,12 +64,16 @@ export function UserDeleteModal({
       shouldCloseOnOverlayClick={true}
       shouldCloseOnEsc={true}
     >
-      <Box p={6}>
-        {/* Header */}
+      <Box
+        p={6}
+        bg="primary.gray.bg"
+        color="primary.gray.text"
+        borderRadius="12px"
+      >
         <HStack justify="space-between" align="center" mb={6}>
           <HStack gap={2}>
-            <HiTrash size={24} color="red" />
-            <Heading size="lg" color="red.600">
+            <HiTrash size={24} color="#dc2626" />
+            <Heading size="lg" color="primary.error.text">
               Confirmar Exclusão
             </Heading>
           </HStack>
@@ -78,59 +82,72 @@ export function UserDeleteModal({
             variant="ghost"
             size="sm"
             onClick={onClose}
+            color="secondary.gray.text"
+            _hover={{
+              bg: 'secondary.gray.bg.hover',
+              color: 'secondary.gray.text.hover',
+            }}
           >
             <FaWindowClose />
           </IconButton>
         </HStack>
 
         <VStack gap={6}>
-          {/* Alert de Aviso */}
-          <Alert.Root status="error">
-            <Alert.Indicator />
+          <Alert.Root
+            status="error"
+            bg="secondary.error.bg"
+            borderColor="primary.error.bg"
+          >
+            <Alert.Indicator color="primary.error.text" />
             <VStack align="start" gap={1}>
-              <Alert.Title>⚠️ Atenção!</Alert.Title>
-              <Alert.Description>
+              <Alert.Title color="primary.error.text">⚠️ Atenção!</Alert.Title>
+              <Alert.Description color="primary.error.text">
                 Esta ação <strong>não pode ser desfeita</strong>. O usuário será
                 removido permanentemente do sistema, incluindo todos os dados
                 associados.
               </Alert.Description>
             </VStack>
           </Alert.Root>
-
-          {/* Informações do Usuário */}
           <Box
             w="full"
             p={4}
-            bg="modalItem.bg"
+            bg="secondary.gray.bg"
             borderRadius="lg"
             border="2px"
-            borderColor="red.200"
+            borderColor="primary.error.bg"
           >
             <HStack gap={4}>
               <Avatar.Root>
-                <Avatar.Fallback name={user?.name} />
-                <Avatar.Image src="https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/user-profile-icon.png" />
+                <Avatar.Fallback
+                  name={user?.name}
+                  bg="secondary.error.bg"
+                  color="white"
+                />
+                <Avatar.Image src="../../public/account.png" />
               </Avatar.Root>
               <VStack align="start" gap={1}>
-                <Text
-                  fontWeight="bold"
-                  fontSize="lg"
-                  bg="text.bg"
-                  color="text.color"
-                >
+                <Text fontWeight="bold" fontSize="lg" color="primary.gray.text">
                   {user.name}
                 </Text>
-                <Text fontSize="sm" bg="text.bg" color="text.color">
+                <Text fontSize="sm" color="secondary.gray.text">
                   {user.email}
                 </Text>
-                <Text fontSize="sm" bg="text.bg" color="text.color">
-                  <Text as="span" fontWeight="semibold">
+                <Text fontSize="sm" color="secondary.gray.text">
+                  <Text
+                    as="span"
+                    fontWeight="semibold"
+                    color="primary.gray.text"
+                  >
                     Perfil:
                   </Text>{' '}
                   {user.role}
                 </Text>
-                <Text fontSize="sm" bg="text.bg" color="text.color">
-                  <Text as="span" fontWeight="semibold">
+                <Text fontSize="sm" color="secondary.gray.text">
+                  <Text
+                    as="span"
+                    fontWeight="semibold"
+                    color="primary.gray.text"
+                  >
                     Sigla:
                   </Text>{' '}
                   {user.sigle}
@@ -138,68 +155,99 @@ export function UserDeleteModal({
               </VStack>
             </HStack>
           </Box>
-
-          {/* Pergunta de Confirmação */}
           <Box textAlign="center">
             <HStack justify="center" mb={2}>
-              <HiExclamationTriangle size={24} color="red" />
-              <Text
-                fontSize="lg"
-                fontWeight="bold"
-                bg="text.bg"
-                color="text.color"
-              >
+              <HiExclamationTriangle size={24} color="#dc2626" />{' '}
+              {/* Vermelho */}
+              <Text fontSize="lg" fontWeight="bold" color="primary.error.text">
                 Tem certeza que deseja excluir este usuário?
               </Text>
             </HStack>
-            <Text fontSize="sm" bg="text.bg" color="text.color">
-              Digite o nome do usuário para confirmar a exclusão:
+            <Text fontSize="sm" color="secondary.gray.text">
+              Esta ação removerá permanentemente todos os dados do usuário.
             </Text>
           </Box>
-
-          {/* Campo de Confirmação */}
-          <Box w="full">
-            <Text fontSize="sm" bg="text.bg" color="text.color" mb={2}>
-              Nome esperado:{' '}
-              <Text as="span" fontWeight="bold">
+          <Box
+            w="full"
+            p={3}
+            bg="secondary.error.bg"
+            borderRadius="md"
+            border="1px"
+            borderColor="primary.error.bg"
+          >
+            <Text
+              fontSize="sm"
+              color="primary.error.text"
+              textAlign="center"
+              fontWeight="medium"
+            >
+              Usuário a ser excluído:{' '}
+              <Text as="span" fontWeight="bold" color="primary.error.text">
                 {user.name}
               </Text>
             </Text>
-            {/* Você pode adicionar um Input aqui se quiser confirmação por digitação */}
           </Box>
-
-          {/* Botões de Ação */}
-          <HStack gap={3} w="full" justify="center" pt={4}>
+          <HStack
+            gap={3}
+            w="full"
+            justify="center"
+            pt={4}
+            borderTop="1px"
+            borderColor="secondary.gray.bg"
+          >
             <Button
-              variant="outline"
+              variant="ghost"
               size="lg"
               onClick={onClose}
               disabled={deleteMutation.isPending}
               flex={1}
+              color="secondary.gray.text"
+              _hover={{
+                bg: 'secondary.gray.bg.hover',
+                color: 'secondary.gray.text.hover',
+              }}
             >
-              ❌ Cancelar
+              Cancelar
+              <HiXCircle/>
             </Button>
             <Button
-              colorScheme="red"
+              bg="primary.error.bg"
+              color="white"
               size="lg"
               onClick={handleDelete}
               loading={deleteMutation.isPending}
               loadingText="Excluindo..."
               flex={1}
+              _hover={{
+                bg: 'primary.error.bg.hover',
+              }}
+              _disabled={{
+                bg: 'secondary.gray.bg',
+                color: 'secondary.gray.text',
+              }}
             >
-              🗑️ Confirmar Exclusão
+              Confirmar Exclusão
+              <HiTrash/>
             </Button>
           </HStack>
-
-          {/* Aviso Final */}
-          <Text
-            fontSize="xs"
-            bg="text.bg"
-            color="text.color"
-            textAlign="center"
+          <Alert.Root
+            status="warning"
+            variant="subtle"
+            bg="secondary.warning.bg"
+            borderColor="primary.warning.bg"
           >
-            Esta ação é irreversível e todos os dados do usuário serão perdidos.
-          </Text>
+            <Alert.Indicator color="primary.warning.text" />
+            <Alert.Description>
+              <Text
+                fontSize="xs"
+                color="primary.warning.text"
+                textAlign="center"
+              >
+                Esta ação é irreversível e todos os dados do usuário serão
+                perdidos.
+              </Text>
+            </Alert.Description>
+          </Alert.Root>
         </VStack>
       </Box>
     </Modal>

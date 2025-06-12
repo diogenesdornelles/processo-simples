@@ -101,18 +101,24 @@ export function UserCreateModal({
       shouldCloseOnOverlayClick={true}
       shouldCloseOnEsc={true}
     >
-      <Box p={6}>
-        {/* Header */}
+      <Box p={6} bg="primary.gray.bg" color="primary.gray.text">
         <HStack justify="space-between" align="center" mb={6}>
           <HStack gap={2}>
-            <HiUser size={24} color="icon.bg" />
-            <Heading size="lg">Criar Novo Usuário</Heading>
+            <HiUser size={24} color="blue" />
+            <Heading size="lg" color="primary.gray.text">
+              Criar Novo Usuário
+            </Heading>
           </HStack>
           <IconButton
             aria-label="Fechar modal"
             variant="ghost"
             size="sm"
             onClick={onClose}
+            color="secondary.gray.text"
+            _hover={{
+              bg: 'secondary.gray.bg.hover',
+              color: 'secondary.gray.text.hover',
+            }}
           >
             <FaWindowClose />
           </IconButton>
@@ -134,7 +140,6 @@ export function UserCreateModal({
           {({ isSubmitting, errors, touched, values, setFieldValue }) => (
             <Form>
               <VStack gap={5}>
-                {/* Dados Pessoais */}
                 <Fieldset.Root>
                   <Fieldset.Legend>
                     <HStack gap={2}>
@@ -142,7 +147,7 @@ export function UserCreateModal({
                       <Text
                         fontWeight="semibold"
                         bg="text.bg"
-                        color="text.color"
+                        color="primary.gray.text"
                       >
                         Dados Pessoais
                       </Text>
@@ -158,15 +163,22 @@ export function UserCreateModal({
                             <Input
                               {...field}
                               placeholder="Digite o nome completo do usuário"
-                              bg="input.bg"
-                              color="input.color"
+                              bg="primary.gray.bg"
+                              color="primary.gray.text"
+                              borderColor="secondary.gray.bg"
+                              _hover={{
+                                borderColor: 'secondary.gray.bg.hover',
+                              }}
+                              _focus={{
+                                borderColor: 'primary.purple.bg',
+                              }}
                             />
-                            <Field.ErrorText>{errors.name}</Field.ErrorText>
+                            <Field.ErrorText color="primary.error.text">
+                              {errors.name}
+                            </Field.ErrorText>
                           </Field.Root>
                         )}
                       </FormikField>
-
-                      {/* E-mail */}
                       <FormikField name="email">
                         {({ field }: any) => (
                           <Field.Root
@@ -175,17 +187,22 @@ export function UserCreateModal({
                             <Field.Label>
                               <HStack gap={2}>
                                 <AiOutlineMail size={30} />
-                                <Text bg="text.bg" color="text.color">
-                                  E-mail
-                                </Text>
+                                <Text color="primary.gray.text">E-mail</Text>
                               </HStack>
                             </Field.Label>
                             <Input
                               {...field}
                               type="email"
                               placeholder="email@exemplo.com"
-                              bg="input.bg"
-                              color="input.color"
+                              bg="primary.gray.bg"
+                              color="primary.gray.text"
+                              borderColor="secondary.gray.bg"
+                              _hover={{
+                                borderColor: 'secondary.gray.bg.hover',
+                              }}
+                              _focus={{
+                                borderColor: 'primary.purple.bg',
+                              }}
                             />
                             <Field.ErrorText>{errors.email}</Field.ErrorText>
                           </Field.Root>
@@ -193,23 +210,27 @@ export function UserCreateModal({
                       </FormikField>
 
                       <HStack gap={4} w="full">
-                        {/* CPF */}
                         <FormikField name="cpf">
                           {({ field }: any) => (
                             <Field.Root invalid={!!errors.cpf && !!touched.cpf}>
                               <Field.Label>
                                 <HStack gap={2}>
                                   <HiIdentification size={16} />
-                                  <Text bg="text.bg" color="text.color">
-                                    CPF
-                                  </Text>
+                                  <Text color="primary.gray.text">CPF</Text>
                                 </HStack>
                               </Field.Label>
                               <Input
                                 {...field}
                                 placeholder="000.000.000-00"
-                                bg="input.bg"
-                                color="input.color"
+                                bg="primary.gray.bg"
+                                color="primary.gray.text"
+                                borderColor="secondary.gray.bg"
+                                _hover={{
+                                  borderColor: 'secondary.gray.bg.hover',
+                                }}
+                                _focus={{
+                                  borderColor: 'primary.purple.bg',
+                                }}
                                 maxLength={14}
                                 onChange={e => {
                                   const formatted = formatCPF(e.target.value);
@@ -220,8 +241,6 @@ export function UserCreateModal({
                             </Field.Root>
                           )}
                         </FormikField>
-
-                        {/* Sigla */}
                         <FormikField name="sigle">
                           {({ field }: any) => (
                             <Field.Root
@@ -231,8 +250,15 @@ export function UserCreateModal({
                               <Input
                                 {...field}
                                 placeholder="ABC"
-                                bg="input.bg"
-                                color="input.color"
+                                bg="primary.gray.bg"
+                                color="primary.gray.text"
+                                borderColor="secondary.gray.bg"
+                                _hover={{
+                                  borderColor: 'secondary.gray.bg.hover',
+                                }}
+                                _focus={{
+                                  borderColor: 'primary.purple.bg',
+                                }}
                                 textTransform="uppercase"
                                 maxLength={5}
                                 onChange={e => {
@@ -250,18 +276,15 @@ export function UserCreateModal({
                     </VStack>
                   </Fieldset.Content>
                 </Fieldset.Root>
-
-                {/* Configurações de Acesso */}
                 <Fieldset.Root>
                   <Fieldset.Legend>
-                    <Text fontWeight="semibold" bg="text.bg" color="text.color">
+                    <Text fontWeight="semibold" color="primary.gray.text">
                       Configurações de Acesso
                     </Text>
                   </Fieldset.Legend>
 
                   <Fieldset.Content>
                     <VStack gap={4}>
-                      {/* Perfil */}
                       <FormikField name="role">
                         {({ field }: any) => (
                           <Field.Root>
@@ -297,7 +320,6 @@ export function UserCreateModal({
                           </Field.Root>
                         )}
                       </FormikField>
-                      {/* SENHA  */}
                       <FormikField name="password">
                         {({ field }: any) => (
                           <Field.Root
@@ -305,7 +327,7 @@ export function UserCreateModal({
                           >
                             <Field.Label>
                               <HStack gap={2}>
-                                <Text bg="text.bg" color="text.color">
+                                <Text bg="text.bg" color="primary.gray.text">
                                   🔒 Senha
                                 </Text>
                               </HStack>
@@ -314,8 +336,15 @@ export function UserCreateModal({
                               {...field}
                               type="password"
                               placeholder="Digite a senha do usuário"
-                              bg="input.bg"
-                              color="input.color"
+                              bg="primary.gray.bg"
+                              color="primary.gray.text"
+                              borderColor="secondary.gray.bg"
+                              _hover={{
+                                borderColor: 'secondary.gray.bg.hover',
+                              }}
+                              _focus={{
+                                borderColor: 'primary.purple.bg',
+                              }}
                             />
                             <Field.HelperText>
                               Mínimo de 6 caracteres
@@ -327,15 +356,17 @@ export function UserCreateModal({
                     </VStack>
                   </Fieldset.Content>
                 </Fieldset.Root>
-
-                {/* Preview dos dados */}
                 {values.name && values.email && (
                   <Alert.Root status="success" variant="subtle">
                     <Alert.Indicator />
                     <VStack align="start" gap={1}>
                       <Alert.Title>Resumo do usuário:</Alert.Title>
                       <Alert.Description>
-                        <Text fontSize="sm" bg="text.bg" color="text.color">
+                        <Text
+                          fontSize="sm"
+                          bg="text.bg"
+                          color="secondary.gray.text"
+                        >
                           <strong>{values.name}</strong> ({values.sigle}) será
                           criado com perfil de <strong>{values.role}</strong> e
                           status{' '}
@@ -347,27 +378,36 @@ export function UserCreateModal({
                   </Alert.Root>
                 )}
 
-                {/* Footer */}
                 <HStack
                   gap={3}
                   w="full"
                   justify="end"
                   pt={4}
                   borderTop="1px"
-                  borderColor="gray.200"
+                  borderColor="secondary.gray.bg"
                 >
                   <Button
+                    bg="primary.purple.bg"
+                    color="white"
                     variant="ghost"
                     onClick={onClose}
                     disabled={isSubmitting}
+                    _hover={{
+                      bg: 'primary.purple.bg.hover',
+                    }}
                   >
                     Cancelar
                   </Button>
                   <Button
+                    bg="primary.purple.bg"
+                    color="white"
                     colorScheme="blue"
                     type="submit"
                     loading={isSubmitting}
                     loadingText="Criando usuário..."
+                    _hover={{
+                      bg: 'primary.purple.bg.hover',
+                    }}
                   >
                     Criar Usuário
                   </Button>

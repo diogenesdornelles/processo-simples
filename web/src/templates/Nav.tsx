@@ -40,70 +40,93 @@ export default function Nav() {
   return (
     <Flex
       suppressHydrationWarning
-      backgroundColor="nav.bg"
+      bg="primary.gray.bg"
+      color="primary.gray.color"
       minHeight={16}
       flex="0 0 auto"
       px={6}
       alignItems="center"
       justifyContent="space-between"
       boxShadow="md"
+      borderBottom="1px"
+      borderColor="secondary.gray.bg"
     >
-      {/* Logo/Brand */}
       <Box suppressHydrationWarning>
         <Text
           fontSize="xl"
           fontWeight="bold"
-          bg="text.bg"
-          color="text.color"
           cursor="pointer"
+          color="primary.purple.color"
+          _hover={{
+            color: 'primary.purple.color.hover',
+            transform: 'scale(1.05)',
+            transition: 'all 0.2s',
+          }}
           onClick={() => handleNavigation('/home')}
         >
           Processo Fácil
         </Text>
       </Box>
 
-      {/* Navigation Links */}
       {isAuthenticated && (
         <HStack gap={6}>
-          {/* Processos */}
           <Link
-            color="link.color"
+            color="secondary.gray.color"
             fontWeight="medium"
-            _hover={{ color: 'link.color.hover' }}
+            _hover={{
+              color: 'secondary.gray.color.hover',
+              bg: 'secondary.gray.bg.hover',
+              borderRadius: 'md',
+              transition: 'all 0.2s',
+            }}
             onClick={() => handleNavigation('/processos')}
             cursor="pointer"
             display="flex"
             alignItems="center"
             gap={2}
+            px={3}
+            py={2}
           >
             <FiFileText />
             Processos
           </Link>
-
-          {/* Pesquisar */}
           <Link
-            color="link.color"
+            color="secondary.gray.color"
             fontWeight="medium"
-            _hover={{ color: 'link.color.hover' }}
+            _hover={{
+              color: 'secondary.gray.color.hover',
+              bg: 'secondary.gray.bg.hover',
+              borderRadius: 'md',
+              transition: 'all 0.2s',
+            }}
             onClick={() => handleNavigation('/pesquisar')}
             cursor="pointer"
             display="flex"
             alignItems="center"
             gap={2}
+            px={3}
+            py={2}
           >
             <FiSearch />
             Pesquisar
           </Link>
 
           <Link
-            color="link.color"
+            color="secondary.gray.color"
             fontWeight="medium"
-            _hover={{ color: 'link.color.hover' }}
+            _hover={{
+              color: 'secondary.gray.color.hover',
+              bg: 'secondary.gray.bg.hover',
+              borderRadius: 'md',
+              transition: 'all 0.2s',
+            }}
             onClick={() => handleNavigation('/perfis')}
             cursor="pointer"
             display="flex"
             alignItems="center"
             gap={2}
+            px={3}
+            py={2}
           >
             <FiUsers />
             Perfis
@@ -111,56 +134,96 @@ export default function Nav() {
         </HStack>
       )}
 
-      {/* Right Side - User Menu & Theme Toggle */}
       <HStack gap={4}>
         {/* Theme Toggle */}
-        <ColorModeButton onClick={toggleColorMode} />
+        <ColorModeButton
+          onClick={toggleColorMode}
+          bg="secondary.gray.bg"
+          color="secondary.gray.color"
+          _hover={{
+            bg: 'secondary.gray.bg.hover',
+            color: 'secondary.gray.color.hover',
+          }}
+        />
 
-        {/* User Menu ou Login */}
         {isAuthenticated ? (
           <Menu.Root>
             <Menu.Trigger asChild>
               <Button
                 variant="ghost"
-                color="button.color"
-                _hover={{ bg: 'button.bg.hover' }}
-                _active={{ bg: 'button.bg.hover' }}
+                p={3}
+                bg="secondary.gray.bg"
+                color="primary.gray.color"
+                _hover={{
+                  bg: 'secondary.gray.bg.hover',
+                  color: 'primary.gray.color.hover',
+                }}
+                borderRadius="lg"
               >
                 <HStack gap={2}>
-                  <Avatar.Root>
-                    <Avatar.Fallback name={user?.name} />
-                    <Avatar.Image src="https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/user-profile-icon.png" />
+                  <Avatar.Root size="sm">
+                    <Avatar.Fallback
+                      name={user?.name}
+                      bg="secondary.purple.bg"
+                      color="secondary.purple.color"
+                    />
+                    <Avatar.Image src="../../account.png" />
                   </Avatar.Root>
                   <Text
                     display={{ base: 'none', md: 'block' }}
-                    bg="text.bg"
-                    color="text.color"
+                    color="primary.gray.color"
+                    fontSize="sm"
+                    fontWeight="medium"
                   >
                     {user?.name}
                   </Text>
-                  <FiChevronDown />
+                  <FiChevronDown size={14} />
                 </HStack>
               </Button>
             </Menu.Trigger>
 
             <Menu.Positioner>
-              <Menu.Content>
+              <Menu.Content
+                bg="primary.gray.bg"
+                borderColor="secondary.gray.bg"
+                boxShadow="lg"
+              >
                 <Menu.Item
                   value=""
                   onClick={() => handleView()}
-                  color="menuItem.color"
-                  _hover={{ bg: 'menuItem.color.hover' }}
+                  color="primary.gray.color"
+                  _hover={{
+                    bg: 'secondary.gray.bg.hover',
+                    color: 'secondary.purple.color.hover',
+                  }}
+                  _focus={{
+                    bg: 'secondary.gray.bg.hover',
+                    color: 'secondary.purple.color.hover',
+                  }}
+                  px={4}
+                  py={2}
+                  fontSize="sm"
                 >
                   Meu Perfil
                 </Menu.Item>
 
-                <Menu.Separator />
+                <Menu.Separator borderColor="secondary.gray.bg" />
 
                 <Menu.Item
                   value=""
                   onClick={handleLogout}
-                  color="menuItem.color"
-                  _hover={{ bg: 'menuItem.color.hover' }}
+                  color="primary.gray.color"
+                  _hover={{
+                    bg: 'secondary.gray.bg.hover',
+                    color: 'secondary.purple.color.hover',
+                  }}
+                  _focus={{
+                    bg: 'secondary.gray.bg.hover',
+                    color: 'secondary.purple.color.hover',
+                  }}
+                  px={4}
+                  py={2}
+                  fontSize="sm"
                 >
                   Sair
                 </Menu.Item>
@@ -169,14 +232,23 @@ export default function Nav() {
           </Menu.Root>
         ) : (
           <Button
-            variant="outline"
-            color="button.color"
-            bg="button.bg"
-            borderColor="button.borderColor"
-            _hover={{ bg: 'button.bg.hover' }}
+            bg="primary.purple.bg"
+            color="white"
+            borderColor="primary.purple.bg"
+            _hover={{
+              bg: 'primary.purple.bg.hover',
+              borderColor: 'primary.purple.bg.hover',
+              transform: 'translateY(-1px)',
+              boxShadow: 'md',
+            }}
             onClick={() => handleNavigation('/login')}
+            fontWeight="semibold"
+            px={6}
+            py={2}
+            borderRadius="lg"
+            transition="all 0.2s"
           >
-            Login
+            Entrar
           </Button>
         )}
       </HStack>

@@ -30,14 +30,15 @@ interface UserViewModalProps {
 
 export function UserViewModal({ isOpen, onClose, user }: UserViewModalProps) {
   const theme = useColorMode();
+
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
       case 'Admin':
-        return 'red';
+        return 'primary.error.bg';
       case 'Comum':
-        return 'blue';
+        return 'primary.info.bg';
       default:
-        return 'gray';
+        return 'secondary.gray.bg';
     }
   };
 
@@ -61,86 +62,116 @@ export function UserViewModal({ isOpen, onClose, user }: UserViewModalProps) {
       shouldCloseOnOverlayClick={true}
       shouldCloseOnEsc={true}
     >
-      <Box p={6}>
-        {/* Header */}
+      <Box
+        p={6}
+        bg="primary.gray.bg"
+        color="primary.gray.text"
+        borderRadius="12px"
+      >
         <HStack justify="space-between" align="center" mb={6}>
           <HStack gap={2}>
-            <HiEye size={24} color="icon.bg" />
-            <Heading size="lg">Detalhes do Usuário</Heading>
+            <HiEye size={24} color="#9333ea" />
+            <Heading size="lg" color="primary.gray.text">
+              Detalhes do Usuário
+            </Heading>
           </HStack>
           <IconButton
             aria-label="Fechar modal"
             variant="ghost"
             size="sm"
-            cursor={'pointer'}
+            cursor="pointer"
             onClick={onClose}
+            color="secondary.gray.text"
+            _hover={{
+              bg: 'secondary.gray.bg.hover',
+              color: 'secondary.gray.text.hover',
+            }}
           >
-            <FaWindowClose size={30} />
+            <FaWindowClose size={20} />
           </IconButton>
         </HStack>
 
         <VStack gap={6} align="stretch">
-          {/* Avatar e Info Principal */}
-          <HStack gap={4} p={4} borderRadius="lg" bg="modalItem.bg">
-            <Avatar.Root>
-              <Avatar.Fallback name={user?.name} />
-              <Avatar.Image src="https://uxwing.com/wp-content/themes/uxwing/download/peoples-avatars/user-profile-icon.png" />
+          <HStack
+            gap={4}
+            p={4}
+            borderRadius="lg"
+            bg="secondary.gray.bg"
+            border="1px"
+            borderColor="secondary.gray.bg.hover"
+          >
+            <Avatar.Root size="lg">
+              <Avatar.Fallback
+                name={user?.name}
+                bg="secondary.purple.bg"
+                color="white"
+              />
+              <Avatar.Image src="../../public/account.png" />
             </Avatar.Root>
-            <VStack align="start" gap={2}>
-              <Heading size="md">{user.name}</Heading>
-              <HStack gap={2}>
+            <VStack align="start" gap={2} flex={1}>
+              <Heading size="md" color="primary.gray.text">
+                {user.name}
+              </Heading>
+              <HStack gap={2} wrap="wrap">
                 <Badge
-                  colorScheme={getRoleBadgeColor(user.role)}
-                  variant="solid"
+                  bg={getRoleBadgeColor(user.role)}
+                  color="white"
                   px={3}
                   py={1}
                   borderRadius="full"
+                  fontSize="xs"
+                  fontWeight="semibold"
                 >
                   {getRoleText(user.role)}
                 </Badge>
                 <Badge
-                  colorScheme={user.active ? 'green' : 'red'}
-                  variant="outline"
+                  bg={user.active ? 'primary.success.bg' : 'primary.error.bg'}
+                  color="white"
                   px={3}
                   py={1}
                   borderRadius="full"
+                  fontSize="xs"
+                  fontWeight="semibold"
                 >
-                  {user.active ? '✅ Ativo' : '❌ Inativo'}
+                  {user.active ? 'Ativo' : 'Inativo'}
                 </Badge>
               </HStack>
-              <Text fontSize="sm" bg="text.bg" color="text.color">
+              <Text fontSize="sm" color="secondary.gray.text">
                 Sigla:{' '}
-                <Text
-                  as="span"
-                  fontWeight="bold"
-                  bg="text.bg"
-                  color="text.color"
-                >
+                <Text as="span" fontWeight="bold" color="primary.purple.text">
                   {user.sigle}
                 </Text>
               </Text>
             </VStack>
           </HStack>
 
-          <Separator />
+          <Separator borderColor="secondary.gray.bg" />
 
-          {/* Informações Detalhadas */}
           <Grid templateColumns="repeat(1, 1fr)" gap={4}>
             {/* E-mail */}
             <GridItem>
-              <Box p={4} borderRadius="lg" borderLeft="4px" bg="modalItem.bg">
+              <Box
+                p={4}
+                borderRadius="lg"
+                borderLeft="4px"
+                borderLeftColor="primary.info.bg"
+                bg="secondary.gray.bg"
+                _hover={{
+                  bg: 'secondary.gray.bg.hover',
+                  transition: 'all 0.2s',
+                }}
+              >
                 <HStack gap={3}>
-                  <AiOutlineMail size={20} color="blue" />
+                  <AiOutlineMail size={20} color="#2563eb" />
                   <VStack align="start" gap={1}>
                     <Text
                       fontSize="sm"
-                      bg="text.bg"
-                      color="text.color"
+                      color="secondary.gray.text"
                       fontWeight="semibold"
                     >
                       E-mail
                     </Text>
-                    <Text fontWeight="medium" bg="text.bg" color="text.color">
+                    <Text fontWeight="medium" color="primary.gray.text">
                       {user.email}
                     </Text>
                   </VStack>
@@ -148,27 +179,29 @@ export function UserViewModal({ isOpen, onClose, user }: UserViewModalProps) {
               </Box>
             </GridItem>
 
-            {/* CPF */}
             <GridItem>
               <Box
                 p={4}
-                bg="modalItem.bg"
+                bg="secondary.gray.bg"
                 borderRadius="lg"
                 borderLeft="4px"
-                borderLeftColor="green.500"
+                borderLeftColor="primary.success.bg"
+                _hover={{
+                  bg: 'secondary.gray.bg.hover',
+                  transition: 'all 0.2s',
+                }}
               >
                 <HStack gap={3}>
-                  <HiIdentification size={20} color="green" />
+                  <HiIdentification size={20} color="#16a34a" />
                   <VStack align="start" gap={1}>
                     <Text
                       fontSize="sm"
-                      bg="text.bg"
-                      color="text.color"
+                      color="secondary.gray.text"
                       fontWeight="semibold"
                     >
                       CPF
                     </Text>
-                    <Text fontWeight="medium" bg="text.bg" color="text.color">
+                    <Text fontWeight="medium" color="primary.gray.text">
                       {user.cpf}
                     </Text>
                   </VStack>
@@ -176,22 +209,24 @@ export function UserViewModal({ isOpen, onClose, user }: UserViewModalProps) {
               </Box>
             </GridItem>
 
-            {/* Data de Criação */}
             <GridItem>
               <Box
                 p={4}
-                bg="modalItem.bg"
+                bg="secondary.gray.bg"
                 borderRadius="lg"
                 borderLeft="4px"
-                borderLeftColor="purple.500"
+                borderLeftColor="primary.purple.bg"
+                _hover={{
+                  bg: 'secondary.gray.bg.hover',
+                  transition: 'all 0.2s',
+                }}
               >
                 <HStack gap={3}>
-                  <HiCalendar size={20} color="purple" />
+                  <HiCalendar size={20} color="#9333ea" />
                   <VStack align="start" gap={1}>
                     <Text
                       fontSize="sm"
-                      bg="text.bg"
-                      color="text.color"
+                      color="secondary.gray.text"
                       fontWeight="semibold"
                     >
                       Criado em
@@ -199,8 +234,7 @@ export function UserViewModal({ isOpen, onClose, user }: UserViewModalProps) {
                     <Text
                       fontWeight="medium"
                       fontSize="sm"
-                      bg="text.bg"
-                      color="text.color"
+                      color="primary.gray.text"
                     >
                       {formatDate(user.created_at)}
                     </Text>
@@ -209,22 +243,24 @@ export function UserViewModal({ isOpen, onClose, user }: UserViewModalProps) {
               </Box>
             </GridItem>
 
-            {/* Última Atualização */}
             <GridItem>
               <Box
                 p={4}
-                bg="modalItem.bg"
+                bg="secondary.gray.bg"
                 borderRadius="lg"
                 borderLeft="4px"
-                borderLeftColor="orange.500"
+                borderLeftColor="primary.attention.bg"
+                _hover={{
+                  bg: 'secondary.gray.bg.hover',
+                  transition: 'all 0.2s',
+                }}
               >
                 <HStack gap={3}>
-                  <HiCalendar size={20} color="orange" />
+                  <HiCalendar size={20} color="#ea580c" />
                   <VStack align="start" gap={1}>
                     <Text
                       fontSize="sm"
-                      bg="text.bg"
-                      color="text.color"
+                      color="secondary.gray.text"
                       fontWeight="semibold"
                     >
                       Última atualização
@@ -232,8 +268,7 @@ export function UserViewModal({ isOpen, onClose, user }: UserViewModalProps) {
                     <Text
                       fontWeight="medium"
                       fontSize="sm"
-                      bg="text.bg"
-                      color="text.color"
+                      color="primary.gray.text"
                     >
                       {formatDate(user.updated_at)}
                     </Text>
@@ -243,16 +278,17 @@ export function UserViewModal({ isOpen, onClose, user }: UserViewModalProps) {
             </GridItem>
           </Grid>
 
-          {/* Estatísticas */}
-          <Box p={4} borderRadius="lg" bg="modalItem.bg">
-            <Text
-              fontSize="sm"
-              bg="text.bg"
-              color="text.color"
-              textAlign="center"
-            >
+          <Box
+            p={4}
+            borderRadius="lg"
+            bg="secondary.gray.bg"
+            border="1px"
+            borderColor="secondary.gray.bg.hover"
+            textAlign="center"
+          >
+            <Text fontSize="sm" color="secondary.gray.text">
               ID do usuário:{' '}
-              <Text as="span" fontWeight="bold" bg="text.bg" color="text.color">
+              <Text as="span" fontWeight="bold" color="primary.purple.text">
                 #{user.id}
               </Text>
             </Text>

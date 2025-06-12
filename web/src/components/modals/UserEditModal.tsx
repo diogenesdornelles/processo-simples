@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
@@ -101,18 +102,29 @@ export function UserEditModal({
       shouldCloseOnOverlayClick={true}
       shouldCloseOnEsc={true}
     >
-      <Box p={6}>
-        {/* Header */}
+      <Box
+        p={6}
+        bg="primary.gray.bg"
+        color="primary.gray.text"
+        borderRadius="12px"
+      >
         <HStack justify="space-between" align="center" mb={6}>
           <HStack gap={2}>
-            <HiPencil size={24} color="orange" />
-            <Heading size="lg">Editar Usuário</Heading>
+            <HiPencil size={24} color="#ea580c" />
+            <Heading size="lg" color="primary.gray.text">
+              Editar Usuário
+            </Heading>
           </HStack>
           <IconButton
             aria-label="Fechar modal"
             variant="ghost"
             size="sm"
             onClick={onClose}
+            color="secondary.gray.text"
+            _hover={{
+              bg: 'secondary.gray.bg.hover',
+              color: 'secondary.gray.text.hover',
+            }}
           >
             <FaWindowClose />
           </IconButton>
@@ -133,48 +145,57 @@ export function UserEditModal({
           {({ isSubmitting, errors, touched, values, setFieldValue }) => (
             <Form>
               <VStack gap={5}>
-                {/* Alert informativo */}
-                <Alert.Root status="warning">
-                  <Alert.Indicator />
-                  <Alert.Description>
+                <Alert.Root
+                  status="warning"
+                  bg="secondary.warning.bg"
+                  borderColor="primary.warning.bg"
+                >
+                  <Alert.Indicator color="primary.warning.text" />
+                  <Alert.Description color="primary.warning.text">
                     Alterações no perfil de acesso podem afetar as permissões do
                     usuário.
                   </Alert.Description>
                 </Alert.Root>
-
-                {/* Dados Pessoais */}
-                <Fieldset.Root>
+                <Fieldset.Root
+                  border="1px"
+                  borderColor="secondary.gray.bg"
+                  borderRadius="md"
+                  p={4}
+                >
                   <Fieldset.Legend>
                     <HStack gap={2}>
-                      <HiUser size={20} />
-                      <Text
-                        fontWeight="semibold"
-                        bg="text.bg"
-                        color="text.color"
-                      >
+                      <HiUser size={20} color="#9333ea" />
+                      <Text fontWeight="semibold" color="primary.gray.text">
                         Dados Pessoais
                       </Text>
                     </HStack>
                   </Fieldset.Legend>
                   <Fieldset.Content>
                     <VStack gap={4}>
-                      {/* Nome */}
                       <FormikField name="name">
                         {({ field }: any) => (
                           <Field.Root invalid={!!errors.name && !!touched.name}>
-                            <Field.Label>Nome Completo</Field.Label>
+                            <Field.Label color="primary.gray.text">
+                              Nome Completo
+                            </Field.Label>
                             <Input
                               {...field}
                               placeholder="Digite o nome completo do usuário"
-                              bg="input.bg"
-                              color="input.color"
+                              bg="primary.gray.bg"
+                              color="primary.gray.text"
+                              borderColor="secondary.gray.bg"
+                              _hover={{
+                                borderColor: 'secondary.gray.bg.hover',
+                              }}
+                              _focus={{ borderColor: 'primary.attention.bg' }}
                             />
-                            <Field.ErrorText>{errors.name}</Field.ErrorText>
+                            <Field.ErrorText color="primary.error.text">
+                              {errors.name}
+                            </Field.ErrorText>
                           </Field.Root>
                         )}
                       </FormikField>
 
-                      {/* E-mail */}
                       <FormikField name="email">
                         {({ field }: any) => (
                           <Field.Root
@@ -182,67 +203,83 @@ export function UserEditModal({
                           >
                             <Field.Label>
                               <HStack gap={2}>
-                                <AiOutlineMail size={16} />
-                                <Text bg="text.bg" color="text.color">
-                                  E-mail
-                                </Text>
+                                <AiOutlineMail size={16} color="#2563eb" />{' '}
+                                {/* Blue */}
+                                <Text color="primary.gray.text">E-mail</Text>
                               </HStack>
                             </Field.Label>
                             <Input
                               {...field}
                               type="email"
                               placeholder="email@exemplo.com"
-                              bg="input.bg"
-                              color="input.color"
+                              bg="primary.gray.bg"
+                              color="primary.gray.text"
+                              borderColor="secondary.gray.bg"
+                              _hover={{
+                                borderColor: 'secondary.gray.bg.hover',
+                              }}
+                              _focus={{ borderColor: 'primary.attention.bg' }}
                             />
-                            <Field.ErrorText>{errors.email}</Field.ErrorText>
+                            <Field.ErrorText color="primary.error.text">
+                              {errors.email}
+                            </Field.ErrorText>
                           </Field.Root>
                         )}
                       </FormikField>
 
                       <HStack gap={4} w="full">
-                        {/* CPF */}
                         <FormikField name="cpf">
                           {({ field }: any) => (
                             <Field.Root invalid={!!errors.cpf && !!touched.cpf}>
                               <Field.Label>
                                 <HStack gap={2}>
-                                  <HiIdentification size={16} />
-                                  <Text bg="text.bg" color="text.color">
-                                    CPF
-                                  </Text>
+                                  <HiIdentification size={16} color="#16a34a" />{' '}
+                                  <Text color="primary.gray.text">CPF</Text>
                                 </HStack>
                               </Field.Label>
                               <Input
                                 {...field}
                                 placeholder="000.000.000-00"
-                                bg="input.bg"
-                                color="input.color"
+                                bg="primary.gray.bg"
+                                color="primary.gray.text"
+                                borderColor="secondary.gray.bg"
                                 maxLength={14}
+                                _hover={{
+                                  borderColor: 'secondary.gray.bg.hover',
+                                }}
+                                _focus={{ borderColor: 'primary.attention.bg' }}
                                 onChange={e => {
                                   const formatted = formatCPF(e.target.value);
                                   setFieldValue('cpf', formatted);
                                 }}
                               />
-                              <Field.ErrorText>{errors.cpf}</Field.ErrorText>
+                              <Field.ErrorText color="primary.error.text">
+                                {errors.cpf}
+                              </Field.ErrorText>
                             </Field.Root>
                           )}
                         </FormikField>
 
-                        {/* Sigla */}
                         <FormikField name="sigle">
                           {({ field }: any) => (
                             <Field.Root
                               invalid={!!errors.sigle && !!touched.sigle}
                             >
-                              <Field.Label>Sigla</Field.Label>
+                              <Field.Label color="primary.gray.text">
+                                Sigla
+                              </Field.Label>
                               <Input
                                 {...field}
                                 placeholder="ABC"
-                                bg="input.bg"
-                                color="input.color"
+                                bg="primary.gray.bg"
+                                color="primary.gray.text"
+                                borderColor="secondary.gray.bg"
                                 textTransform="uppercase"
                                 maxLength={5}
+                                _hover={{
+                                  borderColor: 'secondary.gray.bg.hover',
+                                }}
+                                _focus={{ borderColor: 'primary.attention.bg' }}
                                 onChange={e => {
                                   setFieldValue(
                                     'sigle',
@@ -250,7 +287,9 @@ export function UserEditModal({
                                   );
                                 }}
                               />
-                              <Field.ErrorText>{errors.sigle}</Field.ErrorText>
+                              <Field.ErrorText color="primary.error.text">
+                                {errors.sigle}
+                              </Field.ErrorText>
                             </Field.Root>
                           )}
                         </FormikField>
@@ -259,21 +298,26 @@ export function UserEditModal({
                   </Fieldset.Content>
                 </Fieldset.Root>
 
-                {/* Configurações de Acesso */}
-                <Fieldset.Root>
+                <Fieldset.Root
+                  border="1px"
+                  borderColor="secondary.gray.bg"
+                  borderRadius="md"
+                  p={4}
+                >
                   <Fieldset.Legend>
-                    <Text fontWeight="semibold" bg="text.bg" color="text.color">
+                    <Text fontWeight="semibold" color="primary.gray.text">
                       Configurações de Acesso
                     </Text>
                   </Fieldset.Legend>
 
                   <Fieldset.Content>
                     <VStack gap={4}>
-                      {/* Perfil */}
                       <FormikField name="role">
                         {({ field }: any) => (
                           <Field.Root invalid={!!errors.role && !!touched.role}>
-                            <Field.Label>Perfil de Acesso</Field.Label>
+                            <Field.Label color="primary.gray.text">
+                              Perfil de Acesso
+                            </Field.Label>
                             <Select.Root
                               key={'md'}
                               size={'md'}
@@ -285,7 +329,14 @@ export function UserEditModal({
                             >
                               <Select.HiddenSelect />
                               <Select.Control>
-                                <Select.Trigger>
+                                <Select.Trigger
+                                  bg="primary.gray.bg"
+                                  color="primary.gray.text"
+                                  borderColor="secondary.gray.bg"
+                                  _hover={{
+                                    borderColor: 'secondary.gray.bg.hover',
+                                  }}
+                                >
                                   <Select.ValueText placeholder="Selecione o tipo de usuário" />
                                 </Select.Trigger>
                                 <Select.IndicatorGroup>
@@ -294,9 +345,21 @@ export function UserEditModal({
                               </Select.Control>
                               <Portal>
                                 <Select.Positioner>
-                                  <Select.Content>
+                                  <Select.Content
+                                    bg="primary.gray.bg"
+                                    borderColor="secondary.gray.bg"
+                                    boxShadow="lg"
+                                  >
                                     {userTypes.items.map(type => (
-                                      <Select.Item item={type} key={type.value}>
+                                      <Select.Item
+                                        item={type}
+                                        key={type.value}
+                                        color="primary.gray.text"
+                                        _hover={{
+                                          bg: 'secondary.attention.bg.hover',
+                                          color: 'primary.attention.text',
+                                        }}
+                                      >
                                         {type.label}
                                         <Select.ItemIndicator />
                                       </Select.Item>
@@ -305,7 +368,9 @@ export function UserEditModal({
                                 </Select.Positioner>
                               </Portal>
                             </Select.Root>
-                            <Field.ErrorText>{field.role}</Field.ErrorText>
+                            <Field.ErrorText color="primary.error.text">
+                              {errors.role}
+                            </Field.ErrorText>
                           </Field.Root>
                         )}
                       </FormikField>
@@ -313,14 +378,20 @@ export function UserEditModal({
                   </Fieldset.Content>
                 </Fieldset.Root>
 
-                {/* Preview das alterações */}
                 {values.name && values.email && (
-                  <Alert.Root status="info" variant="subtle">
-                    <Alert.Indicator />
+                  <Alert.Root
+                    status="info"
+                    variant="subtle"
+                    bg="secondary.info.bg"
+                    borderColor="primary.info.bg"
+                  >
+                    <Alert.Indicator color="primary.info.text" />
                     <VStack align="start" gap={1}>
-                      <Alert.Title>Alterações serão aplicadas:</Alert.Title>
+                      <Alert.Title color="primary.info.text">
+                        Alterações serão aplicadas:
+                      </Alert.Title>
                       <Alert.Description>
-                        <Text fontSize="sm" bg="text.bg" color="text.color">
+                        <Text fontSize="sm" color="primary.info.text">
                           <strong>{values.name}</strong> ({values.sigle}) terá
                           perfil <strong>{values.role}</strong> e status{' '}
                           <strong>{values.active ? 'ativo' : 'inativo'}</strong>
@@ -331,27 +402,35 @@ export function UserEditModal({
                   </Alert.Root>
                 )}
 
-                {/* Footer */}
                 <HStack
                   gap={3}
                   w="full"
                   justify="end"
                   pt={4}
                   borderTop="1px"
-                  borderColor="gray.200"
+                  borderColor="secondary.gray.bg"
                 >
                   <Button
                     variant="ghost"
                     onClick={onClose}
                     disabled={isSubmitting}
+                    color="secondary.gray.text"
+                    _hover={{
+                      bg: 'secondary.gray.bg.hover',
+                      color: 'secondary.gray.text.hover',
+                    }}
                   >
                     Cancelar
                   </Button>
                   <Button
-                    colorScheme="orange"
+                    bg="primary.attention.bg"
+                    color="white"
                     type="submit"
                     loading={isSubmitting}
                     loadingText="Salvando alterações..."
+                    _hover={{
+                      bg: 'primary.attention.bg.hover',
+                    }}
                   >
                     Salvar Alterações
                   </Button>
