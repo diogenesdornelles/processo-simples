@@ -19,7 +19,7 @@ import { useToast } from '@/hooks/useToast';
 import { HiTrash, HiExclamationTriangle, HiXCircle } from 'react-icons/hi2';
 import { modalStyles } from '@/styles/modalStyles';
 import { FaWindowClose } from 'react-icons/fa';
-import { useColorMode } from '../ui/color-mode';
+import { useColorMode } from '../../ui/color-mode';
 
 interface UserDeleteModalProps {
   isOpen: boolean;
@@ -34,25 +34,25 @@ export function UserDeleteModal({
   user,
   onSuccess,
 }: UserDeleteModalProps) {
-  const deleteMutation = useDeleteUser();
+  const mutation = useDeleteUser();
   const toast = useToast();
   const theme = useColorMode();
 
   const handleDelete = async () => {
-    try {
-      await deleteMutation.mutateAsync(user.id);
-      toast.success('Sucesso', 'Usuário deletado');
-      onSuccess();
-    } catch (error) {
-      console.error('Erro ao deletar usuário:', error);
-      const errorMessage =
-        (typeof error === 'object' &&
-          error !== null &&
-          'response' in error &&
-          (error as any).response?.data?.message) ||
-        'Erro ao deletar usuário';
-      toast.error('Erro', errorMessage);
-    }
+    toast.loading('Aguarde', 'Deletando usuário...');
+    mutation.mutate(user.id, {
+      onSuccess: () => {
+        onSuccess();
+      },
+      onError: error => {
+        console.log('Save error:', error);
+        toast.error('Erro de conexão com o servidor', 'Tente mais tarde.');
+      },
+      onSettled: () => {
+        toast.dismiss();
+        onClose();
+      },
+    });
   };
 
   return (
@@ -67,13 +67,13 @@ export function UserDeleteModal({
       <Box
         p={6}
         bg="primary.gray.bg"
-        color="primary.gray.text"
+        color="primary.gray.color"
         borderRadius="12px"
       >
         <HStack justify="space-between" align="center" mb={6}>
           <HStack gap={2}>
             <HiTrash size={24} color="#dc2626" />
-            <Heading size="lg" color="primary.error.text">
+            <Heading size="lg" color="primary.error.color">
               Confirmar Exclusão
             </Heading>
           </HStack>
@@ -82,10 +82,10 @@ export function UserDeleteModal({
             variant="ghost"
             size="sm"
             onClick={onClose}
-            color="secondary.gray.text"
+            color="secondary.gray.color"
             _hover={{
               bg: 'secondary.gray.bg.hover',
-              color: 'secondary.gray.text.hover',
+              color: 'secondary.gray.color.hover',
             }}
           >
             <FaWindowClose />
@@ -98,10 +98,10 @@ export function UserDeleteModal({
             bg="secondary.error.bg"
             borderColor="primary.error.bg"
           >
-            <Alert.Indicator color="primary.error.text" />
+            <Alert.Indicator color="primary.error.color" />
             <VStack align="start" gap={1}>
-              <Alert.Title color="primary.error.text">⚠️ Atenção!</Alert.Title>
-              <Alert.Description color="primary.error.text">
+              <Alert.Title color="primary.error.color">⚠️ Atenção!</Alert.Title>
+              <Alert.Description color="primary.error.color">
                 Esta ação <strong>não pode ser desfeita</strong>. O usuário será
                 removido permanentemente do sistema, incluindo todos os dados
                 associados.
@@ -126,27 +126,31 @@ export function UserDeleteModal({
                 <Avatar.Image src="../../public/account.png" />
               </Avatar.Root>
               <VStack align="start" gap={1}>
-                <Text fontWeight="bold" fontSize="lg" color="primary.gray.text">
+                <Text
+                  fontWeight="bold"
+                  fontSize="lg"
+                  color="primary.gray.color"
+                >
                   {user.name}
                 </Text>
-                <Text fontSize="sm" color="secondary.gray.text">
+                <Text fontSize="sm" color="secondary.gray.color">
                   {user.email}
                 </Text>
-                <Text fontSize="sm" color="secondary.gray.text">
+                <Text fontSize="sm" color="secondary.gray.color">
                   <Text
                     as="span"
                     fontWeight="semibold"
-                    color="primary.gray.text"
+                    color="primary.gray.color"
                   >
                     Perfil:
                   </Text>{' '}
                   {user.role}
                 </Text>
-                <Text fontSize="sm" color="secondary.gray.text">
+                <Text fontSize="sm" color="secondary.gray.color">
                   <Text
                     as="span"
                     fontWeight="semibold"
-                    color="primary.gray.text"
+                    color="primary.gray.color"
                   >
                     Sigla:
                   </Text>{' '}
@@ -159,11 +163,11 @@ export function UserDeleteModal({
             <HStack justify="center" mb={2}>
               <HiExclamationTriangle size={24} color="#dc2626" />{' '}
               {/* Vermelho */}
-              <Text fontSize="lg" fontWeight="bold" color="primary.error.text">
+              <Text fontSize="lg" fontWeight="bold" color="primary.error.color">
                 Tem certeza que deseja excluir este usuário?
               </Text>
             </HStack>
-            <Text fontSize="sm" color="secondary.gray.text">
+            <Text fontSize="sm" color="secondary.gray.color">
               Esta ação removerá permanentemente todos os dados do usuário.
             </Text>
           </Box>
@@ -177,12 +181,12 @@ export function UserDeleteModal({
           >
             <Text
               fontSize="sm"
-              color="primary.error.text"
+              color="primary.error.color"
               textAlign="center"
               fontWeight="medium"
             >
               Usuário a ser excluído:{' '}
-              <Text as="span" fontWeight="bold" color="primary.error.text">
+              <Text as="span" fontWeight="bold" color="primary.error.color">
                 {user.name}
               </Text>
             </Text>
@@ -199,23 +203,23 @@ export function UserDeleteModal({
               variant="ghost"
               size="lg"
               onClick={onClose}
-              disabled={deleteMutation.isPending}
+              disabled={mutation.isPending}
               flex={1}
-              color="secondary.gray.text"
+              color="secondary.gray.color"
               _hover={{
                 bg: 'secondary.gray.bg.hover',
-                color: 'secondary.gray.text.hover',
+                color: 'secondary.gray.color.hover',
               }}
             >
               Cancelar
-              <HiXCircle/>
+              <HiXCircle />
             </Button>
             <Button
               bg="primary.error.bg"
               color="white"
               size="lg"
               onClick={handleDelete}
-              loading={deleteMutation.isPending}
+              loading={mutation.isPending}
               loadingText="Excluindo..."
               flex={1}
               _hover={{
@@ -223,11 +227,11 @@ export function UserDeleteModal({
               }}
               _disabled={{
                 bg: 'secondary.gray.bg',
-                color: 'secondary.gray.text',
+                color: 'secondary.gray.color',
               }}
             >
               Confirmar Exclusão
-              <HiTrash/>
+              <HiTrash />
             </Button>
           </HStack>
           <Alert.Root
@@ -236,11 +240,11 @@ export function UserDeleteModal({
             bg="secondary.warning.bg"
             borderColor="primary.warning.bg"
           >
-            <Alert.Indicator color="primary.warning.text" />
+            <Alert.Indicator color="primary.warning.color" />
             <Alert.Description>
               <Text
                 fontSize="xs"
-                color="primary.warning.text"
+                color="primary.warning.color"
                 textAlign="center"
               >
                 Esta ação é irreversível e todos os dados do usuário serão

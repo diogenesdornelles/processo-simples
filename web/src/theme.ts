@@ -110,10 +110,10 @@ const config = defineConfig({
         'primary.purple.bg.hover': {
           value: { base: '{colors.purple.600}', _dark: '{colors.purple.800}' },
         },
-        'primary.purple.text': {
+        'primary.purple.color': {
           value: { base: '{colors.purple.700}', _dark: '{colors.purple.200}' },
         },
-        'primary.purple.text.hover': {
+        'primary.purple.color.hover': {
           value: { base: '{colors.purple.600}', _dark: '{colors.purple.100}' },
         },
 
@@ -123,10 +123,10 @@ const config = defineConfig({
         'secondary.purple.bg.hover': {
           value: { base: '{colors.purple.400}', _dark: '{colors.purple.700}' },
         },
-        'secondary.purple.text': {
+        'secondary.purple.color': {
           value: { base: '{colors.purple.500}', _dark: '{colors.purple.300}' },
         },
-        'secondary.purple.text.hover': {
+        'secondary.purple.color.hover': {
           value: { base: '{colors.purple.400}', _dark: '{colors.purple.200}' },
         },
 
@@ -136,10 +136,10 @@ const config = defineConfig({
         'primary.gray.bg.hover': {
           value: { base: '{colors.gray.200}', _dark: '{colors.gray.700}' },
         },
-        'primary.gray.text': {
+        'primary.gray.color': {
           value: { base: '{colors.gray.900}', _dark: '{colors.gray.100}' },
         },
-        'primary.gray.text.hover': {
+        'primary.gray.color.hover': {
           value: { base: '{colors.gray.800}', _dark: '{colors.gray.200}' },
         },
 
@@ -149,10 +149,10 @@ const config = defineConfig({
         'secondary.gray.bg.hover': {
           value: { base: '{colors.gray.300}', _dark: '{colors.gray.800}' },
         },
-        'secondary.gray.text': {
+        'secondary.gray.color': {
           value: { base: '{colors.gray.600}', _dark: '{colors.gray.400}' },
         },
-        'secondary.gray.text.hover': {
+        'secondary.gray.color.hover': {
           value: { base: '{colors.gray.800}', _dark: '{colors.gray.200}' },
         },
 
@@ -162,23 +162,23 @@ const config = defineConfig({
         'primary.success.bg.hover': {
           value: { base: '{colors.green.500}', _dark: '{colors.green.700}' },
         },
-        'primary.success.text': {
+        'primary.success.color': {
           value: { base: '{colors.green.700}', _dark: '{colors.green.200}' },
         },
-        'primary.success.text.hover': {
+        'primary.success.color.hover': {
           value: { base: '{colors.green.600}', _dark: '{colors.green.100}' },
         },
 
         'secondary.success.bg': {
-          value: { base: '{colors.green.100}', _dark: '{colors.green.900}' },
+          value: { base: '{colors.green.200}', _dark: '{colors.green.900}' },
         },
         'secondary.success.bg.hover': {
-          value: { base: '{colors.green.200}', _dark: '{colors.green.800}' },
+          value: { base: '{colors.green.100}', _dark: '{colors.green.800}' },
         },
-        'secondary.success.text': {
+        'secondary.success.color': {
           value: { base: '{colors.green.600}', _dark: '{colors.green.300}' },
         },
-        'secondary.success.text.hover': {
+        'secondary.success.color.hover': {
           value: { base: '{colors.green.500}', _dark: '{colors.green.200}' },
         },
 
@@ -188,23 +188,23 @@ const config = defineConfig({
         'primary.error.bg.hover': {
           value: { base: '{colors.red.500}', _dark: '{colors.red.700}' },
         },
-        'primary.error.text': {
+        'primary.error.color': {
           value: { base: '{colors.red.700}', _dark: '{colors.red.200}' },
         },
-        'primary.error.text.hover': {
+        'primary.error.color.hover': {
           value: { base: '{colors.red.600}', _dark: '{colors.red.100}' },
         },
 
         'secondary.error.bg': {
-          value: { base: '{colors.red.100}', _dark: '{colors.red.900}' },
+          value: { base: '{colors.red.200}', _dark: '{colors.red.900}' },
         },
         'secondary.error.bg.hover': {
           value: { base: '{colors.red.200}', _dark: '{colors.red.800}' },
         },
-        'secondary.error.text': {
+        'secondary.error.color': {
           value: { base: '{colors.red.600}', _dark: '{colors.red.300}' },
         },
-        'secondary.error.text.hover': {
+        'secondary.error.color.hover': {
           value: { base: '{colors.red.500}', _dark: '{colors.red.200}' },
         },
 
@@ -214,23 +214,23 @@ const config = defineConfig({
         'primary.attention.bg.hover': {
           value: { base: '{colors.orange.500}', _dark: '{colors.orange.700}' },
         },
-        'primary.attention.text': {
+        'primary.attention.color': {
           value: { base: '{colors.orange.700}', _dark: '{colors.orange.200}' },
         },
-        'primary.attention.text.hover': {
+        'primary.attention.color.hover': {
           value: { base: '{colors.orange.600}', _dark: '{colors.orange.100}' },
         },
 
         'secondary.attention.bg': {
-          value: { base: '{colors.orange.100}', _dark: '{colors.orange.900}' },
+          value: { base: '{colors.orange.300}', _dark: '{colors.orange.900}' },
         },
         'secondary.attention.bg.hover': {
           value: { base: '{colors.orange.200}', _dark: '{colors.orange.800}' },
         },
-        'secondary.attention.text': {
+        'secondary.attention.color': {
           value: { base: '{colors.orange.600}', _dark: '{colors.orange.300}' },
         },
-        'secondary.attention.text.hover': {
+        'secondary.attention.color.hover': {
           value: { base: '{colors.orange.500}', _dark: '{colors.orange.200}' },
         },
 
@@ -240,23 +240,23 @@ const config = defineConfig({
         'primary.info.bg.hover': {
           value: { base: '{colors.blue.500}', _dark: '{colors.blue.700}' },
         },
-        'primary.info.text': {
+        'primary.info.color': {
           value: { base: '{colors.blue.700}', _dark: '{colors.blue.200}' },
         },
-        'primary.info.text.hover': {
+        'primary.info.color.hover': {
           value: { base: '{colors.blue.600}', _dark: '{colors.blue.100}' },
         },
 
         'secondary.info.bg': {
-          value: { base: '{colors.blue.100}', _dark: '{colors.blue.900}' },
+          value: { base: '{colors.blue.300}', _dark: '{colors.blue.900}' },
         },
         'secondary.info.bg.hover': {
           value: { base: '{colors.blue.200}', _dark: '{colors.blue.800}' },
         },
-        'secondary.info.text': {
+        'secondary.info.color': {
           value: { base: '{colors.blue.600}', _dark: '{colors.blue.300}' },
         },
-        'secondary.info.text.hover': {
+        'secondary.info.color.hover': {
           value: { base: '{colors.blue.500}', _dark: '{colors.blue.200}' },
         },
 
@@ -266,23 +266,23 @@ const config = defineConfig({
         'primary.warning.bg.hover': {
           value: { base: '{colors.yellow.400}', _dark: '{colors.yellow.600}' },
         },
-        'primary.warning.text': {
+        'primary.warning.color': {
           value: { base: '{colors.yellow.700}', _dark: '{colors.yellow.200}' },
         },
-        'primary.warning.text.hover': {
+        'primary.warning.color.hover': {
           value: { base: '{colors.yellow.600}', _dark: '{colors.yellow.100}' },
         },
 
         'secondary.warning.bg': {
-          value: { base: '{colors.yellow.100}', _dark: '{colors.yellow.900}' },
+          value: { base: '{colors.yellow.300}', _dark: '{colors.yellow.900}' },
         },
         'secondary.warning.bg.hover': {
           value: { base: '{colors.yellow.200}', _dark: '{colors.yellow.800}' },
         },
-        'secondary.warning.text': {
+        'secondary.warning.color': {
           value: { base: '{colors.yellow.600}', _dark: '{colors.yellow.300}' },
         },
-        'secondary.warning.text.hover': {
+        'secondary.warning.color.hover': {
           value: { base: '{colors.yellow.500}', _dark: '{colors.yellow.200}' },
         },
       },

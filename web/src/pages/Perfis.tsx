@@ -22,11 +22,10 @@ import { useGetAllUsers } from '@/services';
 import { UserProps } from '@/domain/interfaces/user.interfaces';
 import { useToast } from '@/hooks/useToast';
 
-// Modais (vamos criar depois)
-import { UserViewModal } from '@/components/modals/UserViewModal';
-import { UserEditModal } from '@/components/modals/UserEditModal';
-import { UserDeleteModal } from '@/components/modals/UserDeleteModal';
-import { UserCreateModal } from '@/components/modals/UserCreateModal';
+import { UserViewModal } from '@/components/modals/users/UserViewModal';
+import { UserEditModal } from '@/components/modals/users/UserEditModal';
+import { UserDeleteModal } from '@/components/modals/users/UserDeleteModal';
+import { UserCreateModal } from '@/components/modals/users/UserCreateModal';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function Perfis() {
@@ -34,7 +33,6 @@ export default function Perfis() {
   const [selectedUser, setSelectedUser] = useState<UserProps | null>(null);
   const { user, isAuthenticated } = useAuth();
 
-  // Estados dos modais
   const viewModal = useDisclosure();
   const editModal = useDisclosure();
   const deleteModal = useDisclosure();
@@ -42,7 +40,6 @@ export default function Perfis() {
 
   const { data: users, isFetching, refetch } = useGetAllUsers();
 
-  // Funções para abrir modais
   const handleView = (userView: UserProps) => {
     if (user?.role === 'Admin' && isAuthenticated) {
       setSelectedUser(userView);
@@ -116,10 +113,10 @@ export default function Perfis() {
       <VStack gap={6} align="stretch">
         <HStack justify="space-between" align="center">
           <VStack align="start" gap={1}>
-            <Heading size="lg" color="gray.800">
+            <Heading size="lg" color="secondary.gray.color">
               Gerenciar Usuários
             </Heading>
-            <Text bg="text.bg" color="text.color">
+            <Text color="primary.gray.color">
               {users?.length || 0} usuários cadastrados
             </Text>
           </VStack>
@@ -169,19 +166,18 @@ export default function Perfis() {
                           <Text
                             fontWeight="semibold"
                             fontSize="sm"
-                            bg="text.bg"
-                            color="text.color"
+                            color="primary.purple.color"
                           >
                             {user.name}
                           </Text>
-                          <Text fontSize="xs" bg="text.bg" color="text.color">
+                          <Text fontSize="xs" color="primary.gray.color">
                             {user.sigle}
                           </Text>
                         </VStack>
                       </HStack>
                     </Table.Cell>
                     <Table.Cell>
-                      <Text fontSize="sm" bg="text.bg" color="text.color">
+                      <Text fontSize="sm" color="primary.gray.color">
                         {user.email}
                       </Text>
                     </Table.Cell>
@@ -204,7 +200,7 @@ export default function Perfis() {
                       </Badge>
                     </Table.Cell>
                     <Table.Cell>
-                      <Text fontSize="sm" bg="text.bg" color="text.color">
+                      <Text fontSize="sm" color="primary.gray.color">
                         {new Date(user.created_at).toLocaleDateString('pt-BR')}
                       </Text>
                     </Table.Cell>
@@ -246,7 +242,7 @@ export default function Perfis() {
             </Table.Root>
             {users && users.length === 0 && (
               <Box textAlign="center" py={12}>
-                <Text bg="text.bg" color="text.color" fontSize="lg">
+                <Text color="primary.gray.color" fontSize="lg">
                   Nenhum usuário encontrado
                 </Text>
                 <Button mt={4} colorScheme="blue" onClick={handleCreate}>

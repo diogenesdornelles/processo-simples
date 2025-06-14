@@ -66,7 +66,8 @@ export default function Login() {
       <Flex minHeight="60vh" align="center">
         <Box
           w="full"
-          bg="form.bg"
+          bg="secondary.gray.bg"
+          color="secondary.gray.color"
           p={8}
           borderRadius="lg"
           boxShadow="xl"
@@ -82,24 +83,14 @@ export default function Login() {
                 <VStack gap={6} align="stretch">
                   {/* Header */}
                   <VStack gap={2}>
-                    <Heading size="lg" color="headingLg.color">
-                      Processo Fácil
-                    </Heading>
-                    <Text bg="text.bg" color="text.color">
-                      Faça login em sua conta
-                    </Text>
+                    <Heading size="lg">Processo Fácil</Heading>
+                    <Text>Faça login em sua conta</Text>
                   </VStack>
 
                   {/* Campos do formulário */}
                   <Fieldset.Root>
                     <Fieldset.Legend>
-                      <Text
-                        bg="text.bg"
-                        color="text.color"
-                        fontWeight="semibold"
-                      >
-                        Credenciais de Acesso
-                      </Text>
+                      <Text fontWeight="semibold">Credenciais de Acesso</Text>
                     </Fieldset.Legend>
 
                     <Fieldset.Content>
@@ -116,8 +107,6 @@ export default function Login() {
                                 id="email"
                                 placeholder="admin@example.com"
                                 type="email"
-                                bg="input.bg"
-                                color="input.color"
                                 suppressHydrationWarning
                               />
                               <Field.ErrorText>
@@ -141,8 +130,6 @@ export default function Login() {
                                 id="password"
                                 placeholder="password"
                                 type="password"
-                                bg="input.bg"
-                                color="input.color"
                                 suppressHydrationWarning
                               />
                               <Field.ErrorText>
@@ -157,9 +144,6 @@ export default function Login() {
 
                   <Button
                     type="submit"
-                    bg="button.bg"
-                    color="button.color"
-                    _hover={{ bg: 'button.bg.hover' }}
                     w="full"
                     size="lg"
                     loading={formikProps.isSubmitting || mutation.isPending}
@@ -171,16 +155,8 @@ export default function Login() {
 
                   {/* Footer */}
                   <HStack justify="center" gap={1}>
-                    <Text fontSize="sm" color="form.color.muted">
-                      Não tem conta?
-                    </Text>
-                    <Text
-                      fontSize="sm"
-                      bg="text.bg"
-                      color="text.color"
-                      cursor="pointer"
-                      _hover={{ color: 'link.color.hover' }}
-                    >
+                    <Text fontSize="sm">Não tem conta?</Text>
+                    <Text fontSize="sm" cursor="pointer">
                       Solicite ao administrador
                     </Text>
                   </HStack>

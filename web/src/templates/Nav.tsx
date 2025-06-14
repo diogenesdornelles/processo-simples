@@ -15,7 +15,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { FiChevronDown, FiSearch, FiFileText, FiUsers } from 'react-icons/fi';
 import { useColorMode, ColorModeButton } from '@/components/ui/color-mode';
-import { UserViewModal } from '@/components/modals/UserViewModal';
+import { UserViewModal } from '@/components/modals/users/UserViewModal';
 
 export default function Nav() {
   const { user, logout, isAuthenticated } = useAuth();

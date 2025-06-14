@@ -39,6 +39,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [isClient, setIsClient] = useState(false);
+  const SESSION = process.env.NEXT_PUBLIC_AUTH_SESSION || '';
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -47,7 +48,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       try {
         const savedToken = manageToken.get();
 
-        const sessionData = localStorage.getItem('session');
+        const sessionData = localStorage.getItem(SESSION || '');
         let savedUser: UserProps | null = null;
 
         if (sessionData && sessionData !== '' && sessionData !== 'null') {
@@ -55,7 +56,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             savedUser = JSON.parse(sessionData);
           } catch (parseError) {
             console.warn('Erro ao fazer parse da sessão:', parseError);
-            localStorage.removeItem('session');
+            localStorage.removeItem(SESSION || '');
           }
         }
         setToken(savedToken);
@@ -73,7 +74,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       manageToken.set(result.token);
 
-      localStorage.setItem('session', JSON.stringify(result.user));
+      localStorage.setItem(SESSION || '', JSON.stringify(result.user));
 
       setToken(result.token);
       setUser(result.user);
@@ -87,7 +88,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const logout = () => {
     try {
       manageToken.remove();
-      localStorage.removeItem('session');
+      localStorage.removeItem(SESSION || '');
 
       setToken(null);
       setUser(null);
@@ -104,8 +105,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setLoading(true);
 
       try {
-        const savedToken = manageToken.ls.get() || manageToken.cookies.get();
-        const sessionData = localStorage.getItem('session');
+        const savedToken = manageToken.get();
+        const sessionData = localStorage.getItem(SESSION || '');
         let savedUser: UserProps | null = null;
 
         if (sessionData && sessionData !== '' && sessionData !== 'null') {

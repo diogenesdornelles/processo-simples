@@ -20,7 +20,7 @@ import { FaWindowClose } from 'react-icons/fa';
 import { AiOutlineMail } from 'react-icons/ai';
 import { modalStyles } from '@/styles/modalStyles';
 import { formatDate } from '@/utils/formatDate';
-import { useColorMode } from '../ui/color-mode';
+import { useColorMode } from '../../ui/color-mode';
 
 interface UserViewModalProps {
   isOpen: boolean;
@@ -65,13 +65,13 @@ export function UserViewModal({ isOpen, onClose, user }: UserViewModalProps) {
       <Box
         p={6}
         bg="primary.gray.bg"
-        color="primary.gray.text"
+        color="primary.gray.color"
         borderRadius="12px"
       >
         <HStack justify="space-between" align="center" mb={6}>
           <HStack gap={2}>
             <HiEye size={24} color="#9333ea" />
-            <Heading size="lg" color="primary.gray.text">
+            <Heading size="lg" color="primary.gray.color">
               Detalhes do Usuário
             </Heading>
           </HStack>
@@ -81,10 +81,10 @@ export function UserViewModal({ isOpen, onClose, user }: UserViewModalProps) {
             size="sm"
             cursor="pointer"
             onClick={onClose}
-            color="secondary.gray.text"
+            color="secondary.gray.color"
             _hover={{
               bg: 'secondary.gray.bg.hover',
-              color: 'secondary.gray.text.hover',
+              color: 'secondary.gray.color.hover',
             }}
           >
             <FaWindowClose size={20} />
@@ -109,7 +109,7 @@ export function UserViewModal({ isOpen, onClose, user }: UserViewModalProps) {
               <Avatar.Image src="../../public/account.png" />
             </Avatar.Root>
             <VStack align="start" gap={2} flex={1}>
-              <Heading size="md" color="primary.gray.text">
+              <Heading size="md" color="primary.gray.color">
                 {user.name}
               </Heading>
               <HStack gap={2} wrap="wrap">
@@ -136,9 +136,9 @@ export function UserViewModal({ isOpen, onClose, user }: UserViewModalProps) {
                   {user.active ? 'Ativo' : 'Inativo'}
                 </Badge>
               </HStack>
-              <Text fontSize="sm" color="secondary.gray.text">
+              <Text fontSize="sm" color="secondary.gray.color">
                 Sigla:{' '}
-                <Text as="span" fontWeight="bold" color="primary.purple.text">
+                <Text as="span" fontWeight="bold" color="primary.purple.color">
                   {user.sigle}
                 </Text>
               </Text>
@@ -166,12 +166,12 @@ export function UserViewModal({ isOpen, onClose, user }: UserViewModalProps) {
                   <VStack align="start" gap={1}>
                     <Text
                       fontSize="sm"
-                      color="secondary.gray.text"
+                      color="secondary.gray.color"
                       fontWeight="semibold"
                     >
                       E-mail
                     </Text>
-                    <Text fontWeight="medium" color="primary.gray.text">
+                    <Text fontWeight="medium" color="primary.gray.color">
                       {user.email}
                     </Text>
                   </VStack>
@@ -196,12 +196,12 @@ export function UserViewModal({ isOpen, onClose, user }: UserViewModalProps) {
                   <VStack align="start" gap={1}>
                     <Text
                       fontSize="sm"
-                      color="secondary.gray.text"
+                      color="secondary.gray.color"
                       fontWeight="semibold"
                     >
                       CPF
                     </Text>
-                    <Text fontWeight="medium" color="primary.gray.text">
+                    <Text fontWeight="medium" color="primary.gray.color">
                       {user.cpf}
                     </Text>
                   </VStack>
@@ -226,7 +226,7 @@ export function UserViewModal({ isOpen, onClose, user }: UserViewModalProps) {
                   <VStack align="start" gap={1}>
                     <Text
                       fontSize="sm"
-                      color="secondary.gray.text"
+                      color="secondary.gray.color"
                       fontWeight="semibold"
                     >
                       Criado em
@@ -234,7 +234,7 @@ export function UserViewModal({ isOpen, onClose, user }: UserViewModalProps) {
                     <Text
                       fontWeight="medium"
                       fontSize="sm"
-                      color="primary.gray.text"
+                      color="primary.gray.color"
                     >
                       {formatDate(user.created_at)}
                     </Text>
@@ -260,7 +260,7 @@ export function UserViewModal({ isOpen, onClose, user }: UserViewModalProps) {
                   <VStack align="start" gap={1}>
                     <Text
                       fontSize="sm"
-                      color="secondary.gray.text"
+                      color="secondary.gray.color"
                       fontWeight="semibold"
                     >
                       Última atualização
@@ -268,7 +268,7 @@ export function UserViewModal({ isOpen, onClose, user }: UserViewModalProps) {
                     <Text
                       fontWeight="medium"
                       fontSize="sm"
-                      color="primary.gray.text"
+                      color="primary.gray.color"
                     >
                       {formatDate(user.updated_at)}
                     </Text>
@@ -286,9 +286,9 @@ export function UserViewModal({ isOpen, onClose, user }: UserViewModalProps) {
             borderColor="secondary.gray.bg.hover"
             textAlign="center"
           >
-            <Text fontSize="sm" color="secondary.gray.text">
+            <Text fontSize="sm" color="secondary.gray.color">
               ID do usuário:{' '}
-              <Text as="span" fontWeight="bold" color="primary.purple.text">
+              <Text as="span" fontWeight="bold" color="primary.purple.color">
                 #{user.id}
               </Text>
             </Text>

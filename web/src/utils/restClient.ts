@@ -16,7 +16,7 @@ const restClient = axios.create({
 
 restClient.interceptors.request.use(
   config => {
-    const token = manageToken.ls.get() || manageToken.cookies.get();
+    const token = manageToken.get();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

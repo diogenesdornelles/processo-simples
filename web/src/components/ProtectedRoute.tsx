@@ -4,7 +4,7 @@ import { ReactNode, ComponentType } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import CustomBackdrop from '@/components/ui/CustomBackdrop';
+import { CustomBackdrop } from './ui';
 
 interface ProtectedRouteProps {
   children: ReactNode;

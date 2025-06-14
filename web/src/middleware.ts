@@ -9,12 +9,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/home', request.url));
   }
 
-  const publicRoutes = ['/login', '/registro'];
+  const publicRoutes = ['/login'];
   if (publicRoutes.includes(pathname)) {
     return NextResponse.next();
   }
 
-  const token = request.cookies.get('token')?.value;
+  const token = request.cookies.get(
+    process.env.NEXT_PUBLIC_AUTH_TOKEN || ''
+  )?.value;
   if (!token) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
@@ -45,7 +47,7 @@ export async function middleware(request: NextRequest) {
     console.error('Token validation error:', error);
 
     const response = NextResponse.redirect(new URL('/login', request.url));
-    response.cookies.delete('token');
+    response.cookies.delete(process.env.NEXT_PUBLIC_AUTH_TOKEN || '');
     return response;
   }
 }

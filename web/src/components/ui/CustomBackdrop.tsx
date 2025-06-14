@@ -5,7 +5,7 @@ interface CustomBackdropProps {
   children?: React.ReactNode;
 }
 
-export default function CustomBackdrop({
+export function CustomBackdrop({
   isOpen = true,
   children,
 }: CustomBackdropProps) {

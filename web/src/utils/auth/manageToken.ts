@@ -1,48 +1,61 @@
+// filepath: /home/dio/programacao/processo-facil/web/src/utils/auth/manageToken.ts
+import { getCookie, setCookie, deleteCookie } from 'cookies-next';
+
+const TOKEN_KEY = process.env.NEXT_PUBLIC_AUTH_TOKEN || 'default_auth_token';
+
 export const manageToken = {
   ls: {
     save: (token: string) => {
-      localStorage.setItem('token', JSON.stringify({ token }));
+      localStorage.setItem(TOKEN_KEY, JSON.stringify({ token }));
     },
 
     remove: () => {
-      localStorage.removeItem('token');
+      localStorage.removeItem(TOKEN_KEY);
     },
 
     get: () => {
-      const token = localStorage.getItem('token');
-      return token ? JSON.parse(token).token : null;
+      const storedValue = localStorage.getItem(TOKEN_KEY);
+      return storedValue ? JSON.parse(storedValue).token : null;
     },
   },
   cookies: {
     save: (token: string) => {
-      const expires = new Date();
-      expires.setDate(expires.getDate() + 7);
-      document.cookie = `token=${token}; expires=${expires.toUTCString()}; path=/; secure; samesite=strict`;
+      setCookie(TOKEN_KEY, token, {
+        maxAge: 60 * 60 * 24 * 7, // 7 dias
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+      });
     },
     remove: () => {
-      document.cookie =
-        'token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;';
+      deleteCookie(TOKEN_KEY, {
+        path: '/',
+      });
     },
     get: () => {
-      if (typeof window === 'undefined') return null;
-
-      const cookies = document.cookie.split(';');
-      const tokenCookie = cookies.find(cookie =>
-        cookie.trim().startsWith('token=')
-      );
-
-      return tokenCookie ? tokenCookie.split('=')[1] : null;
+      return getCookie(TOKEN_KEY) || null;
     },
   },
   get: () => {
-    return manageToken.ls.get() || manageToken.cookies.get();
+    const cookieToken = manageToken.cookies.get();
+    if (cookieToken) {
+      return cookieToken;
+    }
+    if (typeof window !== 'undefined') {
+      return manageToken.ls.get();
+    }
+    return null;
   },
   set: (token: string) => {
-    manageToken.ls.save(token);
     manageToken.cookies.save(token);
+    if (typeof window !== 'undefined') {
+      manageToken.ls.save(token);
+    }
   },
   remove: () => {
-    manageToken.ls.remove();
     manageToken.cookies.remove();
+    if (typeof window !== 'undefined') {
+      manageToken.ls.remove();
+    }
   },
 };
