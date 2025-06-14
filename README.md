@@ -238,6 +238,8 @@ php artisan db:seed
 # 📁 Documentos públicos (uploads)
 php artisan storage:link                         
 
+php artisan make:policy UserPolicy --model=User
+php artisan make:policy ProcPolicy --model=Proc
 
 # 🌐 Inicia o servidor de desenvolvimento
 php artisan serve
