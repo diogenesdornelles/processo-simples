@@ -29,7 +29,9 @@
       "@/pages/*": ["pages/*"],
       "@/utils/*": ["utils/*"],
       "@/providers/*": ["providers/*"],
-      "@/services/*": ["services/*"]
+      "@/services/*": ["services/*"],
+      "@/assets/*": ["assets/*"],
+      "@/public/*": ["../public/*"]
     }
   },
   "include": [

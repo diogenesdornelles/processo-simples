@@ -2,3 +2,8 @@ export * from './auth';
 export * from './formatCPF';
 export * from './formatDate';
 export * from './restClient';
+export * from './getPriorityColor';
+export * from './getStatusColor';
+export * from './isExpired';
+export * from './getRoleColor';
+export * from './sortEventsByDate'

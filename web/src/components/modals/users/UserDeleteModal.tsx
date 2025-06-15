@@ -20,6 +20,7 @@ import { HiTrash, HiExclamationTriangle, HiXCircle } from 'react-icons/hi2';
 import { modalStyles } from '@/styles/modalStyles';
 import { FaWindowClose } from 'react-icons/fa';
 import { useColorMode } from '../../ui/color-mode';
+import img from '@/public/account.png';
 
 interface UserDeleteModalProps {
   isOpen: boolean;
@@ -39,14 +40,14 @@ export function UserDeleteModal({
   const theme = useColorMode();
 
   const handleDelete = async () => {
-    toast.loading('Aguarde', 'Deletando usuário...');
+    toast.show('Aguarde', 'Deletando usuário...', 'loading');
     mutation.mutate(user.id, {
       onSuccess: () => {
         onSuccess();
       },
       onError: error => {
         console.log('Save error:', error);
-        toast.error('Erro de conexão com o servidor', 'Tente mais tarde.');
+        toast.show('Erro de conexão com o servidor', 'Tente mais tarde.', 'error');
       },
       onSettled: () => {
         toast.dismiss();
@@ -123,7 +124,7 @@ export function UserDeleteModal({
                   bg="secondary.error.bg"
                   color="white"
                 />
-                <Avatar.Image src="../../public/account.png" />
+                <Avatar.Image src={img.src} />
               </Avatar.Root>
               <VStack align="start" gap={1}>
                 <Text

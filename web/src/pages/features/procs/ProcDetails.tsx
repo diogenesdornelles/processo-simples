@@ -1,5 +1,4 @@
- 'use client';
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Container,
   VStack,
@@ -11,13 +10,39 @@ import {
   Separator,
   Button,
   Card,
-  Spinner,
-  Alert,
+  Table,
   Avatar,
+  IconButton,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { useGetProc } from '@/services/get/useGetProc';
-import { HiDocumentText, HiUser, HiCalendarDays, HiClock, HiArrowLeft } from 'react-icons/hi2';
+import {
+  HiDocumentText,
+  HiUser,
+  HiCalendarDays,
+  HiClock,
+  HiArrowLeft,
+  HiTrash,
+  HiEye,
+  HiPaperClip,
+  HiPlus,
+} from 'react-icons/hi2';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/useToast';
+import {
+  getPriorityColor,
+  getStatusColor,
+  formatDate,
+  sortEventsByDate,
+} from '@/utils';
+import { CustomBackdrop } from '@/components';
+import img from '@/public/account.png';
+import { useAlert } from '@/hooks/useAlert';
+import { useEffect, useState } from 'react';
+import { useDeleteEvent } from '@/services';
+import { EventCreateModal } from '@/components/modals/events';
+import {DocViewModal} from '@/components/modals/docs/DocViewModal';
 
 interface ProcDetailsProps {
   proc_id: string;
@@ -25,303 +50,556 @@ interface ProcDetailsProps {
 
 export function ProcDetails({ proc_id }: ProcDetailsProps) {
   const router = useRouter();
-  const { data: proc, isLoading, error } = useGetProc(Number(proc_id));
+  const { user } = useAuth();
+  const toast = useToast();
+  const alert = useAlert();
+  const { data: proc, isLoading, error, refetch } = useGetProc(Number(proc_id));
+  const [selectedEventDocuments, setSelectedEventDocuments] = useState<any[]>([]);
+  const [selectedEventName, setSelectedEventName] = useState<string>('');
+  const mutation = useDeleteEvent();
 
-  const getStatusColor = (status: string) => {
-    const colors = {
-      'Aberto': 'blue',
-      'Em Andamento': 'yellow',
-      'Pendente': 'orange',
-      'Concluído': 'green',
-      'Cancelado': 'red',
-    };
-    return colors[status as keyof typeof colors] || 'gray';
-  };
+    const viewModal = useDisclosure();
+    const deleteModal = useDisclosure();
+    const createModal = useDisclosure();
 
-  const getPriorityColor = (priority: string) => {
-    const colors = {
-      'Baixa': 'green',
-      'Média': 'yellow',
-      'Alta': 'red',
-    };
-    return colors[priority as keyof typeof colors] || 'gray';
-  };
-
-  const formatDate = (dateString: string) => {
-    try {
-      return new Date(dateString).toLocaleDateString('pt-BR');
-    } catch {
-      return 'Data inválida';
+  const handleDeleteEvent = (event_id: number) => {
+    toast.show('Aguarde', 'Deletando processo...', 'loading');
+    if (user?.role !== 'Admin') {
+      toast.show(
+        'Acesso Negado',
+        'Apenas administradores podem deletar eventos.',
+        'error'
+      );
+      return;
     }
+    
+    mutation.mutate(event_id, {
+      onSuccess: () => {
+        toast.show('Sucesso', 'Evento deletado.', 'success');
+      },
+      onError: error => {
+        console.log('Delete error:', error);
+        toast.show('Erro de conexão com o servidor', 'Tente mais tarde.', 'error');
+      },
+      onSettled: () => {
+        toast.dismiss();
+      },
+    });
   };
 
-  const formatDateTime = (dateString: string) => {
-    try {
-      return new Date(dateString).toLocaleString('pt-BR');
-    } catch {
-      return 'Data inválida';
+  useEffect(() => {
+    if (proc && proc.events.length > 0) {
+      sortEventsByDate(proc.events);
     }
+  }, [proc]);
+
+  const handleViewDocuments = (documents: any[], eventName: string) => {
+    setSelectedEventDocuments(documents);
+    setSelectedEventName(eventName);
   };
-
-  if (isLoading) {
-    return (
-      <Container maxW="5xl" py={8}>
-        <VStack gap={4} align="center" justify="center" minH="400px">
-          <Spinner size="xl" color="primary.purple.bg" />
-          <Text color="secondary.gray.color">Carregando detalhes do processo...</Text>
-        </VStack>
-      </Container>
-    );
-  }
-
-  if (error || !proc) {
-    return (
-      <Container maxW="5xl" py={8}>
-        <VStack gap={6} align="stretch">
-          <HStack gap={3}>
-            <Button
-              variant="ghost"
-              onClick={() => router.back()}
-              color="secondary.gray.color"
-              _hover={{ bg: 'secondary.gray.bg.hover' }}
-            >
-              <HiArrowLeft />
-              Voltar
-            </Button>
-          </HStack>
-          
-          <Alert.Root status="error">
-            <Alert.Indicator />
-            <Alert.Title>Erro ao carregar processo</Alert.Title>
-            <Alert.Description>
-              Não foi possível encontrar o processo solicitado.
-            </Alert.Description>
-          </Alert.Root>
-        </VStack>
-      </Container>
-    );
-  }
 
   return (
-    <Container maxW="5xl" py={8}>
-      <VStack gap={6} align="stretch">
-        {/* Header com botão voltar */}
-        <HStack justify="space-between" align="center">
-          <HStack gap={3}>
-            <Button
-              variant="ghost"
-              onClick={() => router.back()}
-              color="secondary.gray.color"
-              _hover={{ bg: 'secondary.gray.bg.hover' }}
-            >
-              <HiArrowLeft />
-              Voltar
-            </Button>
-            <Separator orientation="vertical" h="24px" />
-            <HStack gap={2}>
-              <HiDocumentText size={32} color="green" />
-              <Heading size="lg" color="primary.gray.color">
-                Processo #{proc.number}
-              </Heading>
+    <Container maxW="5xl" py={8} mb={100}>
+      {isLoading && <CustomBackdrop isOpen />}
+      {error &&
+        alert.show(
+          'Erro ao carregar processo',
+          'Tente novamente mais tarde.',
+          'error'
+        )}
+      {proc && !isLoading && (
+        <VStack gap={6} align="stretch">
+          {/* Header com botão voltar */}
+          <HStack justify="space-between" align="center">
+            <HStack gap={3}>
+              <Button
+                variant="ghost"
+                onClick={() => router.back()}
+                color="secondary.gray.text"
+                _hover={{ bg: 'secondary.gray.bg.hover' }}
+              >
+                <HiArrowLeft />
+                Voltar
+              </Button>
+              <Separator orientation="vertical" h="24px" />
+              <HStack gap={2}>
+                <HiDocumentText size={32} color="#16a34a" />
+                <Heading size="lg" color="primary.gray.text">
+                  Processo #{proc.number}
+                </Heading>
+              </HStack>
             </HStack>
           </HStack>
-        </HStack>
 
-        <Card.Root bg="primary.gray.bg" borderColor="secondary.gray.bg">
-          <Card.Body p={6}>
-            <VStack gap={6} align="stretch">
-              {/* Status e Prioridade */}
-              <HStack justify="space-between" align="center">
-                <HStack gap={3}>
-                  <Badge
-                    colorPalette={getStatusColor(proc.status)}
-                    variant="surface"
-                    size="lg"
-                  >
-                    {proc.status}
-                  </Badge>
-                  <Badge
-                    colorPalette={getPriorityColor(proc.priority)}
-                    variant="surface"
-                    size="lg"
-                  >
-                    Prioridade {proc.priority}
-                  </Badge>
-                </HStack>
-                <Text
-                  fontSize="sm"
-                  color="secondary.gray.color"
-                >
-                  {proc.active ? 'Ativo' : 'Inativo'}
-                </Text>
-              </HStack>
-
-              <Separator />
-
-              {/* Informações Básicas */}
-              <VStack gap={4} align="stretch">
-                <HStack gap={2}>
-                  <HiDocumentText size={20} color="blue" />
-                  <Heading size="md" color="primary.gray.color">
-                    Informações do Processo
-                  </Heading>
-                </HStack>
-
-                <VStack gap={3} align="stretch" pl={6}>
-                  <HStack justify="space-between">
-                    <Text fontWeight="medium" color="primary.gray.color">
-                      Número:
-                    </Text>
-                    <Text color="secondary.gray.color">
-                      {proc.number}
-                    </Text>
-                  </HStack>
-
-                  <HStack justify="space-between">
-                    <Text fontWeight="medium" color="primary.gray.color">
-                      Requerente:
-                    </Text>
-                    <Text color="secondary.gray.color">
-                      {proc.owner}
-                    </Text>
-                  </HStack>
-
-                  <VStack align="stretch" gap={2}>
-                    <Text fontWeight="medium" color="primary.gray.color">
-                      Descrição:
-                    </Text>
-                    <Box
-                      p={4}
-                      bg="secondary.gray.bg"
-                      borderRadius="md"
-                      borderWidth="1px"
-                      borderColor="secondary.gray.bg"
-                    >
-                      <Text color="primary.gray.color" whiteSpace="pre-wrap">
-                        {proc.description}
-                      </Text>
-                    </Box>
-                  </VStack>
-                </VStack>
-              </VStack>
-
-              <Separator />
-
-              {/* Responsável */}
-              <VStack gap={4} align="stretch">
-                <HStack gap={2}>
-                  <HiUser size={20} color="purple" />
-                  <Heading size="md" color="primary.gray.color">
-                    Responsável
-                  </Heading>
-                </HStack>
-
-                <HStack gap={3} pl={6}>
-                  <Avatar.Root size="lg">
-                    <Avatar.Fallback
-                      name={proc.user.name}
-                      bg="primary.purple.bg"
-                      color="primary.purple.color"
-                    />
-                  </Avatar.Root>
-                  <VStack align="start" gap={1}>
-                    <Text fontWeight="medium" fontSize="lg" color="primary.gray.color">
-                      {proc.user.name}
-                    </Text>
-                    <Text fontSize="md" color="secondary.gray.color">
-                      {proc.user.email}
-                    </Text>
+          <Card.Root bg="primary.gray.bg" borderColor="secondary.gray.bg">
+            <Card.Body p={6}>
+              <VStack gap={6} align="stretch">
+                {/* Status e Prioridade */}
+                <HStack justify="space-between" align="center">
+                  <HStack gap={3}>
                     <Badge
-                      colorPalette="purple"
-                      variant="subtle"
-                      size="md"
+                      bg={`${getStatusColor(proc.status)}`}
+                      color="white"
+                      variant="solid"
+                      size="lg"
+                      px={3}
+                      py={1}
+                      borderRadius="full"
                     >
-                      {proc.user.sigle}
+                      {proc.status}
                     </Badge>
-                  </VStack>
+                    <Badge
+                      bg={`${getPriorityColor(proc.priority)}`}
+                      color="white"
+                      variant="solid"
+                      size="lg"
+                      px={3}
+                      py={1}
+                      borderRadius="full"
+                    >
+                      Prioridade {proc.priority}
+                    </Badge>
+                  </HStack>
+                  <Text fontSize="sm" color="secondary.gray.text">
+                    {proc.active ? '✅ Ativo' : '❌ Inativo'}
+                  </Text>
                 </HStack>
-              </VStack>
 
-              <Separator />
+                <Separator />
 
-              {/* Datas */}
-              <VStack gap={4} align="stretch">
-                <HStack gap={2}>
-                  <HiCalendarDays size={20} color="orange" />
-                  <Heading size="md" color="primary.gray.color">
-                    Prazos e Datas
-                  </Heading>
-                </HStack>
-
-                <VStack gap={3} align="stretch" pl={6}>
-                  <HStack justify="space-between">
-                    <Text fontWeight="medium" color="primary.gray.color">
-                      Data Limite:
-                    </Text>
-                    <Text color="secondary.gray.color" fontSize="lg">
-                      {formatDate(proc.term)}
-                    </Text>
+                {/* Informações Básicas */}
+                <VStack gap={4} align="stretch">
+                  <HStack gap={2}>
+                    <HiDocumentText size={20} color="#2563eb" />
+                    <Heading size="md" color="primary.gray.text">
+                      Informações do Processo
+                    </Heading>
                   </HStack>
 
-                  <HStack justify="space-between">
-                    <Text fontWeight="medium" color="primary.gray.color">
-                      Criado em:
-                    </Text>
-                    <Text color="secondary.gray.color">
-                      {formatDateTime(proc.created_at)}
-                    </Text>
-                  </HStack>
-
-                  <HStack justify="space-between">
-                    <Text fontWeight="medium" color="primary.gray.color">
-                      Última atualização:
-                    </Text>
-                    <Text color="secondary.gray.color">
-                      {formatDateTime(proc.updated_at)}
-                    </Text>
-                  </HStack>
-                </VStack>
-              </VStack>
-
-              {/* Eventos (se houver) */}
-              {proc.events && proc.events.length > 0 && (
-                <>
-                  <Separator />
-                  <VStack gap={4} align="stretch">
-                    <HStack gap={2}>
-                      <HiClock size={20} color="yellow" />
-                      <Heading size="md" color="primary.gray.color">
-                        Histórico de Eventos ({proc.events.length})
-                      </Heading>
+                  <VStack gap={3} align="stretch" pl={6}>
+                    <HStack justify="space-between">
+                      <Text fontWeight="medium" color="primary.gray.text">
+                        Número:
+                      </Text>
+                      <Text color="secondary.gray.text" fontWeight="semibold">
+                        {proc.number}
+                      </Text>
                     </HStack>
 
-                    <VStack gap={3} align="stretch" pl={6}>
-                      {proc.events.map((event, index) => (
-                        <Box
-                          key={index}
-                          p={4}
-                          bg="secondary.gray.bg"
-                          borderRadius="md"
-                          borderWidth="1px"
-                          borderColor="secondary.gray.bg"
-                        >
-                          <Text color="primary.gray.color">
-                            <Text as="span" fontWeight="medium">
-                              {formatDateTime(event.created_at.toString())}
-                            </Text>
-                            {' - '}
-                            {event.name || 'Evento sem nome'}
-                          </Text>
-                        </Box>
-                      ))}
+                    <HStack justify="space-between">
+                      <Text fontWeight="medium" color="primary.gray.text">
+                        Requerente:
+                      </Text>
+                      <Text color="secondary.gray.text">{proc.owner}</Text>
+                    </HStack>
+
+                    <VStack align="stretch" gap={2}>
+                      <Text fontWeight="medium" color="primary.gray.text">
+                        Descrição:
+                      </Text>
+                      <Box
+                        p={4}
+                        bg="secondary.gray.bg"
+                        borderRadius="md"
+                        borderWidth="1px"
+                        borderColor="secondary.gray.bg"
+                      >
+                        <Text color="primary.gray.text" whiteSpace="pre-wrap">
+                          {proc.description}
+                        </Text>
+                      </Box>
                     </VStack>
                   </VStack>
-                </>
-              )}
-            </VStack>
-          </Card.Body>
-        </Card.Root>
-      </VStack>
+                </VStack>
+
+                <Separator />
+
+                {/* Responsável */}
+                <VStack gap={4} align="stretch">
+                  <HStack gap={2}>
+                    <HiUser size={20} color="#9333ea" />
+                    <Heading size="md" color="primary.gray.text">
+                      Responsável
+                    </Heading>
+                  </HStack>
+
+                  <HStack gap={3} pl={6}>
+                    <Avatar.Root size="lg">
+                      <Avatar.Fallback
+                        name={proc.user.name}
+                        bg="secondary.purple.bg"
+                        color="white"
+                      />
+                      <Avatar.Image src={img.src} />
+                    </Avatar.Root>
+                    <VStack align="start" gap={1}>
+                      <Text
+                        fontWeight="medium"
+                        fontSize="lg"
+                        color="primary.gray.text"
+                      >
+                        {proc.user.name}
+                      </Text>
+                      <Text fontSize="md" color="secondary.gray.text">
+                        {proc.user.email}
+                      </Text>
+                      <Badge
+                        bg="purple.500"
+                        color="white"
+                        variant="solid"
+                        size="md"
+                        px={2}
+                        py={1}
+                        borderRadius="full"
+                      >
+                        {proc.user.sigle}
+                      </Badge>
+                    </VStack>
+                  </HStack>
+                </VStack>
+
+                <Separator />
+
+                {/* Datas */}
+                <VStack gap={4} align="stretch">
+                  <HStack gap={2}>
+                    <HiCalendarDays size={20} color="#ea580c" />
+                    <Heading size="md" color="primary.gray.text">
+                      Prazos e Datas
+                    </Heading>
+                  </HStack>
+
+                  <VStack gap={3} align="stretch" pl={6}>
+                    <HStack justify="space-between">
+                      <Text fontWeight="medium" color="primary.gray.text">
+                        Data Limite:
+                      </Text>
+                      <Text
+                        color={
+                          new Date(proc.term) < new Date()
+                            ? 'primary.error.text'
+                            : 'secondary.gray.text'
+                        }
+                        fontSize="lg"
+                        fontWeight={
+                          new Date(proc.term) < new Date() ? 'bold' : 'normal'
+                        }
+                      >
+                        {formatDate(proc.term)}
+                        {new Date(proc.term) < new Date() && ' ⚠️'}
+                      </Text>
+                    </HStack>
+
+                    <HStack justify="space-between">
+                      <Text fontWeight="medium" color="primary.gray.text">
+                        Criado em:
+                      </Text>
+                      <Text color="secondary.gray.text">
+                        {formatDate(proc.created_at)}
+                      </Text>
+                    </HStack>
+
+                    <HStack justify="space-between">
+                      <Text fontWeight="medium" color="primary.gray.text">
+                        Última atualização:
+                      </Text>
+                      <Text color="secondary.gray.text">
+                        {formatDate(proc.updated_at)}
+                      </Text>
+                    </HStack>
+                  </VStack>
+                </VStack>
+
+                {/* Eventos (se houver) */}
+                {proc.events && proc.events.length > 0 && (
+                  <>
+                    <Separator />
+                    <VStack gap={4} align="stretch">
+                      <HStack gap={2} justify="space-between" align="center">
+                        <HStack gap={2}>
+                          <HiClock size={20} color="#eab308" />
+                          <Heading size="md" color="primary.gray.text">
+                            Histórico de Eventos ({proc.events.length})
+                          </Heading>
+                        </HStack>
+                        {user?.role === 'Admin' && (
+                          <Button
+                            size="sm"
+                            bg="secondary.green.bg"
+                            color="white"
+                            _hover={{
+                              bg: 'secondary.green.bg.hover',
+                            }}
+                            onClick={() => createModal.onOpen()}
+                          >
+                            <HiPlus />
+                            Novo Evento
+                          </Button>
+                        )}
+                      </HStack>
+
+                      {/* Tabela de eventos */}
+                      <Card.Root
+                        bg="primary.gray.bg"
+                        borderColor="secondary.gray.bg"
+                      >
+                        <Card.Body p={0}>
+                          <Table.Root size="sm" variant="outline">
+                            <Table.Header bg="secondary.gray.bg">
+                              <Table.Row>
+                                <Table.ColumnHeader color="primary.gray.text">
+                                  Número
+                                </Table.ColumnHeader>
+                                <Table.ColumnHeader color="primary.gray.text">
+                                  Data/Hora
+                                </Table.ColumnHeader>
+                                <Table.ColumnHeader color="primary.gray.text">
+                                  Nome do Evento
+                                </Table.ColumnHeader>
+                                <Table.ColumnHeader color="primary.gray.text">
+                                  Responsável
+                                </Table.ColumnHeader>
+                                <Table.ColumnHeader color="primary.gray.text">
+                                  Documentos
+                                </Table.ColumnHeader>
+                                <Table.ColumnHeader
+                                  textAlign="center"
+                                  color="primary.gray.text"
+                                >
+                                  Ações
+                                </Table.ColumnHeader>
+                              </Table.Row>
+                            </Table.Header>
+
+                            <Table.Body>
+                              {proc.events.map((event, index) => (
+                                <Table.Row
+                                  key={event.id}
+                                  _hover={{
+                                    bg: 'secondary.gray.bg.hover',
+                                  }}
+                                >
+                                  {/* Index */}
+                                  <Table.Cell>
+                                    <Text
+                                      fontSize="sm"
+                                      color="primary.gray.text"
+                                      fontWeight="medium"
+                                    >
+                                      {proc.events.length - index}
+                                    </Text>
+                                  </Table.Cell>
+                                  {/* Data/Hora */}
+                                  <Table.Cell>
+                                    <Text
+                                      fontSize="sm"
+                                      color="primary.gray.text"
+                                      fontWeight="medium"
+                                    >
+                                      {formatDate(event.created_at.toString())}
+                                    </Text>
+                                  </Table.Cell>
+
+                                  {/* Nome do Evento */}
+                                  <Table.Cell>
+                                    <Text
+                                      fontSize="sm"
+                                      color="primary.gray.text"
+                                      fontWeight="semibold"
+                                    >
+                                      {event.name || 'Evento sem nome'}
+                                    </Text>
+                                  </Table.Cell>
+
+                                  {/* Responsável */}
+                                  <Table.Cell>
+                                    <HStack gap={2}>
+                                      <Avatar.Root size="sm">
+                                        <Avatar.Fallback
+                                          name={event.user?.name || 'Usuário'}
+                                          bg="secondary.blue.bg"
+                                          color="white"
+                                        />
+                                        <Avatar.Image src={img.src} />
+                                      </Avatar.Root>
+                                      <VStack align="start" gap={0}>
+                                        <Text
+                                          fontWeight="medium"
+                                          fontSize="sm"
+                                          color="primary.gray.text"
+                                        >
+                                          {event.user?.name || 'N/A'}
+                                        </Text>
+                                        <Text
+                                          fontSize="xs"
+                                          color="secondary.gray.text"
+                                        >
+                                          {event.user?.sigle || 'N/A'}
+                                        </Text>
+                                      </VStack>
+                                    </HStack>
+                                  </Table.Cell>
+
+                                  {/* Documentos */}
+                                  <Table.Cell>
+                                    <HStack gap={2} align="center">
+                                      <HiPaperClip size={16} color="#6b7280" />
+                                      <Text
+                                        fontSize="sm"
+                                        color="secondary.gray.text"
+                                      >
+                                        {event.docs?.length || 0} doc(s)
+                                      </Text>
+                                      {(event.docs?.length || 0) > 0 && (
+                                        <Badge
+                                          bg="blue.500"
+                                          color="white"
+                                          variant="solid"
+                                          size="sm"
+                                          px={2}
+                                          py={1}
+                                          borderRadius="full"
+                                        >
+                                          {event.docs?.length}
+                                        </Badge>
+                                      )}
+                                    </HStack>
+                                  </Table.Cell>
+
+                                  {/* Ações */}
+                                  <Table.Cell textAlign="center">
+                                    <HStack gap={1} justify="center">
+                                      {/* Botão Ver Documentos */}
+                                      <IconButton
+                                        aria-label="Ver documentos"
+                                        size="sm"
+                                        variant="ghost"
+                                        color="primary.info.text"
+                                        _hover={{
+                                          bg: 'secondary.info.bg.hover',
+                                          color: 'primary.info.text',
+                                        }}
+                                        onClick={() =>
+                                          handleViewDocuments(
+                                            event.docs || [],
+                                            event.name || 'Evento sem nome'
+                                          )
+                                        }
+                                      >
+                                        <HiEye />
+                                      </IconButton>
+
+                                      {/* Botão Deletar - Apenas Admin */}
+                                      {user?.role === 'Admin' && (
+                                        <IconButton
+                                          aria-label="Deletar evento"
+                                          size="sm"
+                                          variant="ghost"
+                                          color="primary.error.text"
+                                          _hover={{
+                                            bg: 'secondary.error.bg.hover',
+                                            color: 'primary.error.text',
+                                          }}
+                                          onClick={() =>
+                                            handleDeleteEvent(event.id)
+                                          }
+                                        >
+                                          <HiTrash />
+                                        </IconButton>
+                                      )}
+                                    </HStack>
+                                  </Table.Cell>
+                                </Table.Row>
+                              ))}
+                            </Table.Body>
+                          </Table.Root>
+                        </Card.Body>
+                      </Card.Root>
+                    </VStack>
+                  </>
+                )}
+
+                {/* Empty state para eventos */}
+                {(!proc.events || proc.events.length === 0) && (
+                  <>
+                    <Separator />
+                    <VStack gap={4} align="stretch">
+                      <HStack gap={2} justify="space-between" align="center">
+                        <HStack gap={2}>
+                          <HiClock size={20} color="#eab308" />
+                          <Heading size="md" color="primary.gray.text">
+                            Histórico de Eventos
+                          </Heading>
+                        </HStack>
+                        {user?.role === 'Admin' && (
+                          <Button
+                            size="sm"
+                            bg="secondary.green.bg"
+                            color="white"
+                            _hover={{
+                              bg: 'secondary.green.bg.hover',
+                            }}
+                            onClick={() => createModal.onOpen()}
+                          >
+                            <HiPlus />
+                            Criar Primeiro Evento
+                          </Button>
+                        )}
+                      </HStack>
+
+                      <Box
+                        textAlign="center"
+                        py={8}
+                        bg="secondary.gray.bg"
+                        borderRadius="md"
+                        borderWidth="1px"
+                        borderColor="secondary.gray.bg"
+                      >
+                        <VStack gap={3}>
+                          <HiClock size={32} color="#94a3b8" />
+                          <Text
+                            color="primary.gray.text"
+                            fontSize="md"
+                            fontWeight="semibold"
+                          >
+                            Nenhum evento registrado
+                          </Text>
+                          <Text color="secondary.gray.text" fontSize="sm">
+                            Este processo ainda não possui eventos registrados.
+                          </Text>
+                        </VStack>
+                      </Box>
+                    </VStack>
+                  </>
+                )}
+              </VStack>
+            </Card.Body>
+          </Card.Root>
+        </VStack>
+      )}
+      
+      {/* Modal de criação de evento */}
+      {proc && (
+        <EventCreateModal
+          isOpen={createModal.open}
+          onClose={() => createModal.onClose()}
+          proc_id={Number(proc_id)}
+          onSuccess={() => {
+              refetch();
+              deleteModal.onClose();
+              toast.show('Sucesso!', 'Evento deletado');
+            }}
+        />
+      )}
+      
+      {/* Modal de visualização de documentos */}
+      <DocViewModal
+        isOpen={viewModal.open}
+        onClose={() => viewModal.onClose()}
+        documents={selectedEventDocuments}
+        eventName={selectedEventName}
+        onSuccess={() => {viewModal.onClose()}}
+      />
     </Container>
   );
 }

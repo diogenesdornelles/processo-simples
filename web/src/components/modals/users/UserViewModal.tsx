@@ -21,6 +21,7 @@ import { AiOutlineMail } from 'react-icons/ai';
 import { modalStyles } from '@/styles/modalStyles';
 import { formatDate } from '@/utils/formatDate';
 import { useColorMode } from '../../ui/color-mode';
+import img from '@/public/account.png';
 
 interface UserViewModalProps {
   isOpen: boolean;
@@ -106,7 +107,7 @@ export function UserViewModal({ isOpen, onClose, user }: UserViewModalProps) {
                 bg="secondary.purple.bg"
                 color="white"
               />
-              <Avatar.Image src="../../public/account.png" />
+              <Avatar.Image src={img.src} />
             </Avatar.Root>
             <VStack align="start" gap={2} flex={1}>
               <Heading size="md" color="primary.gray.color">

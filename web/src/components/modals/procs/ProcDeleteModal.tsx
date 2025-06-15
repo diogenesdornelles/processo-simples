@@ -31,6 +31,7 @@ export function ProcDeleteModal({
   isOpen,
   onClose,
   proc,
+
   onSuccess,
 }: ProcDeleteModalProps) {
   const mutation = useDeleteProc();
@@ -38,14 +39,14 @@ export function ProcDeleteModal({
   const theme = useColorMode();
 
   const handleDelete = async () => {
-    toast.loading('Aguarde', 'Deletando processo...');
+    toast.show('Aguarde', 'Deletando processo...', 'loading');
     mutation.mutate(proc.id, {
       onSuccess: () => {
         onSuccess();
       },
       onError: error => {
         console.log('Delete error:', error);
-        toast.error('Erro de conexão com o servidor', 'Tente mais tarde.');
+        toast.show('Erro de conexão com o servidor', 'Tente mais tarde.', 'error');
       },
       onSettled: () => {
         toast.dismiss();

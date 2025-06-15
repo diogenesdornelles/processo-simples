@@ -74,7 +74,7 @@ export function UserEditModal({
   const theme = useColorMode();
 
   const handleSubmit = async (values: any) => {
-    toast.loading('Aguarde', 'Salvando usuário...');
+    toast.show('Aguarde', 'Salvando usuário...', 'error');
     mutation.mutate(
       { id: user.id, user: values },
       {
@@ -82,12 +82,12 @@ export function UserEditModal({
           if (response && response.cpf) {
             onSuccess();
           } else {
-            toast.error('Erro', 'ao salvar usuário');
+            toast.show('Erro', 'ao salvar usuário', 'error');
           }
         },
         onError: error => {
           console.log('Save error:', error);
-          toast.error('Erro de conexão com o servidor', 'Tente mais tarde.');
+          toast.show('Erro de conexão com o servidor', 'Tente mais tarde.', 'error');
         },
         onSettled: () => {
           toast.dismiss();

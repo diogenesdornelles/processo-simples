@@ -73,14 +73,14 @@ export function UserCreateModal({
   const handleSubmit = async (
     values: CreateUser & { cpf: string; sigle: string }
   ) => {
-    toast.loading('Aguarde', 'Salvando usuário...');
+    toast.show('Aguarde', 'Salvando usuário...', 'loading');
     mutation.mutate(values, {
       onSuccess: () => {
         onSuccess();
       },
       onError: error => {
         console.log('Save error:', error);
-        toast.error('Erro de conexão com o servidor', 'Tente mais tarde.');
+        toast.show('Erro de conexão com o servidor', 'Tente mais tarde.', 'error');
       },
       onSettled: () => {
         toast.dismiss();

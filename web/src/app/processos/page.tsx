@@ -1,9 +1,9 @@
 'use client';
 import { withAuth } from '@/components/withAuth';
-import Processos from '@/pages/Processos';
+import Procs from '@/pages/Procs';
 
 function ProcessosPage() {
-  return <Processos />;
+  return <Procs />;
 }
 
 export default withAuth(ProcessosPage, {

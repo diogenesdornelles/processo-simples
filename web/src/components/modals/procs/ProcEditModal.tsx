@@ -111,7 +111,7 @@ export function ProcEditModal({
       term: string;
     }
   ) => {
-    toast.loading('Aguarde', 'Atualizando processo...');
+    toast.show('Aguarde', 'Atualizando processo...', 'loading');
     mutation.mutate(
       { id: proc.id, proc: values },
       {
@@ -120,7 +120,7 @@ export function ProcEditModal({
         },
         onError: error => {
           console.log('Save error:', error);
-          toast.error('Erro de conexão com o servidor', 'Tente mais tarde.');
+          toast.show('Erro de conexão com o servidor', 'Tente mais tarde.', 'error');
         },
         onSettled: () => {
           toast.dismiss();

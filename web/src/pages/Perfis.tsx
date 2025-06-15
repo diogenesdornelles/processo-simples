@@ -27,9 +27,13 @@ import { UserEditModal } from '@/components/modals/users/UserEditModal';
 import { UserDeleteModal } from '@/components/modals/users/UserDeleteModal';
 import { UserCreateModal } from '@/components/modals/users/UserCreateModal';
 import { useAuth } from '@/contexts/AuthContext';
+import img from '@/public/account.png';
+import { getRoleColor } from '@/utils';
+import { useAlert } from '@/hooks/useAlert';
 
 export default function Perfis() {
   const toast = useToast();
+  const alert = useAlert();
   const [selectedUser, setSelectedUser] = useState<UserProps | null>(null);
   const { user, isAuthenticated } = useAuth();
 
@@ -38,16 +42,17 @@ export default function Perfis() {
   const deleteModal = useDisclosure();
   const createModal = useDisclosure();
 
-  const { data: users, isFetching, refetch } = useGetAllUsers();
+  const { data: users, isFetching, refetch, error } = useGetAllUsers();
 
   const handleView = (userView: UserProps) => {
     if (user?.role === 'Admin' && isAuthenticated) {
       setSelectedUser(userView);
       viewModal.onOpen();
     } else {
-      toast.error(
+      toast.show(
         'Acesso Negado',
-        'Você não tem permissão para visualizar este usuário.'
+        'Você não tem permissão para visualizar este usuário.',
+        'error'
       );
     }
   };
@@ -57,9 +62,10 @@ export default function Perfis() {
       setSelectedUser(userEdit);
       editModal.onOpen();
     } else {
-      toast.error(
+      toast.show(
         'Acesso Negado',
-        'Você não tem permissão para visualizar este usuário.'
+        'Você não tem permissão para visualizar este usuário.',
+        'error'
       );
     }
   };
@@ -69,9 +75,10 @@ export default function Perfis() {
       setSelectedUser(userDelete);
       deleteModal.onOpen();
     } else {
-      toast.error(
+      toast.show(
         'Acesso Negado',
-        'Você não tem permissão para visualizar este usuário.'
+        'Você não tem permissão para visualizar este usuário.',
+        'error'
       );
     }
   };
@@ -85,31 +92,28 @@ export default function Perfis() {
 
   const handleRefresh = async () => {
     try {
-      toast.loading('Atualizando...', 'Buscando dados mais recentes.');
+      toast.show('Atualizando...', 'Buscando dados mais recentes.', 'loading');
       await refetch();
       toast.dismiss();
-      toast.success('Lista atualizada!', 'Dados atualizados com sucesso.');
+      toast.show('Lista atualizada!', 'Dados atualizados com sucesso.');
     } catch (err) {
       console.error('Erro ao atualizar usuários:', err);
-      toast.error('Erro ao atualizar', 'Não foi possível atualizar os dados.');
-    }
-  };
-
-  const getRoleBadgeColor = (role: string) => {
-    switch (role) {
-      case 'Admin':
-        return 'red';
-      case 'Manager':
-        return 'orange';
-      case 'User':
-        return 'blue';
-      default:
-        return 'gray';
+      toast.show(
+        'Erro ao atualizar',
+        'Não foi possível atualizar os dados.',
+        'error'
+      );
     }
   };
 
   return (
     <Container maxW="7xl" py={8}>
+      {error &&
+        alert.show(
+          'Erro ao carregar perfil',
+          'Tente novamente mais tarde.',
+          'error'
+        )}
       <VStack gap={6} align="stretch">
         <HStack justify="space-between" align="center">
           <VStack align="start" gap={1}>
@@ -160,7 +164,7 @@ export default function Perfis() {
                       <HStack gap={3}>
                         <Avatar.Root>
                           <Avatar.Fallback name={user?.name} />
-                          <Avatar.Image src="../../../public/account.png" />
+                          <Avatar.Image src={img.src} />
                         </Avatar.Root>
                         <VStack align="start" gap={0}>
                           <Text
@@ -183,7 +187,7 @@ export default function Perfis() {
                     </Table.Cell>
                     <Table.Cell>
                       <Badge
-                        colorScheme={getRoleBadgeColor(user.role)}
+                        colorScheme={getRoleColor(user.role)}
                         variant="subtle"
                         fontSize="xs"
                       >
@@ -268,7 +272,7 @@ export default function Perfis() {
             onSuccess={() => {
               refetch();
               editModal.onClose();
-              toast.success('Sucesso!', 'Usuário atualizado');
+              toast.show('Sucesso!', 'Usuário atualizado');
             }}
           />
           <UserDeleteModal
@@ -278,7 +282,7 @@ export default function Perfis() {
             onSuccess={() => {
               refetch();
               deleteModal.onClose();
-              toast.success('Sucesso!', 'Usuário deletado');
+              toast.show('Sucesso!', 'Usuário deletado');
             }}
           />
         </>
@@ -290,7 +294,7 @@ export default function Perfis() {
         onSuccess={() => {
           refetch();
           createModal.onClose();
-          toast.success('Sucesso!', 'Usuário criado');
+          toast.show('Sucesso!', 'Usuário criado');
         }}
       />
     </Container>

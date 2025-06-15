@@ -2,14 +2,15 @@
 import { toaster } from '@/components/ui/toaster';
 
 export function useToast() {
-  const success = (
+  const show = (
     title: string,
     message: string,
+    status: 'success' | 'error' | 'info' | 'warning' | 'loading' = 'success',
     label?: string,
     cb?: () => void
   ) => {
-    return toaster.success({
-      title: title,
+    return toaster[status]({
+      title,
       description: message,
       duration: 3000,
       action: {
@@ -23,63 +24,6 @@ export function useToast() {
 
   const dismiss = () => {
     return toaster.dismiss();
-  };
-
-  const error = (
-    title: string,
-    message: string,
-    label?: string,
-    cb?: () => void
-  ) => {
-    return toaster.error({
-      title: title,
-      description: message,
-      duration: 3000,
-      action: {
-        label: label || 'OK',
-        onClick: () => {
-          if (cb) cb();
-        },
-      },
-    });
-  };
-
-  const loading = (
-    title: string,
-    message: string,
-    label?: string,
-    cb?: () => void
-  ) => {
-    toaster.loading({
-      title: title,
-      description: message,
-      duration: 3000,
-      action: {
-        label: label || 'OK',
-        onClick: () => {
-          if (cb) cb();
-        },
-      },
-    });
-  };
-
-  const info = (
-    title: string,
-    message: string,
-    label?: string,
-    cb?: () => void
-  ) => {
-    toaster.info({
-      title: title,
-      description: message,
-      duration: 3000,
-      action: {
-        label: label || 'OK',
-        onClick: () => {
-          if (cb) cb();
-        },
-      },
-    });
   };
 
   const promise = (
@@ -113,5 +57,5 @@ export function useToast() {
     });
   };
 
-  return { success, error, loading, promise, info, dismiss };
+  return { show, promise, dismiss };
 }

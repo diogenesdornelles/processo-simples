@@ -32,9 +32,18 @@ import { ProcEditModal } from '@/components/modals/procs/ProcEditModal';
 import { ProcDeleteModal } from '@/components/modals/procs/ProcDeleteModal';
 import { ProcCreateModal } from '@/components/modals/procs/ProcCreateModal';
 import { useRouter } from 'next/navigation';
+import {
+  getStatusColor,
+  getPriorityColor,
+  formatDate,
+  isExpired,
+} from '@/utils';
+import { useAlert } from '@/hooks/useAlert';
+import img from '@/public/account.png';
 
-export default function Processos() {
+export default function Procs() {
   const toast = useToast();
+  const alert = useAlert();
   const [selectedProc, setSelectedProc] = useState<ProcProps | null>(null);
   const { user, isAuthenticated } = useAuth();
   const router = useRouter();
@@ -43,16 +52,17 @@ export default function Processos() {
   const deleteModal = useDisclosure();
   const createModal = useDisclosure();
 
-  const { data: processos, isFetching, refetch } = useGetAllProcs();
+  const { data: processos, isFetching, refetch, error } = useGetAllProcs();
 
   const handleView = (proc: ProcProps) => {
     if (isAuthenticated) {
       setSelectedProc(proc);
       router.push(`/processos/${proc.id}`);
     } else {
-      toast.error(
+      toast.show(
         'Acesso Negado',
-        'Você precisa estar logado para visualizar processos.'
+        'Você precisa estar logado para visualizar processos.',
+        'error'
       );
     }
   };
@@ -62,9 +72,10 @@ export default function Processos() {
       setSelectedProc(proc);
       editModal.onOpen();
     } else {
-      toast.error(
+      toast.show(
         'Acesso Negado',
-        'Você não tem permissão para editar este processo.'
+        'Você não tem permissão para editar este processo.',
+        'error'
       );
     }
   };
@@ -74,9 +85,10 @@ export default function Processos() {
       setSelectedProc(proc);
       deleteModal.onOpen();
     } else {
-      toast.error(
+      toast.show(
         'Acesso Negado',
-        'Você não tem permissão para deletar este processo.'
+        'Você não tem permissão para deletar este processo.',
+        'error'
       );
     }
   };
@@ -86,67 +98,38 @@ export default function Processos() {
       setSelectedProc(null);
       createModal.onOpen();
     } else {
-      toast.error(
+      toast.show(
         'Acesso Negado',
-        'Você não tem permissão para criar processos.'
+        'Você não tem permissão para criar processos.',
+        'error'
       );
     }
   };
 
   const handleRefresh = async () => {
     try {
-      toast.loading('Atualizando...', 'Buscando dados mais recentes.');
+      toast.show('Atualizando...', 'Buscando dados mais recentes.', 'loading');
       await refetch();
       toast.dismiss();
-      toast.success('Lista atualizada!', 'Dados atualizados com sucesso.');
+      toast.show('Lista atualizada!', 'Dados atualizados com sucesso.');
     } catch (err) {
       console.error('Erro ao atualizar processos:', err);
-      toast.error('Erro ao atualizar', 'Não foi possível atualizar os dados.');
+      toast.show(
+        'Erro ao atualizar',
+        'Não foi possível atualizar os dados.',
+        'error'
+      );
     }
-  };
-
-  const getStatusBadgeColor = (status: string) => {
-    switch (status) {
-      case 'Aberto':
-        return 'secondary.info.bg';
-      case 'Em Andamento':
-        return 'secondary.warning.bg';
-      case 'Pendente':
-        return 'secondary.attention.bg';
-      case 'Concluído':
-        return 'secondary.success.bg';
-      case 'Cancelado':
-        return 'secondary.error.bg';
-      default:
-        return 'secondary.gray.bg';
-    }
-  };
-
-  const getPriorityBadgeColor = (priority: string) => {
-    switch (priority) {
-      case 'Alta':
-        return 'secondary.error.bg';
-      case 'Média':
-        return 'secondary.attention.bg';
-      case 'Baixa':
-        return 'secondary.info.bg';
-      default:
-        return 'secondary.gray.bg';
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR');
-  };
-
-  const isExpired = (term: string) => {
-    const termDate = new Date(term);
-    const today = new Date();
-    return termDate < today;
   };
 
   return (
     <Container maxW="7xl" py={8}>
+      {error &&
+        alert.show(
+          'Erro ao carregar processos',
+          'Tente novamente mais tarde.',
+          'error'
+        )}
       <VStack gap={6} align="stretch">
         {/* Header */}
         <HStack justify="space-between" align="center">
@@ -263,6 +246,7 @@ export default function Processos() {
                             bg="secondary.purple.bg"
                             color="white"
                           />
+                          <Avatar.Image src={img.src}/>
                         </Avatar.Root>
                         <VStack align="start" gap={0}>
                           <Text
@@ -282,7 +266,7 @@ export default function Processos() {
                     {/* Status */}
                     <Table.Cell>
                       <Badge
-                        bg={`${getStatusBadgeColor(proc.status)}`}
+                        bg={`${getStatusColor(proc.status)}`}
                         color="white"
                         variant="solid"
                         fontSize="xs"
@@ -298,7 +282,7 @@ export default function Processos() {
                     <Table.Cell>
                       <HStack gap={1}>
                         <Badge
-                          bg={`${getPriorityBadgeColor(proc.priority)}`}
+                          bg={`${getPriorityColor(proc.priority)}`}
                           color="white"
                           variant="solid"
                           fontSize="xs"
@@ -449,7 +433,7 @@ export default function Processos() {
             onSuccess={() => {
               refetch();
               editModal.onClose();
-              toast.success('Sucesso!', 'Processo atualizado');
+              toast.show('Sucesso!', 'Processo atualizado');
             }}
           />
           <ProcDeleteModal
@@ -459,7 +443,7 @@ export default function Processos() {
             onSuccess={() => {
               refetch();
               deleteModal.onClose();
-              toast.success('Sucesso!', 'Processo deletado');
+              toast.show('Sucesso!', 'Processo deletado');
             }}
           />
         </>
@@ -471,7 +455,7 @@ export default function Processos() {
         onSuccess={() => {
           refetch();
           createModal.onClose();
-          toast.success('Sucesso!', 'Processo criado');
+          toast.show('Sucesso!', 'Processo criado');
         }}
       />
     </Container>

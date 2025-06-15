@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation';
 import { FiChevronDown, FiSearch, FiFileText, FiUsers } from 'react-icons/fi';
 import { useColorMode, ColorModeButton } from '@/components/ui/color-mode';
 import { UserViewModal } from '@/components/modals/users/UserViewModal';
+import img from '@/public/account.png';
 
 export default function Nav() {
   const { user, logout, isAuthenticated } = useAuth();
@@ -167,7 +168,7 @@ export default function Nav() {
                       bg="secondary.purple.bg"
                       color="secondary.purple.color"
                     />
-                    <Avatar.Image src="../../account.png" />
+                    <Avatar.Image src={img.src} />
                   </Avatar.Root>
                   <Text
                     display={{ base: 'none', md: 'block' }}

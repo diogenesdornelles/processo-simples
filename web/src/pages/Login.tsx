@@ -34,12 +34,12 @@ export default function Login() {
   const { login } = useAuth();
   const toast = useToast();
   const handleLoginSubmit = async (values: any) => {
-    toast.loading('Aguarde', 'Processando login...');
+    toast.show('Aguarde', 'Processando login...', 'loading');
     mutation.mutate(values, {
       onSuccess: response => {
         if (response && response.token_type) {
           toast.dismiss();
-          toast.success(
+          toast.show(
             'Login realizado!',
             `Bem-vindo, ${response.user?.name || 'usuário'}!`
           );
@@ -47,15 +47,23 @@ export default function Login() {
           router.push('/home');
         } else {
           if (response?.message) {
-            toast.error('Erro ao fazer login', response.message);
+            toast.show('Erro ao fazer login', response.message, 'error');
             return;
           }
-          toast.error('Erro de conexão com o servidor', 'tente mais tarde.');
+          toast.show(
+            'Erro de conexão com o servidor',
+            'tente mais tarde.',
+            'error'
+          );
         }
       },
       onError: error => {
         console.log('Login error:', error);
-        toast.error('Erro de conexão com o servidor', 'Tente mais tarde.');
+        toast.show(
+          'Erro de conexão com o servidor',
+          'tente mais tarde.',
+          'error'
+        );
       },
     });
     toast.dismiss();

@@ -20,8 +20,7 @@ import {
 } from '@chakra-ui/react';
 import { Formik, Form, Field as FormikField } from 'formik';
 import * as Yup from 'yup';
-import { useCreateProc } from '@/services/post/useCreateProc';
-import { useGetAllUsers } from '@/services/get/useGetAllUsers';
+import { useCreateProc, useCreateEvent, useGetAllUsers } from '@/services';
 import { CreateProc } from '@/domain/interfaces/proc.interfaces';
 import { ProcStatus } from '@/domain/types/ProcStatus';
 import { ProcPriority } from '@/domain/types/ProcPriority';
@@ -30,6 +29,7 @@ import { HiDocumentText, HiUser, HiCalendarDays } from 'react-icons/hi2';
 import { FaWindowClose } from 'react-icons/fa';
 import { modalStyles } from '@/styles/modalStyles';
 import { useColorMode } from '../../ui/color-mode';
+import { useAuth } from '@/contexts/AuthContext';
 
 const statusOptions = createListCollection({
   items: [
@@ -82,7 +82,9 @@ export function ProcCreateModal({
   onClose,
   onSuccess,
 }: ProcCreateModalProps) {
-  const mutation = useCreateProc();
+  const mutationCreateProc = useCreateProc();
+  const { user } = useAuth();
+  const createEventMutation = useCreateEvent();
   const { data: users = [] } = useGetAllUsers();
   const toast = useToast();
   const theme = useColorMode();
@@ -95,14 +97,43 @@ export function ProcCreateModal({
   });
 
   const handleSubmit = async (values: CreateProc) => {
-    toast.loading('Aguarde', 'Criando processo...');
-    mutation.mutate(values, {
-      onSuccess: () => {
+    if (!user) {
+      toast.show(
+        'Usuário não autenticado',
+        'Faça login para continuar.',
+        'error'
+      );
+      return;
+    }
+    toast.show('Aguarde', 'Criando processo...', 'loading');
+    await mutationCreateProc.mutateAsync(values, {
+      onSuccess: async result => {
+        await createEventMutation.mutateAsync(
+          {
+            name: 'Criação do Processo',
+            proc_id: result.id,
+            user_id: user.id,
+          },
+          {
+            onError: error => {
+              console.error('Error creating event:', error);
+              toast.show(
+                'Erro de conexão com o servidor',
+                'Tente mais tarde.',
+                'error'
+              );
+            },
+          }
+        );
         onSuccess();
       },
       onError: error => {
         console.log('Save error:', error);
-        toast.error('Erro de conexão com o servidor', 'Tente mais tarde.');
+        toast.show(
+          'Erro de conexão com o servidor',
+          'Tente mais tarde.',
+          'error'
+        );
       },
       onSettled: () => {
         toast.dismiss();
@@ -467,7 +498,7 @@ export function ProcCreateModal({
                     type="submit"
                     loading={isSubmitting}
                     bg="primary.purple.bg"
-                    color="primary.purple.color"
+                    color="white"
                     _hover={{
                       bg: 'primary.purple.bg.hover',
                     }}

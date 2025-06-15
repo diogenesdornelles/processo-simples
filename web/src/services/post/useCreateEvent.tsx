@@ -8,8 +8,10 @@ export function useCreateEvent() {
 
   return useMutation({
     mutationFn: (event: CreateEvent) => Api.event.create(event),
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['event', 'getAll'] });
+      queryClient.invalidateQueries({ queryKey: ['proc', 'getAll'] });
+      queryClient.invalidateQueries({ queryKey: ['proc', 'get', variables.proc_id] });
     },
   });
 }
