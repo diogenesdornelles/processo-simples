@@ -23,7 +23,7 @@ return new class extends Migration
            $table->string('status');
            $table->string('priority')->nullable();
            $table->timestamp('term');
-           $table->boolean('active')->default(true);
+           $table->boolean('active')->default(false);
            $table->timestamps();
        });
 

@@ -134,24 +134,31 @@ export default function Perfis() {
               <IoMdRefresh />
               Atualizar
             </Button>
-            <Button colorScheme="blue" onClick={handleCreate}>
+            <Button
+              colorScheme="blue"
+              onClick={handleCreate}
+              bg="primary.purple.bg"
+              color={'white'}
+            >
               <HiPlus />
               Novo Usuário
             </Button>
           </HStack>
         </HStack>
 
-        <Card.Root>
+        <Card.Root bg="primary.gray.bg" borderColor="secondary.gray.bg">
           <Card.Body p={0}>
             <Table.Root size="sm" variant="outline">
-              <Table.Header>
+              <Table.Header bg="primary.purple.bg">
                 <Table.Row>
-                  <Table.ColumnHeader>Usuário</Table.ColumnHeader>
-                  <Table.ColumnHeader>E-mail</Table.ColumnHeader>
-                  <Table.ColumnHeader>Perfil</Table.ColumnHeader>
-                  <Table.ColumnHeader>Status</Table.ColumnHeader>
-                  <Table.ColumnHeader>Criado em</Table.ColumnHeader>
-                  <Table.ColumnHeader textAlign="center">
+                  <Table.ColumnHeader color="white">Usuário</Table.ColumnHeader>
+                  <Table.ColumnHeader color="white">E-mail</Table.ColumnHeader>
+                  <Table.ColumnHeader color="white">Perfil</Table.ColumnHeader>
+                  <Table.ColumnHeader color="white">Status</Table.ColumnHeader>
+                  <Table.ColumnHeader color="white">
+                    Criado em
+                  </Table.ColumnHeader>
+                  <Table.ColumnHeader textAlign="center" color="white">
                     Ações
                   </Table.ColumnHeader>
                 </Table.Row>
@@ -213,6 +220,7 @@ export default function Perfis() {
                         {/* Botão Ver */}
                         <IconButton
                           aria-label="Visualizar usuário"
+                          title="Visualizar usuário"
                           size="sm"
                           variant="ghost"
                           colorScheme="blue"
@@ -222,6 +230,7 @@ export default function Perfis() {
                         </IconButton>
                         <IconButton
                           aria-label="Editar usuário"
+                          title="Editar usuário"
                           size="sm"
                           variant="ghost"
                           colorScheme="orange"
@@ -231,6 +240,7 @@ export default function Perfis() {
                         </IconButton>
                         <IconButton
                           aria-label="Deletar usuário"
+                          title="Deletar usuário"
                           size="sm"
                           variant="ghost"
                           colorScheme="red"

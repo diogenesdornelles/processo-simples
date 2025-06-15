@@ -13,7 +13,7 @@ import {
 import { Menu } from '@chakra-ui/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { FiChevronDown, FiSearch, FiFileText, FiUsers } from 'react-icons/fi';
+import { FiChevronDown, FiFileText, FiUsers } from 'react-icons/fi';
 import { useColorMode, ColorModeButton } from '@/components/ui/color-mode';
 import { UserViewModal } from '@/components/modals/users/UserViewModal';
 import img from '@/public/account.png';
@@ -51,6 +51,11 @@ export default function Nav() {
       boxShadow="md"
       borderBottom="1px"
       borderColor="secondary.gray.bg"
+      position={'fixed'}
+      top={0}
+      left={0}
+      zIndex={1000}
+      width="100%"
     >
       <Box suppressHydrationWarning>
         <Text
@@ -90,26 +95,6 @@ export default function Nav() {
           >
             <FiFileText />
             Processos
-          </Link>
-          <Link
-            color="secondary.gray.color"
-            fontWeight="medium"
-            _hover={{
-              color: 'secondary.gray.color.hover',
-              bg: 'secondary.gray.bg.hover',
-              borderRadius: 'md',
-              transition: 'all 0.2s',
-            }}
-            onClick={() => handleNavigation('/pesquisar')}
-            cursor="pointer"
-            display="flex"
-            alignItems="center"
-            gap={2}
-            px={3}
-            py={2}
-          >
-            <FiSearch />
-            Pesquisar
           </Link>
 
           <Link

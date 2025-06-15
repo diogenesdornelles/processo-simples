@@ -31,12 +31,10 @@ class ProcsController extends Controller
     private function generateProcNumber(): string
     {
         do {
-            // Gerar número de 20 dígitos usando uma abordagem diferente
             $number = '';
             for ($i = 0; $i < 20; $i++) {
                 $number .= mt_rand(0, 9);
             }
-            // Garantir que não comece com 0
             if ($number[0] === '0') {
                 $number[0] = mt_rand(1, 9);
             }
@@ -55,6 +53,9 @@ class ProcsController extends Controller
     {
         $this->authorize('update', $proc);   
         $data = $request->validated();
+        if ($request->has('active')) {
+            $proc->active = (bool) $request->active;
+        }
         $proc->update($data);
         return response()->json($proc->load('user'));
     }

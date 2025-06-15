@@ -42,7 +42,7 @@ import { useAlert } from '@/hooks/useAlert';
 import { useEffect, useState } from 'react';
 import { useDeleteEvent } from '@/services';
 import { EventCreateModal } from '@/components/modals/events';
-import {DocViewModal} from '@/components/modals/docs/DocViewModal';
+import { DocViewModal } from '@/components/modals/docs/DocViewModal';
 
 interface ProcDetailsProps {
   proc_id: string;
@@ -54,13 +54,14 @@ export function ProcDetails({ proc_id }: ProcDetailsProps) {
   const toast = useToast();
   const alert = useAlert();
   const { data: proc, isLoading, error, refetch } = useGetProc(Number(proc_id));
-  const [selectedEventDocuments, setSelectedEventDocuments] = useState<any[]>([]);
+  const [selectedEventDocuments, setSelectedEventDocuments] = useState<any[]>(
+    []
+  );
   const [selectedEventName, setSelectedEventName] = useState<string>('');
   const mutation = useDeleteEvent();
 
-    const viewModal = useDisclosure();
-    const deleteModal = useDisclosure();
-    const createModal = useDisclosure();
+  const viewModal = useDisclosure();
+  const createModal = useDisclosure();
 
   const handleDeleteEvent = (event_id: number) => {
     toast.show('Aguarde', 'Deletando processo...', 'loading');
@@ -72,14 +73,18 @@ export function ProcDetails({ proc_id }: ProcDetailsProps) {
       );
       return;
     }
-    
+
     mutation.mutate(event_id, {
       onSuccess: () => {
         toast.show('Sucesso', 'Evento deletado.', 'success');
       },
       onError: error => {
         console.log('Delete error:', error);
-        toast.show('Erro de conexão com o servidor', 'Tente mais tarde.', 'error');
+        toast.show(
+          'Erro de conexão com o servidor',
+          'Tente mais tarde.',
+          'error'
+        );
       },
       onSettled: () => {
         toast.dismiss();
@@ -325,10 +330,10 @@ export function ProcDetails({ proc_id }: ProcDetailsProps) {
                         {user?.role === 'Admin' && (
                           <Button
                             size="sm"
-                            bg="secondary.green.bg"
+                            bg="secondary.purple.bg"
                             color="white"
                             _hover={{
-                              bg: 'secondary.green.bg.hover',
+                              bg: 'secondary.purple.bg.hover',
                             }}
                             onClick={() => createModal.onOpen()}
                           >
@@ -473,6 +478,7 @@ export function ProcDetails({ proc_id }: ProcDetailsProps) {
                                       <IconButton
                                         aria-label="Ver documentos"
                                         size="sm"
+                                        title="Ver documentos"
                                         variant="ghost"
                                         color="primary.info.text"
                                         _hover={{
@@ -495,6 +501,7 @@ export function ProcDetails({ proc_id }: ProcDetailsProps) {
                                           aria-label="Deletar evento"
                                           size="sm"
                                           variant="ghost"
+                                          title="Deletar evento"
                                           color="primary.error.text"
                                           _hover={{
                                             bg: 'secondary.error.bg.hover',
@@ -577,28 +584,28 @@ export function ProcDetails({ proc_id }: ProcDetailsProps) {
           </Card.Root>
         </VStack>
       )}
-      
+
       {/* Modal de criação de evento */}
       {proc && (
         <EventCreateModal
+          isCreationProc={false}
           isOpen={createModal.open}
           onClose={() => createModal.onClose()}
           proc_id={Number(proc_id)}
           onSuccess={() => {
-              refetch();
-              deleteModal.onClose();
-              toast.show('Sucesso!', 'Evento deletado');
-            }}
+            refetch();
+            createModal.onClose();
+            toast.show('Sucesso!', 'Evento deletado');
+          }}
         />
       )}
-      
+
       {/* Modal de visualização de documentos */}
       <DocViewModal
         isOpen={viewModal.open}
         onClose={() => viewModal.onClose()}
         documents={selectedEventDocuments}
         eventName={selectedEventName}
-        onSuccess={() => {viewModal.onClose()}}
       />
     </Container>
   );

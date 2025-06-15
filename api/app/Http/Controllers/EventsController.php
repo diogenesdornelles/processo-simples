@@ -19,6 +19,9 @@ class EventsController extends Controller
     {
         $data = $request->validated();
         $event = Event::create($data);
+        if (!empty($data['name']) && $data['name'] === 'Criação do processo') {
+            $event->proc()->update(['active' => true]);
+        }
         return response()->json($event->load(['user', 'proc']), 201);
     }
 

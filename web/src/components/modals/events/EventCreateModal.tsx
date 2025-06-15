@@ -30,15 +30,14 @@ import { HiDocumentText, HiPaperClip } from 'react-icons/hi2';
 import { FaWindowClose } from 'react-icons/fa';
 import { modalStyles } from '@/styles/modalStyles';
 import { useColorMode } from '../../ui/color-mode';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { HiUpload } from 'react-icons/hi';
 
 const eventTypes = createListCollection({
   items: [
-    { label: 'Atualização de Dados', value: 'Atualização de Dados' },
-    { label: 'Anexação de Documento', value: 'Anexação de Documento' },
-    { label: 'Mudança de Status', value: 'Mudança de Status' },
-    { label: 'Comentário Adicionado', value: 'Comentário Adicionado' },
+    { label: 'Criação do processo', value: 'Criação do processo' },
+    { label: 'Juntada de documento', value: 'Juntada de documento' },
+    { label: 'Baixa', value: 'Baixa' },
   ],
 });
 
@@ -53,6 +52,7 @@ interface EventCreateModalProps {
   onClose: () => void;
   proc_id: number;
   onSuccess: () => void;
+  isCreationProc: boolean;
 }
 
 interface SelectedFile {
@@ -66,6 +66,7 @@ export function EventCreateModal({
   onClose,
   proc_id,
   onSuccess,
+  isCreationProc = false,
 }: EventCreateModalProps) {
   const { user } = useAuth();
   const createEventMutation = useCreateEvent();
@@ -80,8 +81,55 @@ export function EventCreateModal({
       return;
     }
 
-    toast.show('Aguarde', 'Criando evento...', 'loading');
+    if (isCreationProc) {
+      if (values.name !== 'Criação do processo') {
+        toast.show(
+          'Erro',
+          'Para criar um processo, o primeiro evento deve ser do tipo "Criação do processo".',
+          'error'
+        );
+        return;
+      }
 
+      if (selectedFiles.length === 0) {
+        toast.show(
+          'Erro',
+          'Para criar um processo, é necessário anexar ao menos um documento.',
+          'error'
+        );
+        return;
+      }
+    } else {
+      if (values.name === 'Criação do processo') {
+        toast.show(
+          'Erro',
+          'Criação do processo deve ser usado somente como o primeiro evento.',
+          'error'
+        );
+        return;
+      }
+
+      if (values.name === 'Baixa' && selectedFiles.length > 0) {
+        toast.show(
+          'Erro',
+          'O evento de Baixa não deve conter documentos anexados.',
+          'error'
+        );
+        return;
+      }
+      if (
+        values.name === 'Juntada de documento' &&
+        selectedFiles.length === 0
+      ) {
+        toast.show(
+          'Erro',
+          'O evento de Juntada de documento deve conter ao menos um documento anexado.',
+          'error'
+        );
+        return;
+      }
+    }
+    toast.show('Aguarde', 'Criando evento...', 'loading');
     const newEvent = await createEventMutation.mutateAsync(
       {
         name: values.name,
@@ -99,7 +147,10 @@ export function EventCreateModal({
         },
       }
     );
+    toast.dismiss();
+
     if (selectedFiles.length > 0) {
+      toast.show('Aguarde', 'Criando evento...', 'loading');
       const docPromises = selectedFiles.map(async selectedFile => {
         const docData = {
           name: selectedFile.name || selectedFile.file.name,
@@ -115,8 +166,8 @@ export function EventCreateModal({
           },
         });
       });
-
       await Promise.all(docPromises);
+      toast.dismiss();
     }
     toast.show('Sucesso', 'Evento criado com sucesso!', 'success');
     onSuccess();
@@ -187,6 +238,12 @@ export function EventCreateModal({
             <Heading size="lg" color="primary.gray.color">
               Criar Novo Evento
             </Heading>
+            {isCreationProc && (
+              <Text color="primary.gray.color" fontSize="sm">
+                A criação do processo dependa da inserção de um evento inicial
+                com um documento, ao menos.
+              </Text>
+            )}
           </HStack>
           <IconButton
             aria-label="Fechar modal"
@@ -205,7 +262,9 @@ export function EventCreateModal({
 
         <Formik
           initialValues={{
-            name: '' as EventName,
+            name: isCreationProc
+              ? 'Criação do processo'
+              : 'Juntada de documento',
           }}
           validationSchema={CreateEventSchema}
           onSubmit={handleSubmit}
@@ -234,6 +293,12 @@ export function EventCreateModal({
                               key={'md'}
                               size={'md'}
                               collection={eventTypes}
+                              disabled={
+                                isSubmitting ||
+                                createEventMutation.isPending ||
+                                createDocMutation.isPending ||
+                                !!isCreationProc
+                              }
                               value={[values.name]}
                               onValueChange={details => {
                                 setFieldValue('name', details.value[0]);

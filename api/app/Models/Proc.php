@@ -20,7 +20,6 @@ class Proc extends Model
         'status',
         'priority',
         'term',
-        'active',
         'number',
     ];
 

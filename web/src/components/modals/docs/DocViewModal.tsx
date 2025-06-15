@@ -25,7 +25,6 @@ interface DocumentViewModalProps {
   onClose: () => void;
   documents: DocProps[];
   eventName?: string;
-  onSuccess?: () => void;
 }
 
 export function DocViewModal({
@@ -33,7 +32,6 @@ export function DocViewModal({
   onClose,
   documents,
   eventName,
-  onSuccess
 }: DocumentViewModalProps) {
   const handleDownload = (doc: DocProps) => {
     // Create a download link for the document
@@ -47,7 +45,11 @@ export function DocViewModal({
   };
 
   return (
-    <DialogRoot open={isOpen} onOpenChange={({ open }) => !open && onClose()} size="md">
+    <DialogRoot
+      open={isOpen}
+      onOpenChange={({ open }) => !open && onClose()}
+      size="md"
+    >
       <DialogBackdrop />
       <DialogContent>
         <DialogHeader>
@@ -55,7 +57,11 @@ export function DocViewModal({
             <Heading size="md" color="primary.gray.text">
               Documentos do Evento
               {eventName && (
-                <Text fontSize="sm" color="secondary.gray.text" fontWeight="normal">
+                <Text
+                  fontSize="sm"
+                  color="secondary.gray.text"
+                  fontWeight="normal"
+                >
                   {eventName}
                 </Text>
               )}
@@ -78,7 +84,11 @@ export function DocViewModal({
             <Box textAlign="center" py={8}>
               <VStack gap={3}>
                 <HiPaperClip size={32} color="#94a3b8" />
-                <Text color="primary.gray.text" fontSize="md" fontWeight="semibold">
+                <Text
+                  color="primary.gray.text"
+                  fontSize="md"
+                  fontWeight="semibold"
+                >
                   Nenhum documento
                 </Text>
                 <Text color="secondary.gray.text" fontSize="sm">
@@ -88,7 +98,7 @@ export function DocViewModal({
             </Box>
           ) : (
             <VStack gap={3} align="stretch">
-              {documents.map((doc) => (
+              {documents.map(doc => (
                 <Box
                   key={doc.id}
                   p={4}
@@ -129,12 +139,15 @@ export function DocViewModal({
                             .{doc.ext.toUpperCase()}
                           </Badge>
                           <Text fontSize="xs" color="secondary.gray.text">
-                            Criado em {new Date(doc.created_at).toLocaleDateString('pt-BR')}
+                            Criado em{' '}
+                            {new Date(doc.created_at).toLocaleDateString(
+                              'pt-BR'
+                            )}
                           </Text>
                         </HStack>
                       </VStack>
                     </HStack>
-                    
+
                     <VStack gap={2}>
                       <Button
                         size="sm"
@@ -150,7 +163,7 @@ export function DocViewModal({
                         <HiArrowDownTray />
                         Download
                       </Button>
-                      
+
                       <Link
                         href={doc.uri}
                         target="_blank"

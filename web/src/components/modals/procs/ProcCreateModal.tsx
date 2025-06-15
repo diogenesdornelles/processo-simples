@@ -17,6 +17,7 @@ import {
   Fieldset,
   Field,
   createListCollection,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { Formik, Form, Field as FormikField } from 'formik';
 import * as Yup from 'yup';
@@ -30,6 +31,8 @@ import { FaWindowClose } from 'react-icons/fa';
 import { modalStyles } from '@/styles/modalStyles';
 import { useColorMode } from '../../ui/color-mode';
 import { useAuth } from '@/contexts/AuthContext';
+import { EventCreateModal } from '../events';
+import { useState } from 'react';
 
 const statusOptions = createListCollection({
   items: [
@@ -84,10 +87,12 @@ export function ProcCreateModal({
 }: ProcCreateModalProps) {
   const mutationCreateProc = useCreateProc();
   const { user } = useAuth();
-  const createEventMutation = useCreateEvent();
   const { data: users = [] } = useGetAllUsers();
   const toast = useToast();
   const theme = useColorMode();
+  const [showEventCreateModal, setShowEventCreateModal] = useState(false);
+  const [newProcId, setNewProcId] = useState<null | number>(null);
+  const createModal = useDisclosure();
 
   const userOptions = createListCollection({
     items: users.map(user => ({
@@ -108,23 +113,8 @@ export function ProcCreateModal({
     toast.show('Aguarde', 'Criando processo...', 'loading');
     await mutationCreateProc.mutateAsync(values, {
       onSuccess: async result => {
-        await createEventMutation.mutateAsync(
-          {
-            name: 'Criação do Processo',
-            proc_id: result.id,
-            user_id: user.id,
-          },
-          {
-            onError: error => {
-              console.error('Error creating event:', error);
-              toast.show(
-                'Erro de conexão com o servidor',
-                'Tente mais tarde.',
-                'error'
-              );
-            },
-          }
-        );
+        setNewProcId(result.id);
+        setShowEventCreateModal(true);
         onSuccess();
       },
       onError: error => {
@@ -511,6 +501,18 @@ export function ProcCreateModal({
           )}
         </Formik>
       </Box>
+      {showEventCreateModal && newProcId && (
+        <EventCreateModal
+          isOpen={createModal.open}
+          onClose={() => createModal.onClose()}
+          proc_id={Number(newProcId)}
+          isCreationProc={true}
+          onSuccess={() => {
+            createModal.onClose();
+            toast.show('Sucesso!', 'Evento deletado');
+          }}
+        />
+      )}
     </Modal>
   );
 }

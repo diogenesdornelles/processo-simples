@@ -46,7 +46,11 @@ export function ProcDeleteModal({
       },
       onError: error => {
         console.log('Delete error:', error);
-        toast.show('Erro de conexão com o servidor', 'Tente mais tarde.', 'error');
+        toast.show(
+          'Erro de conexão com o servidor',
+          'Tente mais tarde.',
+          'error'
+        );
       },
       onSettled: () => {
         toast.dismiss();

@@ -6,4 +6,4 @@ export * from './getPriorityColor';
 export * from './getStatusColor';
 export * from './isExpired';
 export * from './getRoleColor';
-export * from './sortEventsByDate'
+export * from './sortEventsByDate';

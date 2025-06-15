@@ -180,29 +180,29 @@ export default function Procs() {
         <Card.Root bg="primary.gray.bg" borderColor="secondary.gray.bg">
           <Card.Body p={0}>
             <Table.Root size="sm" variant="outline">
-              <Table.Header bg="secondary.gray.bg">
+              <Table.Header bg="primary.purple.bg">
                 <Table.Row>
-                  <Table.ColumnHeader color="primary.gray.text">
+                  <Table.ColumnHeader color="white">
                     Processo
                   </Table.ColumnHeader>
-                  <Table.ColumnHeader color="primary.gray.text">
+                  <Table.ColumnHeader color="white">
                     Responsável
                   </Table.ColumnHeader>
-                  <Table.ColumnHeader color="primary.gray.text">
+                  <Table.ColumnHeader color="white">
                     Status
                   </Table.ColumnHeader>
-                  <Table.ColumnHeader color="primary.gray.text">
+                  <Table.ColumnHeader color="white">
                     Prioridade
                   </Table.ColumnHeader>
-                  <Table.ColumnHeader color="primary.gray.text">
+                  <Table.ColumnHeader color="white">
                     Prazo
                   </Table.ColumnHeader>
-                  <Table.ColumnHeader color="primary.gray.text">
+                  <Table.ColumnHeader color="white">
                     Criado em
                   </Table.ColumnHeader>
                   <Table.ColumnHeader
                     textAlign="center"
-                    color="primary.gray.text"
+                    color="white"
                   >
                     Ações
                   </Table.ColumnHeader>
@@ -246,7 +246,7 @@ export default function Procs() {
                             bg="secondary.purple.bg"
                             color="white"
                           />
-                          <Avatar.Image src={img.src}/>
+                          <Avatar.Image src={img.src} />
                         </Avatar.Root>
                         <VStack align="start" gap={0}>
                           <Text
@@ -336,6 +336,7 @@ export default function Procs() {
                           aria-label="Visualizar processo"
                           size="sm"
                           variant="ghost"
+                          title="Visualizar processo"
                           color="primary.info.text"
                           _hover={{
                             bg: 'secondary.info.bg.hover',
@@ -352,6 +353,7 @@ export default function Procs() {
                             aria-label="Editar processo"
                             size="sm"
                             variant="ghost"
+                            title="Editar processo"
                             color="primary.attention.text"
                             _hover={{
                               bg: 'secondary.attention.bg.hover',
@@ -368,6 +370,7 @@ export default function Procs() {
                           <IconButton
                             aria-label="Deletar processo"
                             size="sm"
+                            title="Deletar processo"
                             variant="ghost"
                             color="primary.error.text"
                             _hover={{

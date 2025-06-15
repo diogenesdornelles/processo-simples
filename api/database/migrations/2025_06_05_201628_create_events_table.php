@@ -12,11 +12,9 @@ return new class extends Migration
    public function up(): void
    {
        DB::statement("CREATE TYPE name_event AS ENUM (
-           'Criação do Processo',
-           'Atualização de Dados',
-           'Anexação de Documento',
-           'Mudança de Status',
-           'Comentário Adicionado'
+           'Criação do processo',
+           'Juntada de documento',
+           'Baixa'
        )");
       
        Schema::create('events', function (Blueprint $table) {

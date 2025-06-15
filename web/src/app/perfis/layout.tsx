@@ -1,8 +1,10 @@
 'use client';
+import { Box } from '@chakra-ui/react';
+
 export default function PerfisLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <Box mt={50}>{children}</Box>;
 }

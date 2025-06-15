@@ -13,15 +13,20 @@ class ProcRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
-            'user_id' => 'required|exists:users,id',
-            'owner' => 'required|string',
-            'description' => 'nullable|string',
-            'status' => 'in:Aberto,Em Andamento,Pendente,Concluído,Cancelado',
-            'priority' => 'nullable|in:Alta,Média,Baixa',
-            'term' => 'required|date',
-            'active' => 'boolean',
+        $rules = [
+            'owner'       => ['required','string'],
+            'description' => ['nullable','string'],
+            'status'      => ['required','in:Aberto,Em Andamento,Pendente,Concluído,Cancelado'],
+            'priority'    => ['nullable','in:Alta,Média,Baixa'],
+            'term'        => ['required','date'],
+            'number'      => ['prohibited'],
         ];
+
+        if ($this->isMethod('put') || $this->isMethod('patch')) {
+            $rules['active'] = ['sometimes','boolean'];
+        }
+
+        return $rules;
     }
     public function messages(): array
     {

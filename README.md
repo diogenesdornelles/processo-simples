@@ -244,3 +244,15 @@ php artisan make:policy ProcPolicy --model=Proc
 # 🌐 Inicia o servidor de desenvolvimento
 php artisan serve
 ```
+
+- Criação (com documento) (instauração de ofício ou a pedido)
+- Juntada de documento -> despacho/termo de recebimento (mercadoria entregue) -> vai ter o encaminhamento
+- Baixa/Arquivamento
+
+## Expansões futuras
+
+- criação processo (precisa inserir um doc);
+- Sigilo do documento: ostensivo, restrito ou sigiloso (LGPD);
+- Nome fixo de documentos (NF, Ofício, Despacho, Etc.);
+- Assinaturas de documentos;
+- Sistema de encaminhamento (entre unidades);

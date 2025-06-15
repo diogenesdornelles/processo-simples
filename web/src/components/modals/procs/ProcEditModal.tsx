@@ -120,7 +120,11 @@ export function ProcEditModal({
         },
         onError: error => {
           console.log('Save error:', error);
-          toast.show('Erro de conexão com o servidor', 'Tente mais tarde.', 'error');
+          toast.show(
+            'Erro de conexão com o servidor',
+            'Tente mais tarde.',
+            'error'
+          );
         },
         onSettled: () => {
           toast.dismiss();
