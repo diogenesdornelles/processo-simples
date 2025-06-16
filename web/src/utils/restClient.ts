@@ -49,6 +49,9 @@ restClient.interceptors.response.use(
       const { status, data } = error.response;
 
       switch (status) {
+        case 400:
+          console.error('Bad request:', data.message || 'Erro desconhecido');
+          break;
         case 401:
           console.error('Unauthorized - redirecting to login');
           handleUnauthorizedAccess();
