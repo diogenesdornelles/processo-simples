@@ -17,7 +17,7 @@ export const modalStyles = (themeColor: ColorMode) => {
       right: 'auto',
       bottom: 'auto',
       border: 'none',
-      background:
+      backgroundColor:
         themeColor === 'light'
           ? system.token('colors.purple.200')
           : system.token('colors.purple.800'),
