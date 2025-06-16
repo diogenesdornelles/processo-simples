@@ -13,7 +13,7 @@ import {
 import { Menu } from '@chakra-ui/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { FiChevronDown, FiFileText, FiUsers } from 'react-icons/fi';
+import { FiChevronDown, FiFileText, FiUsers, FiHome } from 'react-icons/fi';
 import { useColorMode, ColorModeButton } from '@/components/ui/color-mode';
 import { UserViewModal } from '@/components/modals/users/UserViewModal';
 import img from '@/public/account.png';
@@ -73,6 +73,26 @@ export default function Nav() {
           Processo Fácil
         </Text>
       </Box>
+      <Link
+        color="secondary.gray.color"
+        fontWeight="medium"
+        _hover={{
+          color: 'secondary.gray.color.hover',
+          bg: 'secondary.gray.bg.hover',
+          borderRadius: 'md',
+          transition: 'all 0.2s',
+        }}
+        onClick={() => handleNavigation('/home')}
+        cursor="pointer"
+        display="flex"
+        alignItems="center"
+        gap={2}
+        px={3}
+        py={2}
+      >
+        <FiHome />
+        Home
+      </Link>
 
       {isAuthenticated && (
         <HStack gap={6}>
