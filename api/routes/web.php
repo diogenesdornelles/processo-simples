@@ -7,6 +7,7 @@ use App\Http\Controllers\EventsController;
 use App\Http\Controllers\DocsController;
 use App\Http\Controllers\AccessController;
 
+
 Route::prefix('api')->group(function () {
     Route::post('/login', [AccessController::class, 'login']);
     Route::middleware('auth:sanctum')->group(function () {

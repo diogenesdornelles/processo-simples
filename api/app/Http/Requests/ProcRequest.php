@@ -14,6 +14,7 @@ class ProcRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
+            'user_id'     => ['required', 'integer', 'exists:users,id'],
             'owner'       => ['required','string'],
             'description' => ['nullable','string'],
             'status'      => ['required','in:Aberto,Em Andamento,Pendente,Concluído,Cancelado'],
