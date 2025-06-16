@@ -1,9 +1,10 @@
 'use client';
 
 import { withAuth } from '@/components/withAuth';
+import Home from '@/pages/Home';
 
 function HomePage() {
-  return <>Home</>;
+  return <Home />;
 }
 
 export default withAuth(HomePage, {

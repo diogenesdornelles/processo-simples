@@ -22,7 +22,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
           <Flex direction="column" minHeight="100vh">
             <Nav />
             {/* Main content area */}
-            <Flex flex={1} direction="column">
+            <Flex flex={1} direction="column" mt={100} mb={200}>
               {children}
             </Flex>
             <Footer />
