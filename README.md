@@ -178,7 +178,7 @@ CREATE TABLE docs (
 ```
 
 
-Instalar
+## Instalações necessárias
 ```bash
 sudo apt update
 sudo apt install composer
@@ -188,13 +188,10 @@ sudo apt install php-mysql
 sudo apt install php-pgsql
 ```
 
-
-
-
+## Criar o projeto
 ```bash
 # 🚀 Criação e inicialização do projeto Laravel
 composer create-project laravel/laravel .                                 
-
 
 # ✅ Controllers: CRUD para cada entidade
 php artisan make:controller ProcsController --api  
@@ -202,36 +199,43 @@ php artisan make:controller EventsController  --api
 php artisan make:controller UsersController  --api
 php artisan make:controller DocsController  --api
 php artisan make:controller AcessController --api     
-
+# Editar classes criadas em App\Http\Controllers
+# Chamar controller em routes para processar requisições
 
 # 🧠 Models: Entidades com propriedades
                     
 php artisan make:model Proc
 php artisan make:model Event
 php artisan make:model Doc
-
+# Editar classes criadas em App\Models
+# Chamar Models em Controller para acesso ao banco de dados
 
 # 🛡️ Form Requests: Validações personalizadas
 php artisan make:request ProcRequest         
 php artisan make:request UserRequest
 php artisan make:request EventRequest
 php artisan make:request DocRequest
-
+# Editar classes criadas em App\Http\Requests
+# Chamar requests em Controller para validação
 
 # 🏗️ Migrations: Estrutura do banco de dados
 php artisan make:migration create_procs_table
 php artisan make:migration create_events_table  
 php artisan make:migration create_docs_table
-
+# Editar tabelas criadas em database\migrations
 
 php artisan migrate      
 
 composer require laravel/sanctum
 php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+# Adicionar expires em config/sanctum.php
+# Habilitar middleware de autenticação app/Http/Kernel
+# Adicionar trait HasApiTokens no model User
 
 php artisan migrate
 
 php artisan make:seeder UserSeeder
+# Editar o seeder
 
 php artisan db:seed
 
@@ -240,10 +244,17 @@ php artisan storage:link
 
 php artisan make:policy UserPolicy --model=User
 php artisan make:policy ProcPolicy --model=Proc
+# Editar classes criadas em App\Http\Policies
+# Chamar as models policiadas
+# Registrar no AuthServiceProvider
+# Proteger suas rotas ou ações de controller: $this->authorize(...);
+
 
 # 🌐 Inicia o servidor de desenvolvimento
 php artisan serve
 ```
+
+## Eventos admitidos
 
 - Criação (com documento) (instauração de ofício ou a pedido)
 - Juntada de documento -> despacho/termo de recebimento (mercadoria entregue) -> vai ter o encaminhamento
@@ -256,3 +267,4 @@ php artisan serve
 - Nome fixo de documentos (NF, Ofício, Despacho, Etc.);
 - Assinaturas de documentos;
 - Sistema de encaminhamento (entre unidades);
+- Embutir um editor de texto como CKEditor
