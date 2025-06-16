@@ -101,8 +101,21 @@ export function UserCreateModal({
       ariaHideApp={false}
       shouldCloseOnOverlayClick={true}
       shouldCloseOnEsc={true}
+      preventScroll={true}
+      shouldFocusAfterRender={true}
+      shouldReturnFocusAfterClose={true}
     >
-      <Box p={6} bg="primary.gray.bg" color="primary.gray.color">
+      <Box
+        p={6}
+        bg="primary.gray.bg"
+        data-state={isOpen ? 'open' : 'closed'}
+        _open={{
+          animation: 'fade-in 300ms ease-out',
+        }}
+        _closed={{
+          animation: 'fade-out 300ms ease-in',
+        }}
+      >
         <HStack justify="space-between" align="center" mb={6}>
           <HStack gap={2}>
             <HiUser size={24} color="blue" />
@@ -257,12 +270,6 @@ export function UserCreateModal({
                                 }}
                                 textTransform="uppercase"
                                 maxLength={5}
-                                onChange={e => {
-                                  setFieldValue(
-                                    'sigle',
-                                    e.target.value.toUpperCase()
-                                  );
-                                }}
                               />
                               <Field.ErrorText>{errors.sigle}</Field.ErrorText>
                             </Field.Root>
@@ -289,6 +296,11 @@ export function UserCreateModal({
                               key={'md'}
                               size={'md'}
                               collection={userTypes}
+                              value={[field.value]}
+                              defaultValue={['Comum']}
+                              onValueChange={details => {
+                                setFieldValue('role', details.value[0]);
+                              }}
                             >
                               <Select.HiddenSelect />
                               <Select.Control>

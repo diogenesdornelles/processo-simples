@@ -134,7 +134,6 @@ export function ProcEditModal({
     );
   };
 
-  // Formatar data para input (YYYY-MM-DD)
   const formatDateForInput = (dateString: string) => {
     try {
       const date = new Date(dateString);
@@ -152,8 +151,23 @@ export function ProcEditModal({
       ariaHideApp={false}
       shouldCloseOnOverlayClick={true}
       shouldCloseOnEsc={true}
+      closeTimeoutMS={100}
+      preventScroll={true}
+      shouldFocusAfterRender={true}
+      shouldReturnFocusAfterClose={true}
     >
-      <Box p={6} bg="primary.gray.bg" color="primary.gray.color">
+      <Box
+        p={6}
+        bg="primary.gray.bg"
+        color="primary.gray.color"
+        data-state={isOpen ? 'open' : 'closed'}
+        _open={{
+          animation: 'fade-in 300ms ease-out',
+        }}
+        _closed={{
+          animation: 'fade-out 300ms ease-in',
+        }}
+      >
         <HStack justify="space-between" align="center" mb={6}>
           <HStack gap={2}>
             <HiPencil size={24} color="orange" />
@@ -188,7 +202,7 @@ export function ProcEditModal({
           validationSchema={UpdateProcSchema}
           onSubmit={handleSubmit}
         >
-          {({ isSubmitting, errors, touched, setFieldValue, values }) => (
+          {({ isSubmitting, errors, touched, setFieldValue }) => (
             <Form>
               <VStack gap={5}>
                 <Fieldset.Root>
@@ -218,7 +232,7 @@ export function ProcEditModal({
                             </Field.Label>
                             <Select.Root
                               collection={userOptions}
-                              value={[values.user_id.toString()]}
+                              value={[field.value]}
                               onValueChange={details => {
                                 setFieldValue(
                                   'user_id',
@@ -346,7 +360,7 @@ export function ProcEditModal({
                               <Field.Label>Status</Field.Label>
                               <Select.Root
                                 collection={statusOptions}
-                                value={[values.status]}
+                                value={[field.value]}
                                 onValueChange={details => {
                                   setFieldValue('status', details.value[0]);
                                 }}
@@ -402,7 +416,7 @@ export function ProcEditModal({
                               <Field.Label>Prioridade</Field.Label>
                               <Select.Root
                                 collection={priorityOptions}
-                                value={[values.priority]}
+                                value={[field.value]}
                                 onValueChange={details => {
                                   setFieldValue('priority', details.value[0]);
                                 }}

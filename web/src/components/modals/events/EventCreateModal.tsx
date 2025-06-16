@@ -50,7 +50,7 @@ const CreateEventSchema = Yup.object().shape({
 interface EventCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  proc_id: number;
+  procId: number;
   onSuccess: () => void;
   isCreationProc: boolean;
 }
@@ -64,7 +64,7 @@ interface SelectedFile {
 export function EventCreateModal({
   isOpen,
   onClose,
-  proc_id,
+  procId,
   onSuccess,
   isCreationProc = false,
 }: EventCreateModalProps) {
@@ -133,7 +133,7 @@ export function EventCreateModal({
     const newEvent = await createEventMutation.mutateAsync(
       {
         name: values.name,
-        proc_id: proc_id,
+        proc_id: procId,
         user_id: user.id,
       },
       {
@@ -230,8 +230,23 @@ export function EventCreateModal({
       ariaHideApp={false}
       shouldCloseOnOverlayClick={true}
       shouldCloseOnEsc={true}
+      closeTimeoutMS={100}
+      preventScroll={true}
+      shouldFocusAfterRender={true}
+      shouldReturnFocusAfterClose={true}
     >
-      <Box p={6} bg="primary.gray.bg" color="primary.gray.color">
+      <Box
+        p={6}
+        bg="primary.gray.bg"
+        color="primary.gray.color"
+        data-state={isOpen ? 'open' : 'closed'}
+        _open={{
+          animation: 'fade-in 300ms ease-out',
+        }}
+        _closed={{
+          animation: 'fade-out 300ms ease-in',
+        }}
+      >
         <HStack justify="space-between" align="center" mb={6}>
           <HStack gap={2}>
             <HiDocumentText size={24} color="blue" />
@@ -269,7 +284,7 @@ export function EventCreateModal({
           validationSchema={CreateEventSchema}
           onSubmit={handleSubmit}
         >
-          {({ isSubmitting, errors, touched, values, setFieldValue }) => (
+          {({ isSubmitting, errors, touched, setFieldValue }) => (
             <Form>
               <VStack gap={5}>
                 <Fieldset.Root>
@@ -299,7 +314,12 @@ export function EventCreateModal({
                                 createDocMutation.isPending ||
                                 !!isCreationProc
                               }
-                              value={[values.name]}
+                              value={[field.value]}
+                              defaultValue={
+                                isCreationProc
+                                  ? ['Criação do processo']
+                                  : ['Juntada de documento']
+                              }
                               onValueChange={details => {
                                 setFieldValue('name', details.value[0]);
                               }}

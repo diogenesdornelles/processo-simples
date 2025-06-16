@@ -68,12 +68,23 @@ export function UserDeleteModal({
       ariaHideApp={false}
       shouldCloseOnOverlayClick={true}
       shouldCloseOnEsc={true}
+      closeTimeoutMS={100}
+      preventScroll={true}
+      shouldFocusAfterRender={true}
+      shouldReturnFocusAfterClose={true}
     >
       <Box
         p={6}
         bg="primary.gray.bg"
         color="primary.gray.color"
         borderRadius="12px"
+        data-state={isOpen ? 'open' : 'closed'}
+        _open={{
+          animation: 'fade-in 300ms ease-out',
+        }}
+        _closed={{
+          animation: 'fade-out 300ms ease-in',
+        }}
       >
         <HStack justify="space-between" align="center" mb={6}>
           <HStack gap={2}>

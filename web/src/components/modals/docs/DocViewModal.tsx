@@ -1,13 +1,7 @@
+'use client';
+
+import Modal from 'react-modal';
 import {
-  DialogRoot,
-  DialogBackdrop,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogCloseTrigger,
-  DialogBody,
-  DialogFooter,
-  Button,
   VStack,
   Text,
   HStack,
@@ -16,23 +10,31 @@ import {
   Box,
   Heading,
   Link,
+  Button,
 } from '@chakra-ui/react';
-import { HiXMark, HiPaperClip, HiArrowDownTray } from 'react-icons/hi2';
+import { HiPaperClip, HiArrowDownTray } from 'react-icons/hi2';
+import { FaWindowClose } from 'react-icons/fa';
 import { DocProps } from '@/domain/interfaces/doc.interfaces';
+import { modalStyles } from '@/styles/modalStyles';
+import { useColorMode } from '@/components/ui/color-mode';
 
 interface DocumentViewModalProps {
   isOpen: boolean;
   onClose: () => void;
-  documents: DocProps[];
-  eventName?: string;
+  docs: DocProps[];
+  eventName: string;
+  eventIndex: number;
 }
 
 export function DocViewModal({
   isOpen,
   onClose,
-  documents,
+  docs,
   eventName,
+  eventIndex,
 }: DocumentViewModalProps) {
+  const theme = useColorMode();
+
   const handleDownload = (doc: DocProps) => {
     // Create a download link for the document
     const link = document.createElement('a');
@@ -45,69 +47,103 @@ export function DocViewModal({
   };
 
   return (
-    <DialogRoot
-      open={isOpen}
-      onOpenChange={({ open }) => !open && onClose()}
-      size="md"
+    <Modal
+      isOpen={isOpen}
+      onRequestClose={onClose}
+      style={modalStyles(theme.colorMode)}
+      ariaHideApp={false}
+      shouldCloseOnOverlayClick={true}
+      shouldCloseOnEsc={true}
+      closeTimeoutMS={100}
+      preventScroll={true}
+      shouldFocusAfterRender={true}
+      shouldReturnFocusAfterClose={true}
     >
-      <DialogBackdrop />
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>
-            <Heading size="md" color="primary.gray.text">
-              Documentos do Evento
-              {eventName && (
-                <Text
-                  fontSize="sm"
-                  color="secondary.gray.text"
-                  fontWeight="normal"
-                >
-                  {eventName}
-                </Text>
-              )}
-            </Heading>
-          </DialogTitle>
-          <DialogCloseTrigger asChild>
-            <IconButton
-              aria-label="Fechar modal"
-              variant="ghost"
-              size="sm"
-              color="secondary.gray.text"
-            >
-              <HiXMark />
-            </IconButton>
-          </DialogCloseTrigger>
-        </DialogHeader>
+      <Box
+        p={6}
+        bg="primary.gray.bg"
+        color="primary.gray.color"
+        borderRadius="12px"
+        data-state={isOpen ? 'open' : 'closed'}
+        _open={{
+          animation: 'fade-in 300ms ease-out',
+        }}
+        _closed={{
+          animation: 'fade-out 300ms ease-in',
+        }}
+      >
+        <HStack justify="space-between" align="center" mb={6}>
+          <VStack align="start" gap={1}>
+            <HStack gap={2}>
+              <HiPaperClip size={24} color="#9333ea" />
+              <Heading size="lg" color="primary.gray.color">
+                Documentos do Evento
+              </Heading>
+            </HStack>
+            {eventName && typeof eventIndex === 'number' && (
+              <Text
+                fontSize="sm"
+                color="secondary.gray.color"
+                fontWeight="normal"
+                ml={8}
+              >
+                Evento {eventIndex + 1}: {eventName}
+              </Text>
+            )}
+          </VStack>
+          <IconButton
+            aria-label="Fechar modal"
+            variant="ghost"
+            size="sm"
+            cursor="pointer"
+            onClick={onClose}
+            color="secondary.gray.color"
+            _hover={{
+              bg: 'secondary.gray.bg.hover',
+              color: 'secondary.gray.color.hover',
+            }}
+          >
+            <FaWindowClose size={20} />
+          </IconButton>
+        </HStack>
 
-        <DialogBody>
-          {documents.length === 0 ? (
-            <Box textAlign="center" py={8}>
+        <VStack gap={6} align="stretch">
+          {docs.length === 0 ? (
+            <Box
+              textAlign="center"
+              py={8}
+              bg="secondary.gray.bg"
+              borderRadius="md"
+              borderWidth="1px"
+              borderColor="secondary.gray.bg"
+            >
               <VStack gap={3}>
                 <HiPaperClip size={32} color="#94a3b8" />
                 <Text
-                  color="primary.gray.text"
+                  color="primary.gray.color"
                   fontSize="md"
                   fontWeight="semibold"
                 >
                   Nenhum documento
                 </Text>
-                <Text color="secondary.gray.text" fontSize="sm">
+                <Text color="secondary.gray.color" fontSize="sm">
                   Este evento não possui documentos anexados.
                 </Text>
               </VStack>
             </Box>
           ) : (
             <VStack gap={3} align="stretch">
-              {documents.map(doc => (
+              {docs.map(doc => (
                 <Box
                   key={doc.id}
                   p={4}
                   bg="secondary.gray.bg"
                   borderRadius="md"
                   borderWidth="1px"
-                  borderColor="secondary.gray.bg"
+                  borderColor="secondary.gray.bg.hover"
                   _hover={{
                     bg: 'secondary.gray.bg.hover',
+                    transition: 'all 0.2s',
                   }}
                 >
                   <HStack justify="space-between" align="center">
@@ -116,13 +152,13 @@ export function DocViewModal({
                       <VStack align="start" gap={1} flex={1}>
                         <Text
                           fontSize="md"
-                          color="primary.gray.text"
+                          color="primary.gray.color"
                           fontWeight="semibold"
                         >
                           {doc.name}
                         </Text>
                         {doc.description && (
-                          <Text fontSize="sm" color="secondary.gray.text">
+                          <Text fontSize="sm" color="secondary.gray.color">
                             {doc.description}
                           </Text>
                         )}
@@ -138,7 +174,7 @@ export function DocViewModal({
                           >
                             .{doc.ext.toUpperCase()}
                           </Badge>
-                          <Text fontSize="xs" color="secondary.gray.text">
+                          <Text fontSize="xs" color="secondary.gray.color">
                             Criado em{' '}
                             {new Date(doc.created_at).toLocaleDateString(
                               'pt-BR'
@@ -152,7 +188,7 @@ export function DocViewModal({
                       <Button
                         size="sm"
                         variant="outline"
-                        color="secondary.blue.text"
+                        color="secondary.blue.color"
                         borderColor="secondary.blue.bg"
                         _hover={{
                           bg: 'secondary.blue.bg.hover',
@@ -173,7 +209,7 @@ export function DocViewModal({
                         <Button
                           size="sm"
                           variant="ghost"
-                          color="secondary.gray.text"
+                          color="secondary.gray.color"
                           _hover={{
                             bg: 'secondary.gray.bg.hover',
                           }}
@@ -187,21 +223,24 @@ export function DocViewModal({
               ))}
             </VStack>
           )}
-        </DialogBody>
 
-        <DialogFooter>
-          <Button
-            onClick={onClose}
-            color="secondary.gray.text"
-            borderColor="secondary.gray.bg"
-            _hover={{
-              bg: 'secondary.gray.bg.hover',
-            }}
+          <Box
+            p={4}
+            borderRadius="lg"
+            bg="secondary.gray.bg"
+            border="1px"
+            borderColor="secondary.gray.bg.hover"
+            textAlign="center"
           >
-            Fechar
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </DialogRoot>
+            <Text fontSize="sm" color="secondary.gray.color">
+              Total de documentos:{' '}
+              <Text as="span" fontWeight="bold" color="primary.purple.color">
+                {docs.length}
+              </Text>
+            </Text>
+          </Box>
+        </VStack>
+      </Box>
+    </Modal>
   );
 }

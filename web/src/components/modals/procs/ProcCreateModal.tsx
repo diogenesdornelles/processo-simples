@@ -31,8 +31,6 @@ import { FaWindowClose } from 'react-icons/fa';
 import { modalStyles } from '@/styles/modalStyles';
 import { useColorMode } from '../../ui/color-mode';
 import { useAuth } from '@/contexts/AuthContext';
-import { EventCreateModal } from '../events';
-import { useState } from 'react';
 
 const statusOptions = createListCollection({
   items: [
@@ -77,7 +75,7 @@ const CreateProcSchema = Yup.object().shape({
 interface ProcCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (procId: number) => void;
 }
 
 export function ProcCreateModal({
@@ -90,9 +88,6 @@ export function ProcCreateModal({
   const { data: users = [] } = useGetAllUsers();
   const toast = useToast();
   const theme = useColorMode();
-  const [showEventCreateModal, setShowEventCreateModal] = useState(false);
-  const [newProcId, setNewProcId] = useState<null | number>(null);
-  const createModal = useDisclosure();
 
   const userOptions = createListCollection({
     items: users.map(user => ({
@@ -102,6 +97,7 @@ export function ProcCreateModal({
   });
 
   const handleSubmit = async (values: CreateProc) => {
+    console.log('Submitting values:', values);
     if (!user) {
       toast.show(
         'Usuário não autenticado',
@@ -113,9 +109,7 @@ export function ProcCreateModal({
     toast.show('Aguarde', 'Criando processo...', 'loading');
     await mutationCreateProc.mutateAsync(values, {
       onSuccess: async result => {
-        setNewProcId(result.id);
-        setShowEventCreateModal(true);
-        onSuccess();
+        onSuccess(result.id);
       },
       onError: error => {
         console.log('Save error:', error);
@@ -140,8 +134,23 @@ export function ProcCreateModal({
       ariaHideApp={false}
       shouldCloseOnOverlayClick={true}
       shouldCloseOnEsc={true}
+      closeTimeoutMS={100}
+      preventScroll={true}
+      shouldFocusAfterRender={true}
+      shouldReturnFocusAfterClose={true}
     >
-      <Box p={6} bg="primary.gray.bg" color="primary.gray.color">
+      <Box
+        p={6}
+        bg="primary.gray.bg"
+        color="primary.gray.color"
+        data-state={isOpen ? 'open' : 'closed'}
+        _open={{
+          animation: 'fade-in 300ms ease-out',
+        }}
+        _closed={{
+          animation: 'fade-out 300ms ease-in',
+        }}
+      >
         <HStack justify="space-between" align="center" mb={6}>
           <HStack gap={2}>
             <HiDocumentText size={24} color="blue" />
@@ -166,7 +175,7 @@ export function ProcCreateModal({
 
         <Formik
           initialValues={{
-            user_id: 0,
+            user_id: user ? user.id : 0,
             owner: '',
             description: '',
             status: 'Aberto' as ProcStatus,
@@ -195,6 +204,7 @@ export function ProcCreateModal({
                         {({ field }: any) => (
                           <Field.Root
                             invalid={!!errors.user_id && !!touched.user_id}
+                            disabled={true}
                           >
                             <Field.Label>
                               <HStack gap={2}>
@@ -206,6 +216,8 @@ export function ProcCreateModal({
                             </Field.Label>
                             <Select.Root
                               collection={userOptions}
+                              defaultValue={user ? [`${user.id}`] : ['']}
+                              value={[field.value]}
                               onValueChange={details => {
                                 setFieldValue(
                                   'user_id',
@@ -295,7 +307,10 @@ export function ProcCreateModal({
                             <Field.Label>Descrição</Field.Label>
                             <Textarea
                               {...field}
+                              autoresize
+                              maxH="5lh"
                               placeholder="Descreva detalhadamente o processo..."
+                              variant={'outline'}
                               bg="primary.gray.bg"
                               color="primary.gray.color"
                               borderColor="secondary.gray.bg"
@@ -329,10 +344,12 @@ export function ProcCreateModal({
                         {/* Status */}
                         <FormikField name="status">
                           {({ field }: any) => (
-                            <Field.Root>
+                            <Field.Root disabled={true}>
                               <Field.Label>Status</Field.Label>
                               <Select.Root
                                 collection={statusOptions}
+                                defaultValue={['Aberto']}
+                                value={[field.value]}
                                 onValueChange={details => {
                                   setFieldValue('status', details.value[0]);
                                 }}
@@ -387,6 +404,8 @@ export function ProcCreateModal({
                             <Field.Root>
                               <Field.Label>Prioridade</Field.Label>
                               <Select.Root
+                                defaultValue={['Média']}
+                                value={[field.value]}
                                 collection={priorityOptions}
                                 onValueChange={details => {
                                   setFieldValue('priority', details.value[0]);
@@ -501,18 +520,6 @@ export function ProcCreateModal({
           )}
         </Formik>
       </Box>
-      {showEventCreateModal && newProcId && (
-        <EventCreateModal
-          isOpen={createModal.open}
-          onClose={() => createModal.onClose()}
-          proc_id={Number(newProcId)}
-          isCreationProc={true}
-          onSuccess={() => {
-            createModal.onClose();
-            toast.show('Sucesso!', 'Evento deletado');
-          }}
-        />
-      )}
     </Modal>
   );
 }
