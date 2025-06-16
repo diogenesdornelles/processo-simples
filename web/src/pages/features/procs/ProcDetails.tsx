@@ -45,25 +45,24 @@ import { EventCreateModal } from '@/components/modals/events';
 import { DocViewModal } from '@/components/modals/docs/DocViewModal';
 
 interface ProcDetailsProps {
-  proc_id: string;
+  procId: string;
 }
 
-export function ProcDetails({ proc_id }: ProcDetailsProps) {
+export function ProcDetails({ procId }: ProcDetailsProps) {
   const router = useRouter();
   const { user } = useAuth();
   const toast = useToast();
   const alert = useAlert();
-  const { data: proc, isLoading, error, refetch } = useGetProc(Number(proc_id));
-  const [selectedEventDocuments, setSelectedEventDocuments] = useState<any[]>(
-    []
-  );
+  const { data: proc, isLoading, error, refetch } = useGetProc(Number(procId));
+  const [selectedEventDocs, setSelectedEventDocs] = useState<any[]>([]);
   const [selectedEventName, setSelectedEventName] = useState<string>('');
+  const [selectedEventIndex, setSelectedEventIndex] = useState<number>(0);
   const mutation = useDeleteEvent();
 
-  const viewModal = useDisclosure();
-  const createModal = useDisclosure();
+  const viewDocModal = useDisclosure();
+  const createEventModal = useDisclosure();
 
-  const handleDeleteEvent = (event_id: number) => {
+  const handleDeleteEvent = (eventId: number) => {
     toast.show('Aguarde', 'Deletando processo...', 'loading');
     if (user?.role !== 'Admin') {
       toast.show(
@@ -74,7 +73,7 @@ export function ProcDetails({ proc_id }: ProcDetailsProps) {
       return;
     }
 
-    mutation.mutate(event_id, {
+    mutation.mutate(eventId, {
       onSuccess: () => {
         toast.show('Sucesso', 'Evento deletado.', 'success');
       },
@@ -98,9 +97,15 @@ export function ProcDetails({ proc_id }: ProcDetailsProps) {
     }
   }, [proc]);
 
-  const handleViewDocuments = (documents: any[], eventName: string) => {
-    setSelectedEventDocuments(documents);
+  const handleViewDocuments = (
+    eventIndex: number,
+    docs: any[],
+    eventName: string
+  ) => {
+    setSelectedEventDocs(docs);
     setSelectedEventName(eventName);
+    setSelectedEventIndex(eventIndex);
+    viewDocModal.onOpen();
   };
 
   return (
@@ -335,7 +340,7 @@ export function ProcDetails({ proc_id }: ProcDetailsProps) {
                             _hover={{
                               bg: 'secondary.purple.bg.hover',
                             }}
-                            onClick={() => createModal.onOpen()}
+                            onClick={() => createEventModal.onOpen()}
                           >
                             <HiPlus />
                             Novo Evento
@@ -480,13 +485,14 @@ export function ProcDetails({ proc_id }: ProcDetailsProps) {
                                         size="sm"
                                         title="Ver documentos"
                                         variant="ghost"
-                                        color="primary.info.text"
+                                        color="primary.info.color"
                                         _hover={{
                                           bg: 'secondary.info.bg.hover',
                                           color: 'primary.info.text',
                                         }}
                                         onClick={() =>
                                           handleViewDocuments(
+                                            index,
                                             event.docs || [],
                                             event.name || 'Evento sem nome'
                                           )
@@ -546,7 +552,7 @@ export function ProcDetails({ proc_id }: ProcDetailsProps) {
                             _hover={{
                               bg: 'secondary.green.bg.hover',
                             }}
-                            onClick={() => createModal.onOpen()}
+                            onClick={() => createEventModal.onOpen()}
                           >
                             <HiPlus />
                             Criar Primeiro Evento
@@ -589,22 +595,24 @@ export function ProcDetails({ proc_id }: ProcDetailsProps) {
       {proc && (
         <EventCreateModal
           isCreationProc={false}
-          isOpen={createModal.open}
-          onClose={() => createModal.onClose()}
-          proc_id={Number(proc_id)}
+          isOpen={createEventModal.open}
+          onClose={() => createEventModal.onClose()}
+          procId={Number(procId)}
           onSuccess={() => {
             refetch();
-            createModal.onClose();
+            createEventModal.onClose();
             toast.show('Sucesso!', 'Evento deletado');
           }}
         />
       )}
 
       {/* Modal de visualização de documentos */}
+
       <DocViewModal
-        isOpen={viewModal.open}
-        onClose={() => viewModal.onClose()}
-        documents={selectedEventDocuments}
+        isOpen={viewDocModal.open}
+        onClose={() => viewDocModal.onClose()}
+        docs={selectedEventDocs}
+        eventIndex={selectedEventIndex}
         eventName={selectedEventName}
       />
     </Container>

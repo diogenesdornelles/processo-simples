@@ -15,7 +15,7 @@ import {
   Avatar,
   useDisclosure,
 } from '@chakra-ui/react';
-import { HiEye, HiPencil, HiTrash, HiPlus } from 'react-icons/hi2';
+import { HiEye, HiPencil, HiTrash, HiPlus, HiUser } from 'react-icons/hi2';
 import { IoMdRefresh } from 'react-icons/io';
 import { useState } from 'react';
 import { useGetAllUsers } from '@/services';
@@ -117,10 +117,13 @@ export default function Perfis() {
       <VStack gap={6} align="stretch">
         <HStack justify="space-between" align="center">
           <VStack align="start" gap={1}>
-            <Heading size="lg" color="secondary.gray.color">
-              Gerenciar Usuários
-            </Heading>
-            <Text color="primary.gray.color">
+            <HStack gap={2}>
+              <HiUser size={32} color="#9333ea" />
+              <Heading size="lg" color="primary.gray.text">
+                Gerenciar Usuários
+              </Heading>
+            </HStack>
+            <Text color="secondary.gray.text">
               {users?.length || 0} usuários cadastrados
             </Text>
           </VStack>

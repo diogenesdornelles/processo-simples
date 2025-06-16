@@ -28,9 +28,12 @@ import { useGetAllProcs } from '@/services/get/useGetAllProcs';
 import { ProcProps } from '@/domain/interfaces/proc.interfaces';
 import { useToast } from '@/hooks/useToast';
 import { useAuth } from '@/contexts/AuthContext';
-import { ProcEditModal } from '@/components/modals/procs/ProcEditModal';
-import { ProcDeleteModal } from '@/components/modals/procs/ProcDeleteModal';
-import { ProcCreateModal } from '@/components/modals/procs/ProcCreateModal';
+import {
+  ProcEditModal,
+  EventCreateModal,
+  ProcDeleteModal,
+  ProcCreateModal,
+} from '@/components';
 import { useRouter } from 'next/navigation';
 import {
   getStatusColor,
@@ -47,10 +50,12 @@ export default function Procs() {
   const [selectedProc, setSelectedProc] = useState<ProcProps | null>(null);
   const { user, isAuthenticated } = useAuth();
   const router = useRouter();
+  const [newProcId, setNewProcId] = useState<number | null>(null);
 
-  const editModal = useDisclosure();
-  const deleteModal = useDisclosure();
-  const createModal = useDisclosure();
+  const editProcModal = useDisclosure();
+  const deleteProcModal = useDisclosure();
+  const createProcModal = useDisclosure();
+  const createEventModal = useDisclosure();
 
   const { data: processos, isFetching, refetch, error } = useGetAllProcs();
 
@@ -70,7 +75,7 @@ export default function Procs() {
   const handleEdit = (proc: ProcProps) => {
     if (user?.role === 'Admin' && isAuthenticated) {
       setSelectedProc(proc);
-      editModal.onOpen();
+      editProcModal.onOpen();
     } else {
       toast.show(
         'Acesso Negado',
@@ -83,7 +88,7 @@ export default function Procs() {
   const handleDelete = (proc: ProcProps) => {
     if (user?.role === 'Admin' && isAuthenticated) {
       setSelectedProc(proc);
-      deleteModal.onOpen();
+      deleteProcModal.onOpen();
     } else {
       toast.show(
         'Acesso Negado',
@@ -96,7 +101,7 @@ export default function Procs() {
   const handleCreate = () => {
     if (isAuthenticated) {
       setSelectedProc(null);
-      createModal.onOpen();
+      createProcModal.onOpen();
     } else {
       toast.show(
         'Acesso Negado',
@@ -188,22 +193,15 @@ export default function Procs() {
                   <Table.ColumnHeader color="white">
                     Responsável
                   </Table.ColumnHeader>
-                  <Table.ColumnHeader color="white">
-                    Status
-                  </Table.ColumnHeader>
+                  <Table.ColumnHeader color="white">Status</Table.ColumnHeader>
                   <Table.ColumnHeader color="white">
                     Prioridade
                   </Table.ColumnHeader>
-                  <Table.ColumnHeader color="white">
-                    Prazo
-                  </Table.ColumnHeader>
+                  <Table.ColumnHeader color="white">Prazo</Table.ColumnHeader>
                   <Table.ColumnHeader color="white">
                     Criado em
                   </Table.ColumnHeader>
-                  <Table.ColumnHeader
-                    textAlign="center"
-                    color="white"
-                  >
+                  <Table.ColumnHeader textAlign="center" color="white">
                     Ações
                   </Table.ColumnHeader>
                 </Table.Row>
@@ -430,37 +428,61 @@ export default function Procs() {
       {selectedProc && (
         <>
           <ProcEditModal
-            isOpen={editModal.open}
-            onClose={editModal.onClose}
+            isOpen={editProcModal.open}
+            onClose={editProcModal.onClose}
             proc={selectedProc}
             onSuccess={() => {
               refetch();
-              editModal.onClose();
+              editProcModal.onClose();
               toast.show('Sucesso!', 'Processo atualizado');
             }}
           />
           <ProcDeleteModal
-            isOpen={deleteModal.open}
-            onClose={deleteModal.onClose}
+            isOpen={deleteProcModal.open}
+            onClose={deleteProcModal.onClose}
             proc={selectedProc}
             onSuccess={() => {
               refetch();
-              deleteModal.onClose();
+              deleteProcModal.onClose();
               toast.show('Sucesso!', 'Processo deletado');
             }}
           />
         </>
       )}
-
+      {/* Modal de criação do processo*/}
       <ProcCreateModal
-        isOpen={createModal.open}
-        onClose={createModal.onClose}
-        onSuccess={() => {
-          refetch();
-          createModal.onClose();
-          toast.show('Sucesso!', 'Processo criado');
+        isOpen={createProcModal.open}
+        onClose={createProcModal.onClose}
+        onSuccess={(procId: number) => {
+          try {
+            setNewProcId(procId);
+            toast.show(
+              'Sucesso!',
+              'Adicione um documento para validar o processo',
+              'success'
+            );
+            createEventModal.onOpen();
+          } finally {
+            createProcModal.onClose();
+          }
         }}
       />
+
+      {/* Modal de criação de evento */}
+      {newProcId && (
+        <EventCreateModal
+          isCreationProc={true}
+          isOpen={createEventModal.open}
+          onClose={() => createEventModal.onClose()}
+          procId={newProcId ? Number(newProcId) : 0}
+          onSuccess={() => {
+            refetch();
+            createEventModal.onClose();
+            toast.show('Sucesso!', 'Evento criado com sucesso', 'success');
+            setNewProcId(null);
+          }}
+        />
+      )}
     </Container>
   );
 }
