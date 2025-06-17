@@ -40,24 +40,26 @@ export function UserDeleteModal({
   const theme = useColorMode();
 
   const handleDelete = async () => {
-    toast.show('Aguarde', 'Deletando usuário...', 'loading');
-    mutation.mutate(user.id, {
-      onSuccess: () => {
-        onSuccess();
+    const promise = mutation.mutateAsync(user.id);
+
+    toast.promise(
+      promise,
+      {
+        title: 'Erro ao deletar usuário',
+        description: 'Tente novamente mais tarde.',
       },
-      onError: error => {
-        console.log('Save error:', error);
-        toast.show(
-          'Erro de conexão com o servidor',
-          'Tente mais tarde.',
-          'error'
-        );
+      {
+        title: 'Usuário deletado com sucesso',
+        description: `Usuário #${user.name} deletado com sucesso!`,
       },
-      onSettled: () => {
-        toast.dismiss();
-        onClose();
-      },
-    });
+      {
+        title: 'Deletando usuário',
+        description: 'Aguarde enquanto o usuário é deletado...',
+      }
+    );
+    if (mutation.isSuccess) {
+      onSuccess();
+    }
   };
 
   return (

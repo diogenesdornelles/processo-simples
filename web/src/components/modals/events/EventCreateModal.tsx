@@ -129,48 +129,67 @@ export function EventCreateModal({
         return;
       }
     }
-    toast.show('Aguarde', 'Criando evento...', 'loading');
-    const newEvent = await createEventMutation.mutateAsync(
+    const eventPromise = createEventMutation.mutateAsync({
+      name: values.name,
+      proc_id: procId,
+      user_id: user.id,
+    });
+
+    toast.promise(
+      eventPromise,
       {
-        name: values.name,
-        proc_id: procId,
-        user_id: user.id,
+        title: 'Erro ao criar evento',
+        description: 'Tente novamente mais tarde.',
       },
       {
-        onError: error => {
-          console.error('Error creating event:', error);
-          toast.show(
-            'Erro de conexão com o servidor',
-            'Tente mais tarde.',
-            'error'
-          );
-        },
+        title: 'Evento criado com sucesso',
+        description: `Evento #${createEventMutation.data?.name} criado com sucesso!`,
+      },
+      {
+        title: 'Criando evento',
+        description: 'Aguarde enquanto o evento é criado...',
       }
     );
-    toast.dismiss();
-
-    if (selectedFiles.length > 0) {
-      toast.show('Aguarde', 'Criando evento...', 'loading');
+    if (createEventMutation.isSuccess && createEventMutation.data) {
       const docPromises = selectedFiles.map(async selectedFile => {
         const docData = {
           name: selectedFile.name || selectedFile.file.name,
           description: selectedFile.description,
           file: selectedFile.file,
-          event_id: newEvent.id,
+          event_id: createEventMutation.data.id,
           active: true,
         };
-        return await createDocMutation.mutateAsync(docData, {
-          onError: error => {
-            console.error('Error creating document:', error);
-            toast.show('Erro ao anexar documento', 'Tente novamente.', 'error');
-          },
-        });
+        return createDocMutation.mutateAsync(docData);
       });
-      await Promise.all(docPromises);
-      toast.dismiss();
+
+      docPromises.forEach(async docPromise => {
+        toast.promise(
+          docPromise,
+          {
+            title: 'Erro ao criar documento',
+            description: 'Tente novamente mais tarde.',
+          },
+          {
+            title: 'Documento criado com sucesso',
+            description: `Documento #${createEventMutation.data?.name} criado com sucesso!`,
+          },
+          {
+            title: 'Criando documento',
+            description: 'Aguarde enquanto o documento é criado...',
+          }
+        );
+      });
+    } else{
+      toast.show(
+        'Erro',
+        'Não foi possível criar o evento. Tente novamente mais tarde.',
+        'error'
+      );
+      return;
     }
-    toast.show('Sucesso', 'Evento criado com sucesso!', 'success');
-    onSuccess();
+    if (createDocMutation.isSuccess && createEventMutation.isSuccess) {
+      onSuccess();
+    }
   };
 
   const handleClose = () => {

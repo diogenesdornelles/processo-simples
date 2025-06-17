@@ -19,6 +19,7 @@ import { HiTrash, HiExclamationTriangle } from 'react-icons/hi2';
 import { modalStyles } from '@/styles/modalStyles';
 import { FaWindowClose } from 'react-icons/fa';
 import { useColorMode } from '../../ui/color-mode';
+import { getPriorityColor, getStatusColor } from '@/utils';
 
 interface ProcDeleteModalProps {
   isOpen: boolean;
@@ -39,44 +40,25 @@ export function ProcDeleteModal({
   const theme = useColorMode();
 
   const handleDelete = async () => {
-    toast.show('Aguarde', 'Deletando processo...', 'loading');
-    mutation.mutate(proc.id, {
-      onSuccess: () => {
-        onSuccess();
+    const promise = mutation.mutateAsync(proc.id);
+    toast.promise(
+      promise,
+      {
+        title: 'Erro ao deletar processo',
+        description: 'Tente novamente mais tarde.',
       },
-      onError: error => {
-        console.log('Delete error:', error);
-        toast.show(
-          'Erro de conexão com o servidor',
-          'Tente mais tarde.',
-          'error'
-        );
+      {
+        title: 'Processo deletado com sucesso',
+        description: `Processo #${proc.number} deletado com sucesso!`,
       },
-      onSettled: () => {
-        toast.dismiss();
-        onClose();
-      },
-    });
-  };
-
-  const getStatusColor = (status: string) => {
-    const colors = {
-      Aberto: 'blue',
-      'Em Andamento': 'yellow',
-      Pendente: 'orange',
-      Concluído: 'green',
-      Cancelado: 'red',
-    };
-    return colors[status as keyof typeof colors] || 'gray';
-  };
-
-  const getPriorityColor = (priority: string) => {
-    const colors = {
-      Baixa: 'green',
-      Média: 'yellow',
-      Alta: 'red',
-    };
-    return colors[priority as keyof typeof colors] || 'gray';
+      {
+        title: 'Deletando processo',
+        description: 'Aguarde enquanto o processo é deletado...',
+      }
+    );
+    if (mutation.isSuccess) {
+      onSuccess();
+    }
   };
 
   return (

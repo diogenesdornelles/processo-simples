@@ -104,26 +104,27 @@ export function ProcCreateModal({
         'Faça login para continuar.',
         'error'
       );
-      return;
     }
-    toast.show('Aguarde', 'Criando processo...', 'loading');
-    await mutationCreateProc.mutateAsync(values, {
-      onSuccess: async result => {
-        onSuccess(result.id);
+    const promise = mutationCreateProc.mutateAsync(values);
+
+    toast.promise(
+      promise,
+      {
+        title: 'Erro ao criar processo',
+        description: 'Tente novamente mais tarde.',
       },
-      onError: error => {
-        console.log('Save error:', error);
-        toast.show(
-          'Erro de conexão com o servidor',
-          'Tente mais tarde.',
-          'error'
-        );
+      {
+        title: 'Processo criado com sucesso',
+        description: `Processo #${mutationCreateProc.data?.number} criado com sucesso!`,
       },
-      onSettled: () => {
-        toast.dismiss();
-        onClose();
-      },
-    });
+      {
+        title: 'Criando processo',
+        description: 'Aguarde enquanto o processo é criado...',
+      }
+    );
+    if (mutationCreateProc.isSuccess && mutationCreateProc.data) {
+        onSuccess(parseInt(mutationCreateProc.data.number));
+    }
   };
 
   return (

@@ -35,7 +35,7 @@ export default function Perfis() {
   const toast = useToast();
   const alert = useAlert();
   const [selectedUser, setSelectedUser] = useState<UserProps | null>(null);
-  const { user, isAuthenticated } = useAuth();
+  const { user: authUser, isAuthenticated } = useAuth();
 
   const viewModal = useDisclosure();
   const editModal = useDisclosure();
@@ -45,7 +45,7 @@ export default function Perfis() {
   const { data: users, isFetching, refetch, error } = useGetAllUsers();
 
   const handleView = (userView: UserProps) => {
-    if (user?.role === 'Admin' && isAuthenticated) {
+    if (isAuthenticated) {
       setSelectedUser(userView);
       viewModal.onOpen();
     } else {
@@ -58,7 +58,7 @@ export default function Perfis() {
   };
 
   const handleEdit = (userEdit: UserProps) => {
-    if (user?.role === 'Admin' && isAuthenticated) {
+    if (isAuthenticated) {
       setSelectedUser(userEdit);
       editModal.onOpen();
     } else {
@@ -71,7 +71,7 @@ export default function Perfis() {
   };
 
   const handleDelete = (userDelete: UserProps) => {
-    if (user?.role === 'Admin' && isAuthenticated) {
+    if (isAuthenticated) {
       setSelectedUser(userDelete);
       deleteModal.onOpen();
     } else {
@@ -84,9 +84,15 @@ export default function Perfis() {
   };
 
   const handleCreate = () => {
-    if (user?.role === 'Admin' && isAuthenticated) {
+    if (isAuthenticated) {
       setSelectedUser(null);
       createModal.onOpen();
+    } else {
+      toast.show(
+        'Acesso Negado',
+        'Você não tem permissão para visualizar este usuário.',
+        'error'
+      );
     }
   };
 
@@ -137,15 +143,17 @@ export default function Perfis() {
               <IoMdRefresh />
               Atualizar
             </Button>
-            <Button
-              colorScheme="blue"
-              onClick={handleCreate}
-              bg="primary.purple.bg"
-              color={'white'}
-            >
-              <HiPlus />
-              Novo Usuário
-            </Button>
+            {authUser?.role === 'Admin' && (
+              <Button
+                colorScheme="blue"
+                onClick={handleCreate}
+                bg="primary.purple.bg"
+                color={'white'}
+              >
+                <HiPlus />
+                Novo Usuário
+              </Button>
+            )}
           </HStack>
         </HStack>
 
@@ -231,26 +239,30 @@ export default function Perfis() {
                         >
                           <HiEye />
                         </IconButton>
-                        <IconButton
-                          aria-label="Editar usuário"
-                          title="Editar usuário"
-                          size="sm"
-                          variant="ghost"
-                          colorScheme="orange"
-                          onClick={() => handleEdit(user)}
-                        >
-                          <HiPencil />
-                        </IconButton>
-                        <IconButton
-                          aria-label="Deletar usuário"
-                          title="Deletar usuário"
-                          size="sm"
-                          variant="ghost"
-                          colorScheme="red"
-                          onClick={() => handleDelete(user)}
-                        >
-                          <HiTrash />
-                        </IconButton>
+                        {authUser?.role === 'Admin' && (
+                          <IconButton
+                            aria-label="Editar usuário"
+                            title="Editar usuário"
+                            size="sm"
+                            variant="ghost"
+                            colorScheme="orange"
+                            onClick={() => handleEdit(user)}
+                          >
+                            <HiPencil />
+                          </IconButton>
+                        )}
+                        {authUser?.role === 'Admin' && (
+                          <IconButton
+                            aria-label="Deletar usuário"
+                            title="Deletar usuário"
+                            size="sm"
+                            variant="ghost"
+                            colorScheme="red"
+                            onClick={() => handleDelete(user)}
+                          >
+                            <HiTrash />
+                          </IconButton>
+                        )}
                       </HStack>
                     </Table.Cell>
                   </Table.Row>
@@ -262,10 +274,12 @@ export default function Perfis() {
                 <Text color="primary.gray.color" fontSize="lg">
                   Nenhum usuário encontrado
                 </Text>
-                <Button mt={4} colorScheme="blue" onClick={handleCreate}>
-                  <HiPlus />
-                  Criar Primeiro Usuário
-                </Button>
+                {authUser?.role === 'Admin' && (
+                  <Button mt={4} colorScheme="blue" onClick={handleCreate}>
+                    <HiPlus />
+                    Criar Primeiro Usuário
+                  </Button>
+                )}
               </Box>
             )}
           </Card.Body>

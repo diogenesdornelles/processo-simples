@@ -6,7 +6,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname === '/') {
-    return NextResponse.redirect(new URL('/home', request.url));
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   const publicRoutes = ['/login'];
@@ -53,5 +53,11 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/home/:path*', '/processos/:path*', '/usuarios/:path*'],
+  matcher: [
+    '/',
+    '/home/:path*',
+    '/processos/:path*',
+    '/usuarios/:path*',
+    '/login',
+  ],
 };

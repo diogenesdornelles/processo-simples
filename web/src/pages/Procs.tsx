@@ -73,7 +73,7 @@ export default function Procs() {
   };
 
   const handleEdit = (proc: ProcProps) => {
-    if (user?.role === 'Admin' && isAuthenticated) {
+    if (isAuthenticated) {
       setSelectedProc(proc);
       editProcModal.onOpen();
     } else {
@@ -86,7 +86,7 @@ export default function Procs() {
   };
 
   const handleDelete = (proc: ProcProps) => {
-    if (user?.role === 'Admin' && isAuthenticated) {
+    if (isAuthenticated) {
       setSelectedProc(proc);
       deleteProcModal.onOpen();
     } else {
@@ -165,19 +165,18 @@ export default function Procs() {
               <IoMdRefresh />
               Atualizar
             </Button>
-            {user?.role === 'Admin' && (
-              <Button
-                bg="primary.purple.bg"
-                color="white"
-                onClick={handleCreate}
-                _hover={{
-                  bg: 'primary.purple.bg.hover',
-                }}
-              >
-                <HiPlus />
-                Novo Processo
-              </Button>
-            )}
+
+            <Button
+              bg="primary.purple.bg"
+              color="white"
+              onClick={handleCreate}
+              _hover={{
+                bg: 'primary.purple.bg.hover',
+              }}
+            >
+              <HiPlus />
+              Novo Processo
+            </Button>
           </HStack>
         </HStack>
 
@@ -404,19 +403,18 @@ export default function Procs() {
                       Comece criando seu primeiro processo
                     </Text>
                   </VStack>
-                  {user?.role === 'Admin' && (
-                    <Button
-                      bg="primary.purple.bg"
-                      color="white"
-                      onClick={handleCreate}
-                      _hover={{
-                        bg: 'primary.purple.bg.hover',
-                      }}
-                    >
-                      <HiPlus />
-                      Criar Primeiro Processo
-                    </Button>
-                  )}
+
+                  <Button
+                    bg="primary.purple.bg"
+                    color="white"
+                    onClick={handleCreate}
+                    _hover={{
+                      bg: 'primary.purple.bg.hover',
+                    }}
+                  >
+                    <HiPlus />
+                    Criar Primeiro Processo
+                  </Button>
                 </VStack>
               </Box>
             )}
@@ -434,7 +432,6 @@ export default function Procs() {
             onSuccess={() => {
               refetch();
               editProcModal.onClose();
-              toast.show('Sucesso!', 'Processo atualizado');
             }}
           />
           <ProcDeleteModal
@@ -444,7 +441,6 @@ export default function Procs() {
             onSuccess={() => {
               refetch();
               deleteProcModal.onClose();
-              toast.show('Sucesso!', 'Processo deletado');
             }}
           />
         </>
@@ -456,11 +452,6 @@ export default function Procs() {
         onSuccess={(procId: number) => {
           try {
             setNewProcId(procId);
-            toast.show(
-              'Sucesso!',
-              'Adicione um documento para validar o processo',
-              'success'
-            );
             createEventModal.onOpen();
           } finally {
             createProcModal.onClose();
@@ -478,7 +469,6 @@ export default function Procs() {
           onSuccess={() => {
             refetch();
             createEventModal.onClose();
-            toast.show('Sucesso!', 'Evento criado com sucesso', 'success');
             setNewProcId(null);
           }}
         />

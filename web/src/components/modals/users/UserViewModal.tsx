@@ -22,6 +22,8 @@ import { modalStyles } from '@/styles/modalStyles';
 import { formatDate } from '@/utils/formatDate';
 import { useColorMode } from '../../ui/color-mode';
 import img from '@/public/account.png';
+import { getRoleColor } from '@/utils';
+import { getRoleText } from '@/utils/getRoleText';
 
 interface UserViewModalProps {
   isOpen: boolean;
@@ -31,28 +33,6 @@ interface UserViewModalProps {
 
 export function UserViewModal({ isOpen, onClose, user }: UserViewModalProps) {
   const theme = useColorMode();
-
-  const getRoleBadgeColor = (role: string) => {
-    switch (role) {
-      case 'Admin':
-        return 'primary.error.bg';
-      case 'Comum':
-        return 'primary.info.bg';
-      default:
-        return 'secondary.gray.bg';
-    }
-  };
-
-  const getRoleText = (role: string) => {
-    switch (role) {
-      case 'Admin':
-        return 'Administrador';
-      case 'Comum':
-        return 'Usuário';
-      default:
-        return role;
-    }
-  };
 
   return (
     <Modal
@@ -126,7 +106,7 @@ export function UserViewModal({ isOpen, onClose, user }: UserViewModalProps) {
               </Heading>
               <HStack gap={2} wrap="wrap">
                 <Badge
-                  bg={getRoleBadgeColor(user.role)}
+                  bg={getRoleColor(user.role)}
                   color="white"
                   px={3}
                   py={1}

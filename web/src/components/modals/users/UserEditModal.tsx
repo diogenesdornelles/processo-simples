@@ -74,31 +74,25 @@ export function UserEditModal({
   const theme = useColorMode();
 
   const handleSubmit = async (values: any) => {
-    toast.show('Aguarde', 'Salvando usuário...', 'error');
-    mutation.mutate(
-      { id: user.id, user: values },
+    const promise = mutation.mutateAsync({ id: user.id, user: values });
+    toast.promise(
+      promise,
       {
-        onSuccess: response => {
-          if (response && response.cpf) {
-            onSuccess();
-          } else {
-            toast.show('Erro', 'ao salvar usuário', 'error');
-          }
-        },
-        onError: error => {
-          console.log('Save error:', error);
-          toast.show(
-            'Erro de conexão com o servidor',
-            'Tente mais tarde.',
-            'error'
-          );
-        },
-        onSettled: () => {
-          toast.dismiss();
-          onClose();
-        },
+        title: 'Erro ao atualizar usuário',
+        description: 'Tente novamente mais tarde.',
+      },
+      {
+        title: 'Usuário atualizado com sucesso',
+        description: `Usuário #${user.name} atualizado com sucesso!`,
+      },
+      {
+        title: 'Deletando usuário',
+        description: 'Aguarde enquanto o usuário é atualizado...',
       }
     );
+    if (mutation.isSuccess) {
+      onSuccess();
+    }
   };
 
   return (

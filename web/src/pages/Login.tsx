@@ -34,39 +34,34 @@ export default function Login() {
   const { login } = useAuth();
   const toast = useToast();
   const handleLoginSubmit = async (values: any) => {
-    toast.show('Aguarde', 'Processando login...', 'loading');
-    mutation.mutate(values, {
-      onSuccess: response => {
-        if (response && response.token_type) {
-          toast.dismiss();
-          toast.show(
-            'Login realizado!',
-            `Bem-vindo, ${response.user?.name || 'usuário'}!`
-          );
-          login(response);
-          router.push('/home');
-        } else {
-          if (response?.message) {
-            toast.show('Erro ao fazer login', response.message, 'error');
-            return;
-          }
-          toast.show(
-            'Erro de conexão com o servidor',
-            'tente mais tarde.',
-            'error'
-          );
-        }
+    const promise = mutation.mutateAsync(values);
+    toast.promise(
+      promise,
+      {
+        title: 'Erro ao logar',
+        description: 'Tente novamente mais tarde.',
       },
-      onError: error => {
-        console.log('Login error:', error);
-        toast.show(
-          'Erro de conexão com o servidor',
-          'tente mais tarde.',
-          'error'
-        );
+      {
+        title: 'Verificando credenciais',
+        description: `Aguarde enquanto verificamos suas credenciais...`,
       },
-    });
-    toast.dismiss();
+      {
+        title: 'Logando',
+        description: 'Aguarde enquanto o login é efetuado...',
+      }
+    );
+
+    if (mutation.isSuccess && mutation.data && mutation.data.token) {
+      login(mutation.data);
+      new Promise(resolve => setTimeout(resolve, 1500));
+      router.push('/home');
+    } else {
+      toast.show(
+        'Erro ao efetuar login',
+        'Verifique suas credenciais e tente novamente.',
+        'error'
+      );
+    }
   };
 
   return (

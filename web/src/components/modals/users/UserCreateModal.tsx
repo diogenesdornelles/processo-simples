@@ -73,24 +73,25 @@ export function UserCreateModal({
   const handleSubmit = async (
     values: CreateUser & { cpf: string; sigle: string }
   ) => {
-    toast.show('Aguarde', 'Salvando usuário...', 'loading');
-    mutation.mutate(values, {
-      onSuccess: () => {
-        onSuccess();
+    const promise = mutation.mutateAsync(values);
+    toast.promise(
+      promise,
+      {
+        title: 'Erro ao criar usuário',
+        description: 'Tente novamente mais tarde.',
       },
-      onError: error => {
-        console.log('Save error:', error);
-        toast.show(
-          'Erro de conexão com o servidor',
-          'Tente mais tarde.',
-          'error'
-        );
+      {
+        title: 'Usuário criado com sucesso',
+        description: `Usuário #${values.name} criado com sucesso!`,
       },
-      onSettled: () => {
-        toast.dismiss();
-        onClose();
-      },
-    });
+      {
+        title: 'Criando usuário',
+        description: 'Aguarde enquanto o usuário é criado...',
+      }
+    );
+    if (mutation.isSuccess) {
+      onSuccess();
+    }
   };
 
   return (

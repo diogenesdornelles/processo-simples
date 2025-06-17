@@ -50,7 +50,7 @@ interface ProcDetailsProps {
 
 export function ProcDetails({ procId }: ProcDetailsProps) {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const toast = useToast();
   const alert = useAlert();
   const { data: proc, isLoading, error, refetch } = useGetProc(Number(procId));
@@ -64,7 +64,7 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
 
   const handleDeleteEvent = (eventId: number) => {
     toast.show('Aguarde', 'Deletando processo...', 'loading');
-    if (user?.role !== 'Admin') {
+    if (!isAuthenticated) {
       toast.show(
         'Acesso Negado',
         'Apenas administradores podem deletar eventos.',
@@ -73,22 +73,23 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
       return;
     }
 
-    mutation.mutate(eventId, {
-      onSuccess: () => {
-        toast.show('Sucesso', 'Evento deletado.', 'success');
+    const promise = mutation.mutateAsync(eventId);
+
+    toast.promise(
+      promise,
+      {
+        title: 'Erro ao deletar evento',
+        description: 'Tente novamente mais tarde.',
       },
-      onError: error => {
-        console.log('Delete error:', error);
-        toast.show(
-          'Erro de conexão com o servidor',
-          'Tente mais tarde.',
-          'error'
-        );
+      {
+        title: 'Evento deletado com sucesso',
+        description: `Evento #${eventId} deletado com sucesso!`,
       },
-      onSettled: () => {
-        toast.dismiss();
-      },
-    });
+      {
+        title: 'Deletando evento',
+        description: 'Aguarde enquanto o evento é deletado...',
+      }
+    );
   };
 
   useEffect(() => {
@@ -601,7 +602,6 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
           onSuccess={() => {
             refetch();
             createEventModal.onClose();
-            toast.show('Sucesso!', 'Evento deletado');
           }}
         />
       )}
