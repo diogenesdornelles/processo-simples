@@ -15,8 +15,8 @@ const restClient = axios.create({
 });
 
 restClient.interceptors.request.use(
-  config => {
-    const token = manageToken.get();
+  async config => {
+    const token = await manageToken.get();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -50,40 +50,58 @@ restClient.interceptors.response.use(
 
       switch (status) {
         case 400:
-          console.error('Bad request:', data.message || 'Erro desconhecido');
+          console.error('Bad request:', data?.message || 'Requisição inválida');
           break;
+
         case 401:
-          console.error('Unauthorized - redirecting to login');
-          handleUnauthorizedAccess();
+          console.error('Unauthorized - token inválido ou expirado');
+          if (
+            typeof window !== 'undefined' &&
+            !window.location.pathname.includes('/login')
+          ) {
+            handleUnauthorizedAccess();
+          }
           break;
 
         case 403:
-          console.error('Forbidden - insufficient permissions');
+          console.error('Forbidden - permissões insuficientes');
           break;
 
         case 404:
-          console.error('Resource not found');
+          console.error(
+            'Resource not found:',
+            data?.message || 'Recurso não encontrado'
+          );
           break;
 
         case 422:
-          console.error('Validation error:', data.errors || data.message);
+          console.error(
+            'Validation error:',
+            data?.errors || data?.message || 'Erro de validação'
+          );
           break;
 
         case 500:
-          console.error('Server error');
+          console.error(
+            'Server error:',
+            data?.message || 'Erro interno do servidor'
+          );
           break;
 
         default:
           console.error(
             `Error ${status}:`,
-            data.message || 'Erro desconhecido'
+            data?.message || 'Erro desconhecido'
           );
       }
 
-      return Promise.reject(data);
+      return Promise.reject(error);
     } else if (error.request) {
       console.error('Network error:', error.message);
-      return Promise.reject({ message: 'Erro de conexão com o servidor' });
+      return Promise.reject({
+        message: 'Erro de conexão com o servidor',
+        isNetworkError: true,
+      });
     } else {
       console.error('Request setup error:', error.message);
       return Promise.reject(error);
