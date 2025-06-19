@@ -251,7 +251,7 @@ export function ProcDeleteModal({
               onClick={handleDelete}
               loading={mutation.isPending}
               bg="primary.error.bg"
-              color="primary.error.color"
+              color="white"
               _hover={{
                 bg: 'primary.error.bg.hover',
               }}

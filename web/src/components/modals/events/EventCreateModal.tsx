@@ -179,7 +179,7 @@ export function EventCreateModal({
           }
         );
       });
-    } else{
+    } else {
       toast.show(
         'Erro',
         'Não foi possível criar o evento. Tente novamente mais tarde.',

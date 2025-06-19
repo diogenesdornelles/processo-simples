@@ -44,7 +44,7 @@ export function useToast() {
     toaster.promise(promise, {
       success: {
         title: success.title,
-        description: success.description
+        description: success.description,
       },
       error: {
         title: error.title,
