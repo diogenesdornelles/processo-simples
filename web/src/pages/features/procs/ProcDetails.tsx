@@ -109,6 +109,8 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
     viewDocModal.onOpen();
   };
 
+  console.log('Proc Details:', proc);
+
   return (
     <Container maxW="5xl" py={8} mb={100}>
       {isLoading && <CustomBackdrop isOpen />}
@@ -322,216 +324,224 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
                 </VStack>
 
                 {/* Eventos (se houver) */}
-                {proc.events && proc.events.length > 0 && (
-                  <>
-                    <Separator />
-                    <VStack gap={4} align="stretch">
-                      <HStack gap={2} justify="space-between" align="center">
-                        <HStack gap={2}>
-                          <HiClock size={20} color="#eab308" />
-                          <Heading size="md" color="primary.gray.text">
-                            Histórico de Eventos ({proc.events.length})
-                          </Heading>
+                {proc &&
+                  proc.events &&
+                  Array.isArray(proc.events) &&
+                  proc.events.length > 0 && (
+                    <>
+                      <Separator />
+                      <VStack gap={4} align="stretch">
+                        <HStack gap={2} justify="space-between" align="center">
+                          <HStack gap={2}>
+                            <HiClock size={20} color="#eab308" />
+                            <Heading size="md" color="primary.gray.text">
+                              Histórico de Eventos ({proc.events.length})
+                            </Heading>
+                          </HStack>
+                          {user?.role === 'Admin' && (
+                            <Button
+                              size="sm"
+                              bg="secondary.purple.bg"
+                              color="white"
+                              _hover={{
+                                bg: 'secondary.purple.bg.hover',
+                              }}
+                              onClick={() => createEventModal.onOpen()}
+                            >
+                              <HiPlus />
+                              Novo Evento
+                            </Button>
+                          )}
                         </HStack>
-                        {user?.role === 'Admin' && (
-                          <Button
-                            size="sm"
-                            bg="secondary.purple.bg"
-                            color="white"
-                            _hover={{
-                              bg: 'secondary.purple.bg.hover',
-                            }}
-                            onClick={() => createEventModal.onOpen()}
-                          >
-                            <HiPlus />
-                            Novo Evento
-                          </Button>
-                        )}
-                      </HStack>
 
-                      {/* Tabela de eventos */}
-                      <Card.Root
-                        bg="primary.gray.bg"
-                        borderColor="secondary.gray.bg"
-                      >
-                        <Card.Body p={0}>
-                          <Table.Root size="sm" variant="outline">
-                            <Table.Header bg="secondary.gray.bg">
-                              <Table.Row>
-                                <Table.ColumnHeader color="primary.gray.text">
-                                  Número
-                                </Table.ColumnHeader>
-                                <Table.ColumnHeader color="primary.gray.text">
-                                  Data/Hora
-                                </Table.ColumnHeader>
-                                <Table.ColumnHeader color="primary.gray.text">
-                                  Nome do Evento
-                                </Table.ColumnHeader>
-                                <Table.ColumnHeader color="primary.gray.text">
-                                  Responsável
-                                </Table.ColumnHeader>
-                                <Table.ColumnHeader color="primary.gray.text">
-                                  Documentos
-                                </Table.ColumnHeader>
-                                <Table.ColumnHeader
-                                  textAlign="center"
-                                  color="primary.gray.text"
-                                >
-                                  Ações
-                                </Table.ColumnHeader>
-                              </Table.Row>
-                            </Table.Header>
+                        {/* Tabela de eventos */}
+                        <Card.Root
+                          bg="primary.gray.bg"
+                          borderColor="secondary.gray.bg"
+                        >
+                          <Card.Body p={0}>
+                            <Table.Root size="sm" variant="outline">
+                              <Table.Header bg="secondary.gray.bg">
+                                <Table.Row>
+                                  <Table.ColumnHeader color="primary.gray.text">
+                                    Número
+                                  </Table.ColumnHeader>
+                                  <Table.ColumnHeader color="primary.gray.text">
+                                    Data/Hora
+                                  </Table.ColumnHeader>
+                                  <Table.ColumnHeader color="primary.gray.text">
+                                    Nome do Evento
+                                  </Table.ColumnHeader>
+                                  <Table.ColumnHeader color="primary.gray.text">
+                                    Responsável
+                                  </Table.ColumnHeader>
+                                  <Table.ColumnHeader color="primary.gray.text">
+                                    Documentos
+                                  </Table.ColumnHeader>
+                                  <Table.ColumnHeader
+                                    textAlign="center"
+                                    color="primary.gray.text"
+                                  >
+                                    Ações
+                                  </Table.ColumnHeader>
+                                </Table.Row>
+                              </Table.Header>
 
-                            <Table.Body>
-                              {proc.events.map((event, index) => (
-                                <Table.Row
-                                  key={event.id}
-                                  _hover={{
-                                    bg: 'secondary.gray.bg.hover',
-                                  }}
-                                >
-                                  {/* Index */}
-                                  <Table.Cell>
-                                    <Text
-                                      fontSize="sm"
-                                      color="primary.gray.text"
-                                      fontWeight="medium"
-                                    >
-                                      {proc.events.length - index}
-                                    </Text>
-                                  </Table.Cell>
-                                  {/* Data/Hora */}
-                                  <Table.Cell>
-                                    <Text
-                                      fontSize="sm"
-                                      color="primary.gray.text"
-                                      fontWeight="medium"
-                                    >
-                                      {formatDate(event.created_at.toString())}
-                                    </Text>
-                                  </Table.Cell>
-
-                                  {/* Nome do Evento */}
-                                  <Table.Cell>
-                                    <Text
-                                      fontSize="sm"
-                                      color="primary.gray.text"
-                                      fontWeight="semibold"
-                                    >
-                                      {event.name || 'Evento sem nome'}
-                                    </Text>
-                                  </Table.Cell>
-
-                                  {/* Responsável */}
-                                  <Table.Cell>
-                                    <HStack gap={2}>
-                                      <Avatar.Root size="sm">
-                                        <Avatar.Fallback
-                                          name={event.user?.name || 'Usuário'}
-                                          bg="secondary.blue.bg"
-                                          color="white"
-                                        />
-                                        <Avatar.Image src={img.src} />
-                                      </Avatar.Root>
-                                      <VStack align="start" gap={0}>
-                                        <Text
-                                          fontWeight="medium"
-                                          fontSize="sm"
-                                          color="primary.gray.text"
-                                        >
-                                          {event.user?.name || 'N/A'}
-                                        </Text>
-                                        <Text
-                                          fontSize="xs"
-                                          color="secondary.gray.text"
-                                        >
-                                          {event.user?.sigle || 'N/A'}
-                                        </Text>
-                                      </VStack>
-                                    </HStack>
-                                  </Table.Cell>
-
-                                  {/* Documentos */}
-                                  <Table.Cell>
-                                    <HStack gap={2} align="center">
-                                      <HiPaperClip size={16} color="#6b7280" />
+                              <Table.Body>
+                                {proc.events.map((event, index) => (
+                                  <Table.Row
+                                    key={event.id}
+                                    _hover={{
+                                      bg: 'secondary.gray.bg.hover',
+                                    }}
+                                  >
+                                    {/* Index */}
+                                    <Table.Cell>
                                       <Text
                                         fontSize="sm"
-                                        color="secondary.gray.text"
+                                        color="primary.gray.text"
+                                        fontWeight="medium"
                                       >
-                                        {event.docs?.length || 0} doc(s)
+                                        {proc.events.length - index}
                                       </Text>
-                                      {(event.docs?.length || 0) > 0 && (
-                                        <Badge
-                                          bg="blue.500"
-                                          color="white"
-                                          variant="solid"
-                                          size="sm"
-                                          px={2}
-                                          py={1}
-                                          borderRadius="full"
-                                        >
-                                          {event.docs?.length}
-                                        </Badge>
-                                      )}
-                                    </HStack>
-                                  </Table.Cell>
-
-                                  {/* Ações */}
-                                  <Table.Cell textAlign="center">
-                                    <HStack gap={1} justify="center">
-                                      {/* Botão Ver Documentos */}
-                                      <IconButton
-                                        aria-label="Ver documentos"
-                                        size="sm"
-                                        title="Ver documentos"
-                                        variant="ghost"
-                                        color="primary.info.color"
-                                        _hover={{
-                                          bg: 'secondary.info.bg.hover',
-                                          color: 'primary.info.text',
-                                        }}
-                                        onClick={() =>
-                                          handleViewDocuments(
-                                            index,
-                                            event.docs || [],
-                                            event.name || 'Evento sem nome'
-                                          )
-                                        }
+                                    </Table.Cell>
+                                    {/* Data/Hora */}
+                                    <Table.Cell>
+                                      <Text
+                                        fontSize="sm"
+                                        color="primary.gray.text"
+                                        fontWeight="medium"
                                       >
-                                        <HiEye />
-                                      </IconButton>
+                                        {formatDate(
+                                          event.created_at.toString()
+                                        )}
+                                      </Text>
+                                    </Table.Cell>
 
-                                      {/* Botão Deletar - Apenas Admin */}
-                                      {user?.role === 'Admin' && (
+                                    {/* Nome do Evento */}
+                                    <Table.Cell>
+                                      <Text
+                                        fontSize="sm"
+                                        color="primary.gray.text"
+                                        fontWeight="semibold"
+                                      >
+                                        {event.name || 'Evento sem nome'}
+                                      </Text>
+                                    </Table.Cell>
+
+                                    {/* Responsável */}
+                                    <Table.Cell>
+                                      <HStack gap={2}>
+                                        <Avatar.Root size="sm">
+                                          <Avatar.Fallback
+                                            name={event.user?.name || 'Usuário'}
+                                            bg="secondary.blue.bg"
+                                            color="white"
+                                          />
+                                          <Avatar.Image src={img.src} />
+                                        </Avatar.Root>
+                                        <VStack align="start" gap={0}>
+                                          <Text
+                                            fontWeight="medium"
+                                            fontSize="sm"
+                                            color="primary.gray.text"
+                                          >
+                                            {event.user?.name || 'N/A'}
+                                          </Text>
+                                          <Text
+                                            fontSize="xs"
+                                            color="secondary.gray.text"
+                                          >
+                                            {event.user?.sigle || 'N/A'}
+                                          </Text>
+                                        </VStack>
+                                      </HStack>
+                                    </Table.Cell>
+
+                                    {/* Documentos */}
+                                    <Table.Cell>
+                                      <HStack gap={2} align="center">
+                                        <HiPaperClip
+                                          size={16}
+                                          color="#6b7280"
+                                        />
+                                        <Text
+                                          fontSize="sm"
+                                          color="secondary.gray.text"
+                                        >
+                                          {event.docs?.length || 0} doc(s)
+                                        </Text>
+                                        {(event.docs?.length || 0) > 0 && (
+                                          <Badge
+                                            bg="blue.500"
+                                            color="white"
+                                            variant="solid"
+                                            size="sm"
+                                            px={2}
+                                            py={1}
+                                            borderRadius="full"
+                                          >
+                                            {event.docs?.length}
+                                          </Badge>
+                                        )}
+                                      </HStack>
+                                    </Table.Cell>
+
+                                    {/* Ações */}
+                                    <Table.Cell textAlign="center">
+                                      <HStack gap={1} justify="center">
+                                        {/* Botão Ver Documentos */}
                                         <IconButton
-                                          aria-label="Deletar evento"
+                                          aria-label="Ver documentos"
                                           size="sm"
+                                          title="Ver documentos"
                                           variant="ghost"
-                                          title="Deletar evento"
-                                          color="primary.error.text"
+                                          color="primary.info.color"
                                           _hover={{
-                                            bg: 'secondary.error.bg.hover',
-                                            color: 'primary.error.text',
+                                            bg: 'secondary.info.bg.hover',
+                                            color: 'primary.info.text',
                                           }}
                                           onClick={() =>
-                                            handleDeleteEvent(event.id)
+                                            handleViewDocuments(
+                                              index,
+                                              event.docs || [],
+                                              event.name || 'Evento sem nome'
+                                            )
                                           }
                                         >
-                                          <HiTrash />
+                                          <HiEye />
                                         </IconButton>
-                                      )}
-                                    </HStack>
-                                  </Table.Cell>
-                                </Table.Row>
-                              ))}
-                            </Table.Body>
-                          </Table.Root>
-                        </Card.Body>
-                      </Card.Root>
-                    </VStack>
-                  </>
-                )}
+
+                                        {/* Botão Deletar - Apenas Admin */}
+                                        {user?.role === 'Admin' && (
+                                          <IconButton
+                                            aria-label="Deletar evento"
+                                            size="sm"
+                                            variant="ghost"
+                                            title="Deletar evento"
+                                            color="primary.error.text"
+                                            _hover={{
+                                              bg: 'secondary.error.bg.hover',
+                                              color: 'primary.error.text',
+                                            }}
+                                            onClick={() =>
+                                              handleDeleteEvent(event.id)
+                                            }
+                                          >
+                                            <HiTrash />
+                                          </IconButton>
+                                        )}
+                                      </HStack>
+                                    </Table.Cell>
+                                  </Table.Row>
+                                ))}
+                              </Table.Body>
+                            </Table.Root>
+                          </Card.Body>
+                        </Card.Root>
+                      </VStack>
+                    </>
+                  )}
 
                 {/* Empty state para eventos */}
                 {(!proc.events || proc.events.length === 0) && (

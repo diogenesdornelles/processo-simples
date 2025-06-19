@@ -133,94 +133,97 @@ export function DocViewModal({
             </Box>
           ) : (
             <VStack gap={3} align="stretch">
-              {docs.map(doc => (
-                <Box
-                  key={doc.id}
-                  p={4}
-                  bg="secondary.gray.bg"
-                  borderRadius="md"
-                  borderWidth="1px"
-                  borderColor="secondary.gray.bg.hover"
-                  _hover={{
-                    bg: 'secondary.gray.bg.hover',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <HStack justify="space-between" align="center">
-                    <HStack gap={3} flex={1}>
-                      <HiPaperClip size={20} color="#6b7280" />
-                      <VStack align="start" gap={1} flex={1}>
-                        <Text
-                          fontSize="md"
-                          color="primary.gray.color"
-                          fontWeight="semibold"
-                        >
-                          {doc.name}
-                        </Text>
-                        {doc.description && (
-                          <Text fontSize="sm" color="secondary.gray.color">
-                            {doc.description}
-                          </Text>
-                        )}
-                        <HStack gap={2}>
-                          <Badge
-                            bg="blue.500"
-                            color="white"
-                            variant="solid"
-                            size="sm"
-                            px={2}
-                            py={1}
-                            borderRadius="full"
+              {docs &&
+                Array.isArray(docs) &&
+                docs.length > 0 &&
+                docs.map(doc => (
+                  <Box
+                    key={doc.id}
+                    p={4}
+                    bg="secondary.gray.bg"
+                    borderRadius="md"
+                    borderWidth="1px"
+                    borderColor="secondary.gray.bg.hover"
+                    _hover={{
+                      bg: 'secondary.gray.bg.hover',
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    <HStack justify="space-between" align="center">
+                      <HStack gap={3} flex={1}>
+                        <HiPaperClip size={20} color="#6b7280" />
+                        <VStack align="start" gap={1} flex={1}>
+                          <Text
+                            fontSize="md"
+                            color="primary.gray.color"
+                            fontWeight="semibold"
                           >
-                            .{doc.ext.toUpperCase()}
-                          </Badge>
-                          <Text fontSize="xs" color="secondary.gray.color">
-                            Criado em{' '}
-                            {new Date(doc.created_at).toLocaleDateString(
-                              'pt-BR'
-                            )}
+                            {doc.name}
                           </Text>
-                        </HStack>
-                      </VStack>
-                    </HStack>
+                          {doc.description && (
+                            <Text fontSize="sm" color="secondary.gray.color">
+                              {doc.description}
+                            </Text>
+                          )}
+                          <HStack gap={2}>
+                            <Badge
+                              bg="blue.500"
+                              color="white"
+                              variant="solid"
+                              size="sm"
+                              px={2}
+                              py={1}
+                              borderRadius="full"
+                            >
+                              .{doc.ext.toUpperCase()}
+                            </Badge>
+                            <Text fontSize="xs" color="secondary.gray.color">
+                              Criado em{' '}
+                              {new Date(doc.created_at).toLocaleDateString(
+                                'pt-BR'
+                              )}
+                            </Text>
+                          </HStack>
+                        </VStack>
+                      </HStack>
 
-                    <VStack gap={2}>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        color="secondary.blue.color"
-                        borderColor="secondary.blue.bg"
-                        _hover={{
-                          bg: 'secondary.blue.bg.hover',
-                          color: 'white',
-                        }}
-                        onClick={() => handleDownload(doc)}
-                      >
-                        <HiArrowDownTray />
-                        Download
-                      </Button>
-
-                      <Link
-                        href={doc.uri}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        _hover={{ textDecoration: 'none' }}
-                      >
+                      <VStack gap={2}>
                         <Button
                           size="sm"
-                          variant="ghost"
-                          color="secondary.gray.color"
+                          variant="outline"
+                          color="secondary.blue.color"
+                          borderColor="secondary.blue.bg"
                           _hover={{
-                            bg: 'secondary.gray.bg.hover',
+                            bg: 'purple.600',
+                            color: 'gray.50',
                           }}
+                          onClick={() => handleDownload(doc)}
                         >
-                          Visualizar
+                          <HiArrowDownTray />
+                          Download
                         </Button>
-                      </Link>
-                    </VStack>
-                  </HStack>
-                </Box>
-              ))}
+
+                        <Link
+                          href={doc.uri}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          _hover={{ textDecoration: 'none' }}
+                        >
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            color="secondary.gray.color"
+                            _hover={{
+                              bg: 'secondary.gray.bg.hover',
+                            }}
+                          >
+                            Visualizar
+                          </Button>
+                        </Link>
+                      </VStack>
+                    </HStack>
+                  </Box>
+                ))}
             </VStack>
           )}
 

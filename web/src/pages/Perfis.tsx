@@ -176,97 +176,102 @@ export default function Perfis() {
               </Table.Header>
 
               <Table.Body>
-                {users?.map((user: UserProps) => (
-                  <Table.Row key={user.id}>
-                    <Table.Cell>
-                      <HStack gap={3}>
-                        <Avatar.Root>
-                          <Avatar.Fallback name={user?.name} />
-                          <Avatar.Image src={img.src} />
-                        </Avatar.Root>
-                        <VStack align="start" gap={0}>
-                          <Text
-                            fontWeight="semibold"
-                            fontSize="sm"
-                            color="primary.purple.color"
-                          >
-                            {user.name}
-                          </Text>
-                          <Text fontSize="xs" color="primary.gray.color">
-                            {user.sigle}
-                          </Text>
-                        </VStack>
-                      </HStack>
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Text fontSize="sm" color="primary.gray.color">
-                        {user.email}
-                      </Text>
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Badge
-                        colorScheme={getRoleColor(user.role)}
-                        variant="subtle"
-                        fontSize="xs"
-                      >
-                        {user.role}
-                      </Badge>
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Badge
-                        colorScheme={user.active ? 'green' : 'red'}
-                        variant="subtle"
-                        fontSize="xs"
-                      >
-                        {user.active ? 'Ativo' : 'Inativo'}
-                      </Badge>
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Text fontSize="sm" color="primary.gray.color">
-                        {new Date(user.created_at).toLocaleDateString('pt-BR')}
-                      </Text>
-                    </Table.Cell>
-                    <Table.Cell textAlign="center">
-                      <HStack gap={1} justify="center">
-                        {/* Botão Ver */}
-                        <IconButton
-                          aria-label="Visualizar usuário"
-                          title="Visualizar usuário"
-                          size="sm"
-                          variant="ghost"
-                          colorScheme="blue"
-                          onClick={() => handleView(user)}
+                {users &&
+                  Array.isArray(users) &&
+                  users.length > 0 &&
+                  users.map((user: UserProps) => (
+                    <Table.Row key={user.id}>
+                      <Table.Cell>
+                        <HStack gap={3}>
+                          <Avatar.Root>
+                            <Avatar.Fallback name={user?.name} />
+                            <Avatar.Image src={img.src} />
+                          </Avatar.Root>
+                          <VStack align="start" gap={0}>
+                            <Text
+                              fontWeight="semibold"
+                              fontSize="sm"
+                              color="primary.purple.color"
+                            >
+                              {user.name}
+                            </Text>
+                            <Text fontSize="xs" color="primary.gray.color">
+                              {user.sigle}
+                            </Text>
+                          </VStack>
+                        </HStack>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Text fontSize="sm" color="primary.gray.color">
+                          {user.email}
+                        </Text>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Badge
+                          colorScheme={getRoleColor(user.role)}
+                          variant="subtle"
+                          fontSize="xs"
                         >
-                          <HiEye />
-                        </IconButton>
-                        {authUser?.role === 'Admin' && (
+                          {user.role}
+                        </Badge>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Badge
+                          colorScheme={user.active ? 'green' : 'red'}
+                          variant="subtle"
+                          fontSize="xs"
+                        >
+                          {user.active ? 'Ativo' : 'Inativo'}
+                        </Badge>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Text fontSize="sm" color="primary.gray.color">
+                          {new Date(user.created_at).toLocaleDateString(
+                            'pt-BR'
+                          )}
+                        </Text>
+                      </Table.Cell>
+                      <Table.Cell textAlign="center">
+                        <HStack gap={1} justify="center">
+                          {/* Botão Ver */}
                           <IconButton
-                            aria-label="Editar usuário"
-                            title="Editar usuário"
+                            aria-label="Visualizar usuário"
+                            title="Visualizar usuário"
                             size="sm"
                             variant="ghost"
-                            colorScheme="orange"
-                            onClick={() => handleEdit(user)}
+                            colorScheme="blue"
+                            onClick={() => handleView(user)}
                           >
-                            <HiPencil />
+                            <HiEye />
                           </IconButton>
-                        )}
-                        {authUser?.role === 'Admin' && (
-                          <IconButton
-                            aria-label="Deletar usuário"
-                            title="Deletar usuário"
-                            size="sm"
-                            variant="ghost"
-                            colorScheme="red"
-                            onClick={() => handleDelete(user)}
-                          >
-                            <HiTrash />
-                          </IconButton>
-                        )}
-                      </HStack>
-                    </Table.Cell>
-                  </Table.Row>
-                ))}
+                          {authUser?.role === 'Admin' && (
+                            <IconButton
+                              aria-label="Editar usuário"
+                              title="Editar usuário"
+                              size="sm"
+                              variant="ghost"
+                              colorScheme="orange"
+                              onClick={() => handleEdit(user)}
+                            >
+                              <HiPencil />
+                            </IconButton>
+                          )}
+                          {authUser?.role === 'Admin' && (
+                            <IconButton
+                              aria-label="Deletar usuário"
+                              title="Deletar usuário"
+                              size="sm"
+                              variant="ghost"
+                              colorScheme="red"
+                              onClick={() => handleDelete(user)}
+                            >
+                              <HiTrash />
+                            </IconButton>
+                          )}
+                        </HStack>
+                      </Table.Cell>
+                    </Table.Row>
+                  ))}
               </Table.Body>
             </Table.Root>
             {users && users.length === 0 && (

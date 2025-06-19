@@ -57,7 +57,7 @@ export default function Procs() {
   const createProcModal = useDisclosure();
   const createEventModal = useDisclosure();
 
-  const { data: processos, isFetching, refetch, error } = useGetAllProcs();
+  const { data: procsData, isFetching, refetch, error } = useGetAllProcs();
 
   const handleView = (proc: ProcProps) => {
     if (isAuthenticated) {
@@ -146,7 +146,7 @@ export default function Procs() {
               </Heading>
             </HStack>
             <Text color="secondary.gray.text">
-              {processos?.length || 0} processos cadastrados
+              {(procsData && procsData.length) || 0} processos cadastrados
             </Text>
           </VStack>
 
@@ -207,79 +207,66 @@ export default function Procs() {
               </Table.Header>
 
               <Table.Body>
-                {processos?.map((proc: ProcProps) => (
-                  <Table.Row
-                    key={proc.id}
-                    _hover={{
-                      bg: 'secondary.gray.bg.hover',
-                    }}
-                  >
-                    {/* Processo */}
-                    <Table.Cell>
-                      <VStack align="start" gap={1}>
-                        <Text
-                          fontWeight="semibold"
-                          fontSize="sm"
-                          color="primary.purple.color"
-                        >
-                          #{proc.number}
-                        </Text>
-                        <Text
-                          fontSize="xs"
-                          color="secondary.gray.color"
-                          maxW="200px"
-                        >
-                          {proc.description}
-                        </Text>
-                      </VStack>
-                    </Table.Cell>
-
-                    {/* Responsável */}
-                    <Table.Cell>
-                      <HStack gap={2}>
-                        <Avatar.Root size="sm">
-                          <Avatar.Fallback
-                            name={proc.user?.name}
-                            bg="secondary.purple.bg"
-                            color="white"
-                          />
-                          <Avatar.Image src={img.src} />
-                        </Avatar.Root>
-                        <VStack align="start" gap={0}>
+                {procsData &&
+                  Array.isArray(procsData) &&
+                  procsData.length > 0 &&
+                  procsData.map((proc: ProcProps) => (
+                    <Table.Row
+                      key={proc.id}
+                      _hover={{
+                        bg: 'secondary.gray.bg.hover',
+                      }}
+                    >
+                      {/* Processo */}
+                      <Table.Cell>
+                        <VStack align="start" gap={1}>
                           <Text
-                            fontWeight="medium"
+                            fontWeight="semibold"
                             fontSize="sm"
-                            color="primary.gray.color"
+                            color="primary.purple.color"
                           >
-                            {proc.user?.name}
+                            #{proc.number}
                           </Text>
-                          <Text fontSize="xs" color="secondary.gray.color">
-                            {proc.user?.sigle}
+                          <Text
+                            fontSize="xs"
+                            color="secondary.gray.color"
+                            maxW="200px"
+                          >
+                            {proc.description}
                           </Text>
                         </VStack>
-                      </HStack>
-                    </Table.Cell>
+                      </Table.Cell>
 
-                    {/* Status */}
-                    <Table.Cell>
-                      <Badge
-                        bg={`${getStatusColor(proc.status)}`}
-                        color="white"
-                        variant="solid"
-                        fontSize="xs"
-                        px={2}
-                        py={1}
-                        borderRadius="full"
-                      >
-                        {proc.status}
-                      </Badge>
-                    </Table.Cell>
+                      {/* Responsável */}
+                      <Table.Cell>
+                        <HStack gap={2}>
+                          <Avatar.Root size="sm">
+                            <Avatar.Fallback
+                              name={proc.user?.name}
+                              bg="secondary.purple.bg"
+                              color="white"
+                            />
+                            <Avatar.Image src={img.src} />
+                          </Avatar.Root>
+                          <VStack align="start" gap={0}>
+                            <Text
+                              fontWeight="medium"
+                              fontSize="sm"
+                              color="primary.gray.color"
+                            >
+                              {proc.user?.name}
+                            </Text>
+                            <Text fontSize="xs" color="secondary.gray.color">
+                              {proc.user?.sigle}
+                            </Text>
+                          </VStack>
+                        </HStack>
+                      </Table.Cell>
 
-                    {/* Prioridade */}
-                    <Table.Cell>
-                      <HStack gap={1}>
+                      {/* Status */}
+                      <Table.Cell>
                         <Badge
-                          bg={`${getPriorityColor(proc.priority)}`}
+                          bg={`${getStatusColor(proc.status)}`}
                           color="white"
                           variant="solid"
                           fontSize="xs"
@@ -287,107 +274,125 @@ export default function Procs() {
                           py={1}
                           borderRadius="full"
                         >
-                          {proc.priority}
+                          {proc.status}
                         </Badge>
-                      </HStack>
-                    </Table.Cell>
+                      </Table.Cell>
 
-                    {/* Prazo */}
-                    <Table.Cell>
-                      <VStack align="start" gap={0}>
-                        <Text
-                          fontSize="sm"
-                          color={
-                            isExpired(proc.term)
-                              ? 'primary.error.color'
-                              : 'primary.gray.color'
-                          }
-                          fontWeight={isExpired(proc.term) ? 'bold' : 'normal'}
-                        >
-                          {formatDate(proc.term)}
-                        </Text>
-                        {isExpired(proc.term) && (
-                          <Text
+                      {/* Prioridade */}
+                      <Table.Cell>
+                        <HStack gap={1}>
+                          <Badge
+                            bg={`${getPriorityColor(proc.priority)}`}
+                            color="white"
+                            variant="solid"
                             fontSize="xs"
-                            color="primary.error.text"
-                            fontWeight="semibold"
+                            px={2}
+                            py={1}
+                            borderRadius="full"
                           >
-                            ⚠️ Vencido
+                            {proc.priority}
+                          </Badge>
+                        </HStack>
+                      </Table.Cell>
+
+                      {/* Prazo */}
+                      <Table.Cell>
+                        <VStack align="start" gap={0}>
+                          <Text
+                            fontSize="sm"
+                            color={
+                              isExpired(proc.term)
+                                ? 'primary.error.color'
+                                : 'primary.gray.color'
+                            }
+                            fontWeight={
+                              isExpired(proc.term) ? 'bold' : 'normal'
+                            }
+                          >
+                            {formatDate(proc.term)}
                           </Text>
-                        )}
-                      </VStack>
-                    </Table.Cell>
+                          {isExpired(proc.term) && (
+                            <Text
+                              fontSize="xs"
+                              color="primary.error.text"
+                              fontWeight="semibold"
+                            >
+                              ⚠️ Vencido
+                            </Text>
+                          )}
+                        </VStack>
+                      </Table.Cell>
 
-                    {/* Criado em */}
-                    <Table.Cell>
-                      <Text fontSize="sm" color="secondary.gray.text">
-                        {formatDate(proc.created_at)}
-                      </Text>
-                    </Table.Cell>
+                      {/* Criado em */}
+                      <Table.Cell>
+                        <Text fontSize="sm" color="secondary.gray.text">
+                          {formatDate(proc.created_at)}
+                        </Text>
+                      </Table.Cell>
 
-                    {/* Ações */}
-                    <Table.Cell textAlign="center">
-                      <HStack gap={1} justify="center">
-                        {/* Botão Ver - Qualquer usuário logado */}
-                        <IconButton
-                          aria-label="Visualizar processo"
-                          size="sm"
-                          variant="ghost"
-                          title="Visualizar processo"
-                          color="primary.info.text"
-                          _hover={{
-                            bg: 'secondary.info.bg.hover',
-                            color: 'primary.info.color',
-                          }}
-                          onClick={() => handleView(proc)}
-                        >
-                          <HiEye />
-                        </IconButton>
-
-                        {/* Botão Editar - Apenas Admin */}
-                        {user?.role === 'Admin' && (
+                      {/* Ações */}
+                      <Table.Cell textAlign="center">
+                        <HStack gap={1} justify="center">
+                          {/* Botão Ver - Qualquer usuário logado */}
                           <IconButton
-                            aria-label="Editar processo"
+                            aria-label="Visualizar processo"
                             size="sm"
                             variant="ghost"
-                            title="Editar processo"
-                            color="primary.attention.text"
+                            title="Visualizar processo"
+                            color="primary.info.text"
                             _hover={{
-                              bg: 'secondary.attention.bg.hover',
-                              color: 'primary.attention.color',
+                              bg: 'secondary.info.bg.hover',
+                              color: 'primary.info.color',
                             }}
-                            onClick={() => handleEdit(proc)}
+                            onClick={() => handleView(proc)}
                           >
-                            <HiPencil />
+                            <HiEye />
                           </IconButton>
-                        )}
 
-                        {/* Botão Deletar - Apenas Admin */}
-                        {user?.role === 'Admin' && (
-                          <IconButton
-                            aria-label="Deletar processo"
-                            size="sm"
-                            title="Deletar processo"
-                            variant="ghost"
-                            color="primary.error.text"
-                            _hover={{
-                              bg: 'secondary.error.bg.hover',
-                              color: 'primary.error.color',
-                            }}
-                            onClick={() => handleDelete(proc)}
-                          >
-                            <HiTrash />
-                          </IconButton>
-                        )}
-                      </HStack>
-                    </Table.Cell>
-                  </Table.Row>
-                ))}
+                          {/* Botão Editar - Apenas Admin */}
+                          {user?.role === 'Admin' && (
+                            <IconButton
+                              aria-label="Editar processo"
+                              size="sm"
+                              variant="ghost"
+                              title="Editar processo"
+                              color="primary.attention.text"
+                              _hover={{
+                                bg: 'secondary.attention.bg.hover',
+                                color: 'primary.attention.color',
+                              }}
+                              onClick={() => handleEdit(proc)}
+                            >
+                              <HiPencil />
+                            </IconButton>
+                          )}
+
+                          {/* Botão Deletar - Apenas Admin */}
+                          {user?.role === 'Admin' && (
+                            <IconButton
+                              aria-label="Deletar processo"
+                              size="sm"
+                              title="Deletar processo"
+                              variant="ghost"
+                              color="primary.error.text"
+                              _hover={{
+                                bg: 'secondary.error.bg.hover',
+                                color: 'primary.error.color',
+                              }}
+                              onClick={() => handleDelete(proc)}
+                            >
+                              <HiTrash />
+                            </IconButton>
+                          )}
+                        </HStack>
+                      </Table.Cell>
+                    </Table.Row>
+                  ))}
               </Table.Body>
             </Table.Root>
 
             {/* Empty State */}
-            {processos && processos.length === 0 && (
+            {procsData && procsData.length === 0 && (
               <Box textAlign="center" py={12} bg="primary.gray.bg">
                 <VStack gap={4}>
                   <HiDocumentText size={48} color="#94a3b8" />

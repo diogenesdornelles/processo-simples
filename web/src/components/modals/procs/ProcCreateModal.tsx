@@ -17,7 +17,7 @@ import {
   Fieldset,
   Field,
   createListCollection,
-  useDisclosure,
+  ListCollection,
 } from '@chakra-ui/react';
 import { Formik, Form, Field as FormikField } from 'formik';
 import * as Yup from 'yup';
@@ -31,6 +31,7 @@ import { FaWindowClose } from 'react-icons/fa';
 import { modalStyles } from '@/styles/modalStyles';
 import { useColorMode } from '../../ui/color-mode';
 import { useAuth } from '@/contexts/AuthContext';
+import { useEffect, useState } from 'react';
 
 const statusOptions = createListCollection({
   items: [
@@ -78,6 +79,11 @@ interface ProcCreateModalProps {
   onSuccess: (procId: number) => void;
 }
 
+export type UserOptionItem = {
+  label: string;
+  value: string;
+};
+
 export function ProcCreateModal({
   isOpen,
   onClose,
@@ -85,16 +91,23 @@ export function ProcCreateModal({
 }: ProcCreateModalProps) {
   const mutationCreateProc = useCreateProc();
   const { user } = useAuth();
-  const { data: users = [] } = useGetAllUsers();
+  const { data: usersData, isLoading: usersLoading } = useGetAllUsers();
   const toast = useToast();
   const theme = useColorMode();
+  const [userOptionsList, setUserOptionsList] =
+    useState<ListCollection<UserOptionItem> | null>(null);
 
-  const userOptions = createListCollection({
-    items: users.map(user => ({
-      label: `${user.name} (${user.sigle})`,
-      value: user.id.toString(),
-    })),
-  });
+  useEffect(() => {
+    if (!usersData) return;
+    if (!usersData || !Array.isArray(usersData)) return;
+    const userOptions = createListCollection({
+      items: usersData.map(user => ({
+        label: `${user.name} (${user.sigle})`,
+        value: user.id.toString(),
+      })),
+    });
+    setUserOptionsList(userOptions);
+  }, [usersData]);
 
   const handleSubmit = async (values: CreateProc) => {
     console.log('Submitting values:', values);
@@ -123,7 +136,7 @@ export function ProcCreateModal({
       }
     );
     if (mutationCreateProc.isSuccess && mutationCreateProc.data) {
-        onSuccess(parseInt(mutationCreateProc.data.number));
+      onSuccess(parseInt(mutationCreateProc.data.number));
     }
   };
 
@@ -201,74 +214,78 @@ export function ProcCreateModal({
                   <Fieldset.Content>
                     <VStack gap={4}>
                       {/* Usuário Responsável */}
-                      <FormikField name="user_id">
-                        {({ field }: any) => (
-                          <Field.Root
-                            invalid={!!errors.user_id && !!touched.user_id}
-                            disabled={true}
-                          >
-                            <Field.Label>
-                              <HStack gap={2}>
-                                <HiUser size={16} />
-                                <Text color="primary.gray.color">
-                                  Usuário Responsável
-                                </Text>
-                              </HStack>
-                            </Field.Label>
-                            <Select.Root
-                              collection={userOptions}
-                              defaultValue={user ? [`${user.id}`] : ['']}
-                              value={[field.value]}
-                              onValueChange={details => {
-                                setFieldValue(
-                                  'user_id',
-                                  parseInt(details.value[0])
-                                );
-                              }}
-                            >
-                              <Select.HiddenSelect />
-                              <Select.Control>
-                                <Select.Trigger
-                                  bg="primary.gray.bg"
-                                  color="primary.gray.color"
-                                  borderColor="secondary.gray.bg"
-                                  _hover={{
-                                    borderColor: 'secondary.gray.bg.hover',
-                                  }}
-                                  _focus={{
-                                    borderColor: 'primary.purple.bg',
+                      {usersLoading &&
+                        Array.isArray(userOptionsList) &&
+                        userOptionsList.length > 0 && (
+                          <FormikField name="user_id">
+                            {({ field }: any) => (
+                              <Field.Root
+                                invalid={!!errors.user_id && !!touched.user_id}
+                                disabled={true}
+                              >
+                                <Field.Label>
+                                  <HStack gap={2}>
+                                    <HiUser size={16} />
+                                    <Text color="primary.gray.color">
+                                      Usuário Responsável
+                                    </Text>
+                                  </HStack>
+                                </Field.Label>
+                                <Select.Root
+                                  collection={userOptionsList}
+                                  defaultValue={user ? [`${user.id}`] : ['']}
+                                  value={[field.value]}
+                                  onValueChange={details => {
+                                    setFieldValue(
+                                      'user_id',
+                                      parseInt(details.value[0])
+                                    );
                                   }}
                                 >
-                                  <Select.ValueText placeholder="Selecione o usuário responsável" />
-                                </Select.Trigger>
-                              </Select.Control>
-                              <Select.Positioner>
-                                <Select.Content
-                                  bg="primary.gray.bg"
-                                  borderColor="secondary.gray.bg"
-                                >
-                                  {userOptions.items.map(item => (
-                                    <Select.Item
-                                      key={item.value}
-                                      item={item}
+                                  <Select.HiddenSelect />
+                                  <Select.Control>
+                                    <Select.Trigger
+                                      bg="primary.gray.bg"
                                       color="primary.gray.color"
-                                      _hover={{ bg: 'secondary.gray.bg' }}
+                                      borderColor="secondary.gray.bg"
+                                      _hover={{
+                                        borderColor: 'secondary.gray.bg.hover',
+                                      }}
+                                      _focus={{
+                                        borderColor: 'primary.purple.bg',
+                                      }}
                                     >
-                                      <Select.ItemText>
-                                        {item.label}
-                                      </Select.ItemText>
-                                      <Select.ItemIndicator />
-                                    </Select.Item>
-                                  ))}
-                                </Select.Content>
-                              </Select.Positioner>
-                            </Select.Root>
-                            <Field.ErrorText color="primary.error.color">
-                              {errors.user_id}
-                            </Field.ErrorText>
-                          </Field.Root>
+                                      <Select.ValueText placeholder="Selecione o usuário responsável" />
+                                    </Select.Trigger>
+                                  </Select.Control>
+                                  <Select.Positioner>
+                                    <Select.Content
+                                      bg="primary.gray.bg"
+                                      borderColor="secondary.gray.bg"
+                                    >
+                                      {userOptionsList.items.map(item => (
+                                        <Select.Item
+                                          key={item.value}
+                                          item={item}
+                                          color="primary.gray.color"
+                                          _hover={{ bg: 'secondary.gray.bg' }}
+                                        >
+                                          <Select.ItemText>
+                                            {item.label}
+                                          </Select.ItemText>
+                                          <Select.ItemIndicator />
+                                        </Select.Item>
+                                      ))}
+                                    </Select.Content>
+                                  </Select.Positioner>
+                                </Select.Root>
+                                <Field.ErrorText color="primary.error.color">
+                                  {errors.user_id}
+                                </Field.ErrorText>
+                              </Field.Root>
+                            )}
+                          </FormikField>
                         )}
-                      </FormikField>
 
                       {/* Requerente */}
                       <FormikField name="owner">
