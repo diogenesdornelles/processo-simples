@@ -4,9 +4,9 @@ import { manageToken } from './manageToken';
 export const useHandleUnauthorizedAccess = () => {
   const router = useRouter();
 
-  return (message?: string) => {
+  return async (message?: string) => {
     if (typeof window !== 'undefined') {
-      manageToken.remove();
+      await manageToken.remove();
       localStorage.removeItem(process.env.NEXT_PUBLIC_AUTH_SESSION || '');
     }
     console.warn('Unauthorized access:', message);
@@ -14,9 +14,9 @@ export const useHandleUnauthorizedAccess = () => {
   };
 };
 
-export const handleUnauthorizedAccess = (message?: string) => {
+export const handleUnauthorizedAccess = async (message?: string) => {
   if (typeof window !== 'undefined') {
-    manageToken.remove();
+    await manageToken.remove();
     localStorage.removeItem(process.env.NEXT_PUBLIC_AUTH_SESSION || '');
     console.warn('Unauthorized access:', message);
     window.location.replace('/login');

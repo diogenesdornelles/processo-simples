@@ -23,7 +23,6 @@ export default function Nav() {
   const router = useRouter();
   const { toggleColorMode } = useColorMode();
   const viewModal = useDisclosure();
-
   const handleNavigation = (path: string) => {
     router.push(path);
   };

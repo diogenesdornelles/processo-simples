@@ -13,6 +13,7 @@ import {
   Text,
   Fieldset,
   Field,
+  Spinner,
 } from '@chakra-ui/react';
 import { Formik, Form, Field as FormikField } from 'formik';
 import * as Yup from 'yup';
@@ -33,35 +34,23 @@ export default function Login() {
   const mutation = useLogin();
   const { login } = useAuth();
   const toast = useToast();
-  const handleLoginSubmit = async (values: any) => {
-    const promise = mutation.mutateAsync(values);
-    toast.promise(
-      promise,
-      {
-        title: 'Erro ao logar',
-        description: 'Tente novamente mais tarde.',
-      },
-      {
-        title: 'Verificando credenciais',
-        description: `Aguarde enquanto verificamos suas credenciais...`,
-      },
-      {
-        title: 'Logando',
-        description: 'Aguarde enquanto o login é efetuado...',
-      }
-    );
 
-    if (mutation.isSuccess && mutation.data && mutation.data.token) {
-      login(mutation.data);
-      new Promise(resolve => setTimeout(resolve, 1500));
-      router.push('/home');
-    } else {
-      toast.show(
-        'Erro ao efetuar login',
-        'Verifique suas credenciais e tente novamente.',
-        'error'
-      );
-    }
+  const handleLoginSubmit = async (values: any) => {
+    await mutation.mutateAsync(values, {
+      onError: (error: any) => {
+        toast.show(
+          'Erro ao efetuar login',
+          error?.response?.data?.message ||
+            'Verifique suas credenciais e tente novamente.',
+          'error'
+        );
+      },
+      onSuccess: async values => {
+        toast.show('Login efetuado com sucesso', '', 'success');
+        await login(values);
+        router.push('/home');
+      },
+    });
   };
 
   return (
@@ -69,7 +58,7 @@ export default function Login() {
       <Flex minHeight="60vh" align="center">
         <Box
           w="full"
-          bg="secondary.gray.bg"
+          bg="primary.gray.bg"
           color="secondary.gray.color"
           p={8}
           borderRadius="lg"
@@ -111,6 +100,8 @@ export default function Login() {
                                 placeholder="admin@example.com"
                                 type="email"
                                 suppressHydrationWarning
+                                bg={'secondary.gray.bg'}
+                                color={'secondary.purple.color'}
                               />
                               <Field.ErrorText>
                                 {form.errors.email}
@@ -134,6 +125,8 @@ export default function Login() {
                                 placeholder="password"
                                 type="password"
                                 suppressHydrationWarning
+                                bg={'secondary.gray.bg'}
+                                color={'secondary.purple.color'}
                               />
                               <Field.ErrorText>
                                 {form.errors.password}
@@ -153,7 +146,7 @@ export default function Login() {
                     disabled={formikProps.isSubmitting || mutation.isPending}
                     suppressHydrationWarning
                   >
-                    Entrar
+                    {!mutation.isPending ? 'Entrar' : <Spinner />}
                   </Button>
 
                   {/* Footer */}
