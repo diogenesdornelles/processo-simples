@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import axios from 'axios';
@@ -6,10 +7,11 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname === '/') {
-    return NextResponse.redirect(new URL('/login', request.url));
+    return NextResponse.redirect(new URL('/home', request.url));
   }
 
   const publicRoutes = ['/login'];
+
   if (publicRoutes.includes(pathname)) {
     return NextResponse.next();
   }
@@ -17,6 +19,7 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get(
     process.env.NEXT_PUBLIC_AUTH_TOKEN || ''
   )?.value;
+
   if (!token) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
@@ -30,34 +33,48 @@ export async function middleware(request: NextRequest) {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
       },
+      timeout: 5000,
     });
 
-    if (!response.status || response.status < 200 || response.status >= 300) {
-      throw new Error(`API responded with status: ${response.status}`);
+    if (response.status < 200 || response.status >= 300) {
+      console.warn(
+        'Token validation failed - invalid response status:',
+        response.status
+      );
+      const redirectResponse = NextResponse.redirect(
+        new URL('/login', request.url)
+      );
+      redirectResponse.cookies.delete(process.env.NEXT_PUBLIC_AUTH_TOKEN || '');
+      return redirectResponse;
+    }
+
+    if (!response.data || !response.data.id) {
+      console.warn('Token validation failed - invalid user data');
+      const redirectResponse = NextResponse.redirect(
+        new URL('/login', request.url)
+      );
+      redirectResponse.cookies.delete(process.env.NEXT_PUBLIC_AUTH_TOKEN || '');
+      return redirectResponse;
     }
 
     const nextResponse = NextResponse.next();
     nextResponse.headers.set('X-User-ID', response.data.id.toString());
-    nextResponse.headers.set('X-User-Email', response.data.email);
-    nextResponse.headers.set('X-User-Role', response.data.role);
-    nextResponse.headers.set('X-User-Name', response.data.name);
+    nextResponse.headers.set('X-User-Email', response.data.email || '');
+    nextResponse.headers.set('X-User-Role', response.data.role || '');
+    nextResponse.headers.set('X-User-Name', response.data.name || '');
 
     return nextResponse;
-  } catch (error) {
-    console.error('Token validation error:', error);
+  } catch (error: any) {
+    console.error('Token validation error:', error.message || error);
 
-    const response = NextResponse.redirect(new URL('/login', request.url));
-    response.cookies.delete(process.env.NEXT_PUBLIC_AUTH_TOKEN || '');
-    return response;
+    const redirectResponse = NextResponse.redirect(
+      new URL('/login', request.url)
+    );
+    redirectResponse.cookies.delete(process.env.NEXT_PUBLIC_AUTH_TOKEN || '');
+    return redirectResponse;
   }
 }
 
 export const config = {
-  matcher: [
-    '/',
-    '/home/:path*',
-    '/processos/:path*',
-    '/usuarios/:path*',
-    '/login',
-  ],
+  matcher: ['/', '/home/:path*', '/processos/:path*', '/usuarios/:path*'],
 };
