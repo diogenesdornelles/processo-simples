@@ -12,9 +12,19 @@ class ProcsController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Proc::class);
-        return Proc::with(['user', 'events'])
-                   ->where('active', true)
-                   ->get();
+        return Proc::with([
+                'user:id,name,email,sigle,role',
+                'events' => function($query) {
+                    $query->with([
+                              'user:id,name,email,sigle,role', 
+                              'docs'                           
+                          ])
+                          ->where('active', true)
+                          ->orderBy('created_at', 'desc');
+                }
+            ])
+            ->where('active', true)
+            ->get();
     }
 
     public function store(ProcRequest $request)
@@ -25,7 +35,16 @@ class ProcsController extends Controller
         $data['number'] = $this->generateProcNumber();
         
         $proc = Proc::create($data);
-        return response()->json($proc->load('user'), 201);
+        return response()->json(
+            $proc->load([
+                'user:id,name,email,sigle,role',
+                'events' => function($query) {
+                    $query->with(['user:id,name,email,sigle,role', 'docs'])
+                          ->orderBy('created_at', 'desc');
+                }
+            ]), 
+            201
+        );
     }
 
     private function generateProcNumber(): string
@@ -46,7 +65,14 @@ class ProcsController extends Controller
     public function show(Proc $proc)
     {
         $this->authorize('view', $proc);
-        return $proc->load(['user', 'events.docs']);
+        return $proc->load([
+            'user:id,name,email,sigle,role',
+            'events' => function($query) {
+                $query->with(['user:id,name,email,sigle,role', 'docs'])
+                      ->where('active', true)
+                      ->orderBy('created_at', 'desc');
+            }
+        ]);
     }
 
     public function update(ProcRequest $request, Proc $proc)
