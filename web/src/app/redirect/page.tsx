@@ -3,11 +3,11 @@
 import { withAuth } from '@/components/withAuth';
 import Home from '@/pages/Home';
 
-function HomePage() {
+function RedirectPage() {
   return <Home />;
 }
 
-export default withAuth(HomePage, {
+export default withAuth(RedirectPage, {
   requireAdmin: false,
-  redirectTo: '/login',
+  redirectTo: '/home',
 });
