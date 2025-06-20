@@ -18,6 +18,7 @@ import {
   Select,
   Portal,
   createListCollection,
+  Spinner,
 } from '@chakra-ui/react';
 import { Formik, Form, Field as FormikField } from 'formik';
 import * as Yup from 'yup';
@@ -69,30 +70,32 @@ export function UserEditModal({
   onSuccess,
   user,
 }: UserEditModalProps) {
-  const mutation = useUpdateUser();
+  const mutationUpdateUser = useUpdateUser();
   const toast = useToast();
   const theme = useColorMode();
 
   const handleSubmit = async (values: any) => {
-    const promise = mutation.mutateAsync({ id: user.id, user: values });
-    toast.promise(
-      promise,
+    await mutationUpdateUser.mutateAsync(
+      { id: user.id, user: values },
       {
-        title: 'Erro ao atualizar usuário',
-        description: 'Tente novamente mais tarde.',
-      },
-      {
-        title: 'Usuário atualizado com sucesso',
-        description: `Usuário #${user.name} atualizado com sucesso!`,
-      },
-      {
-        title: 'Deletando usuário',
-        description: 'Aguarde enquanto o usuário é atualizado...',
+        onError: (error: any) => {
+          toast.show(
+            'Erro ao atualizar usuário',
+            error?.response?.data?.message ||
+              'Ocorreu um erro ao tentar atualizar o usuário. Tente novamente mais tarde.',
+            'error'
+          );
+        },
+        onSuccess: () => {
+          toast.show(
+            'Usuário atualizado com sucesso',
+            `Usuário #${user.name} atualizado com sucesso!`,
+            'success'
+          );
+          onSuccess();
+        },
       }
     );
-    if (mutation.isSuccess) {
-      onSuccess();
-    }
   };
 
   return (
@@ -426,7 +429,8 @@ export function UserEditModal({
                   <Button
                     variant="ghost"
                     onClick={onClose}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || mutationUpdateUser.isPending}
+                    loading={isSubmitting || mutationUpdateUser.isPending}
                     color="secondary.gray.color"
                     _hover={{
                       bg: 'secondary.gray.bg.hover',
@@ -439,13 +443,19 @@ export function UserEditModal({
                     bg="primary.attention.bg"
                     color="white"
                     type="submit"
-                    loading={isSubmitting}
+                    disabled={isSubmitting || mutationUpdateUser.isPending}
+                    w="full"
+                    loading={isSubmitting || mutationUpdateUser.isPending}
                     loadingText="Salvando alterações..."
                     _hover={{
                       bg: 'primary.attention.bg.hover',
                     }}
                   >
-                    Salvar Alterações
+                    {!mutationUpdateUser.isPending ? (
+                      'Salvar Alterações'
+                    ) : (
+                      <Spinner />
+                    )}
                   </Button>
                 </HStack>
               </VStack>

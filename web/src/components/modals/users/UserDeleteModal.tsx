@@ -12,6 +12,7 @@ import {
   IconButton,
   Avatar,
   Alert,
+  Spinner,
 } from '@chakra-ui/react';
 import { UserProps } from '@/domain/interfaces/user.interfaces';
 import { useDeleteUser } from '@/services';
@@ -35,31 +36,24 @@ export function UserDeleteModal({
   user,
   onSuccess,
 }: UserDeleteModalProps) {
-  const mutation = useDeleteUser();
+  const mutationDeleteUser = useDeleteUser();
   const toast = useToast();
   const theme = useColorMode();
 
   const handleDelete = async () => {
-    const promise = mutation.mutateAsync(user.id);
-
-    toast.promise(
-      promise,
-      {
-        title: 'Erro ao deletar usuário',
-        description: 'Tente novamente mais tarde.',
+    await mutationDeleteUser.mutateAsync(user.id, {
+      onError: (error: any) => {
+        toast.show(
+          'Erro ao deletar usuário',
+          error?.response?.data?.message ||
+            'Ocorreu um erro ao tentar deletar o usuário. Tente novamente mais tarde.',
+          'error'
+        );
       },
-      {
-        title: 'Usuário deletado com sucesso',
-        description: `Usuário #${user.name} deletado com sucesso!`,
+      onSuccess: () => {
+        onSuccess();
       },
-      {
-        title: 'Deletando usuário',
-        description: 'Aguarde enquanto o usuário é deletado...',
-      }
-    );
-    if (mutation.isSuccess) {
-      onSuccess();
-    }
+    });
   };
 
   return (
@@ -221,7 +215,8 @@ export function UserDeleteModal({
               variant="ghost"
               size="lg"
               onClick={onClose}
-              disabled={mutation.isPending}
+              loading={mutationDeleteUser.isPending}
+              disabled={mutationDeleteUser.isPending}
               flex={1}
               color="secondary.gray.color"
               _hover={{
@@ -237,7 +232,8 @@ export function UserDeleteModal({
               color="white"
               size="lg"
               onClick={handleDelete}
-              loading={mutation.isPending}
+              loading={mutationDeleteUser.isPending}
+              disabled={mutationDeleteUser.isPending}
               loadingText="Excluindo..."
               flex={1}
               _hover={{
@@ -248,7 +244,11 @@ export function UserDeleteModal({
                 color: 'secondary.gray.color',
               }}
             >
-              Confirmar Exclusão
+              {!mutationDeleteUser.isPending ? (
+                'Confirmar Exclusão'
+              ) : (
+                <Spinner />
+              )}
               <HiTrash />
             </Button>
           </HStack>

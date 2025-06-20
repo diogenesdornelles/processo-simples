@@ -18,10 +18,11 @@ import {
   Field,
   createListCollection,
   ListCollection,
+  Spinner,
 } from '@chakra-ui/react';
 import { Formik, Form, Field as FormikField } from 'formik';
 import * as Yup from 'yup';
-import { useCreateProc, useCreateEvent, useGetAllUsers } from '@/services';
+import { useCreateProc, useGetAllUsers } from '@/services';
 import { CreateProc } from '@/domain/interfaces/proc.interfaces';
 import { ProcStatus } from '@/domain/types/ProcStatus';
 import { ProcPriority } from '@/domain/types/ProcPriority';
@@ -91,14 +92,20 @@ export function ProcCreateModal({
 }: ProcCreateModalProps) {
   const mutationCreateProc = useCreateProc();
   const { user } = useAuth();
-  const { data: usersData, isLoading: usersLoading } = useGetAllUsers();
+  const {
+    data: usersData,
+    isLoading: isLoadingUsers,
+    isFetching: isFetchingUsers,
+    isPending: isPendingUsers,
+  } = useGetAllUsers();
   const toast = useToast();
   const theme = useColorMode();
   const [userOptionsList, setUserOptionsList] =
     useState<ListCollection<UserOptionItem> | null>(null);
 
   useEffect(() => {
-    if (!usersData) return;
+    if (!usersData || isLoadingUsers || isFetchingUsers || isPendingUsers)
+      return;
     if (!usersData || !Array.isArray(usersData)) return;
     const userOptions = createListCollection({
       items: usersData.map(user => ({
@@ -107,10 +114,9 @@ export function ProcCreateModal({
       })),
     });
     setUserOptionsList(userOptions);
-  }, [usersData]);
+  }, [usersData, isFetchingUsers, isLoadingUsers, isPendingUsers]);
 
   const handleSubmit = async (values: CreateProc) => {
-    console.log('Submitting values:', values);
     if (!user) {
       toast.show(
         'Usuário não autenticado',
@@ -118,26 +124,23 @@ export function ProcCreateModal({
         'error'
       );
     }
-    const promise = mutationCreateProc.mutateAsync(values);
-
-    toast.promise(
-      promise,
-      {
-        title: 'Erro ao criar processo',
-        description: 'Tente novamente mais tarde.',
+    await mutationCreateProc.mutateAsync(values, {
+      onError: (error: any) => {
+        toast.show(
+          'Erro ao criar processo',
+          error?.response?.data?.message || 'Tente novamente mais tarde.',
+          'error'
+        );
       },
-      {
-        title: 'Processo criado com sucesso',
-        description: `Processo #${mutationCreateProc.data?.number} criado com sucesso!`,
+      onSuccess: data => {
+        toast.show(
+          'Processo criado com sucesso',
+          `Processo #${mutationCreateProc.data?.number} criado com sucesso!`,
+          'success'
+        );
+        onSuccess(data.id);
       },
-      {
-        title: 'Criando processo',
-        description: 'Aguarde enquanto o processo é criado...',
-      }
-    );
-    if (mutationCreateProc.isSuccess && mutationCreateProc.data) {
-      onSuccess(parseInt(mutationCreateProc.data.number));
-    }
+    });
   };
 
   return (
@@ -214,7 +217,9 @@ export function ProcCreateModal({
                   <Fieldset.Content>
                     <VStack gap={4}>
                       {/* Usuário Responsável */}
-                      {usersLoading &&
+                      {!isLoadingUsers &&
+                        !isFetchingUsers &&
+                        !isPendingUsers &&
                         Array.isArray(userOptionsList) &&
                         userOptionsList.length > 0 && (
                           <FormikField name="user_id">
@@ -514,6 +519,8 @@ export function ProcCreateModal({
                     variant="outline"
                     onClick={onClose}
                     color="secondary.gray.color"
+                    loading={isSubmitting || mutationCreateProc.isPending}
+                    disabled={isSubmitting || mutationCreateProc.isPending}
                     borderColor="secondary.gray.bg"
                     _hover={{
                       bg: 'secondary.gray.bg.hover',
@@ -523,14 +530,19 @@ export function ProcCreateModal({
                   </Button>
                   <Button
                     type="submit"
-                    loading={isSubmitting}
+                    loading={isSubmitting || mutationCreateProc.isPending}
+                    disabled={isSubmitting || mutationCreateProc.isPending}
                     bg="primary.purple.bg"
                     color="white"
                     _hover={{
                       bg: 'primary.purple.bg.hover',
                     }}
                   >
-                    Criar Processo
+                    {!mutationCreateProc.isPending ? (
+                      'Criar Processo'
+                    ) : (
+                      <Spinner />
+                    )}
                   </Button>
                 </HStack>
               </VStack>

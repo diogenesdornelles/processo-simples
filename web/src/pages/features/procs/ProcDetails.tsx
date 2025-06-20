@@ -53,11 +53,18 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
   const { user, isAuthenticated } = useAuth();
   const toast = useToast();
   const alert = useAlert();
-  const { data: proc, isLoading, error, refetch } = useGetProc(Number(procId));
+  const {
+    data: procData,
+    isPending: isPendingProc,
+    isFetching: isFetchingProc,
+    isLoading: isLoadingProc,
+    error: procError,
+    refetch: refetchProc,
+  } = useGetProc(Number(procId));
   const [selectedEventDocs, setSelectedEventDocs] = useState<any[]>([]);
   const [selectedEventName, setSelectedEventName] = useState<string>('');
   const [selectedEventIndex, setSelectedEventIndex] = useState<number>(0);
-  const mutation = useDeleteEvent();
+  const mutationDeleteEvent = useDeleteEvent();
 
   const viewDocModal = useDisclosure();
   const createEventModal = useDisclosure();
@@ -73,7 +80,7 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
       return;
     }
 
-    const promise = mutation.mutateAsync(eventId);
+    const promise = mutationDeleteEvent.mutateAsync(eventId);
 
     toast.promise(
       promise,
@@ -93,10 +100,10 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
   };
 
   useEffect(() => {
-    if (proc && proc.events.length > 0) {
-      sortEventsByDate(proc.events);
+    if (procData && procData.events.length > 0) {
+      sortEventsByDate(procData.events);
     }
-  }, [proc]);
+  }, [procData]);
 
   const handleViewDocuments = (
     eventIndex: number,
@@ -109,18 +116,20 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
     viewDocModal.onOpen();
   };
 
-  console.log('Proc Details:', proc);
+  console.log('Proc Details:', procData);
 
   return (
     <Container maxW="5xl" py={8} mb={100}>
-      {isLoading && <CustomBackdrop isOpen />}
-      {error &&
+      {isPendingProc && isFetchingProc && isLoadingProc && (
+        <CustomBackdrop isOpen />
+      )}
+      {procError &&
         alert.show(
           'Erro ao carregar processo',
           'Tente novamente mais tarde.',
           'error'
         )}
-      {proc && !isLoading && (
+      {procData && !isPendingProc && !isFetchingProc && !isLoadingProc && (
         <VStack gap={6} align="stretch">
           {/* Header com botão voltar */}
           <HStack justify="space-between" align="center">
@@ -138,7 +147,7 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
               <HStack gap={2}>
                 <HiDocumentText size={32} color="#16a34a" />
                 <Heading size="lg" color="primary.gray.text">
-                  Processo #{proc.number}
+                  Processo #{procData.number}
                 </Heading>
               </HStack>
             </HStack>
@@ -151,7 +160,7 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
                 <HStack justify="space-between" align="center">
                   <HStack gap={3}>
                     <Badge
-                      bg={`${getStatusColor(proc.status)}`}
+                      bg={`${getStatusColor(procData.status)}`}
                       color="white"
                       variant="solid"
                       size="lg"
@@ -159,10 +168,10 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
                       py={1}
                       borderRadius="full"
                     >
-                      {proc.status}
+                      {procData.status}
                     </Badge>
                     <Badge
-                      bg={`${getPriorityColor(proc.priority)}`}
+                      bg={`${getPriorityColor(procData.priority)}`}
                       color="white"
                       variant="solid"
                       size="lg"
@@ -170,11 +179,11 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
                       py={1}
                       borderRadius="full"
                     >
-                      Prioridade {proc.priority}
+                      Prioridade {procData.priority}
                     </Badge>
                   </HStack>
                   <Text fontSize="sm" color="secondary.gray.text">
-                    {proc.active ? '✅ Ativo' : '❌ Inativo'}
+                    {procData.active ? '✅ Ativo' : '❌ Inativo'}
                   </Text>
                 </HStack>
 
@@ -195,7 +204,7 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
                         Número:
                       </Text>
                       <Text color="secondary.gray.text" fontWeight="semibold">
-                        {proc.number}
+                        {procData.number}
                       </Text>
                     </HStack>
 
@@ -203,7 +212,7 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
                       <Text fontWeight="medium" color="primary.gray.text">
                         Requerente:
                       </Text>
-                      <Text color="secondary.gray.text">{proc.owner}</Text>
+                      <Text color="secondary.gray.text">{procData.owner}</Text>
                     </HStack>
 
                     <VStack align="stretch" gap={2}>
@@ -218,7 +227,7 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
                         borderColor="secondary.gray.bg"
                       >
                         <Text color="primary.gray.text" whiteSpace="pre-wrap">
-                          {proc.description}
+                          {procData.description}
                         </Text>
                       </Box>
                     </VStack>
@@ -239,7 +248,7 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
                   <HStack gap={3} pl={6}>
                     <Avatar.Root size="lg">
                       <Avatar.Fallback
-                        name={proc.user.name}
+                        name={procData.user.name}
                         bg="secondary.purple.bg"
                         color="white"
                       />
@@ -251,10 +260,10 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
                         fontSize="lg"
                         color="primary.gray.text"
                       >
-                        {proc.user.name}
+                        {procData.user.name}
                       </Text>
                       <Text fontSize="md" color="secondary.gray.text">
-                        {proc.user.email}
+                        {procData.user.email}
                       </Text>
                       <Badge
                         bg="purple.500"
@@ -265,7 +274,7 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
                         py={1}
                         borderRadius="full"
                       >
-                        {proc.user.sigle}
+                        {procData.user.sigle}
                       </Badge>
                     </VStack>
                   </HStack>
@@ -289,17 +298,19 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
                       </Text>
                       <Text
                         color={
-                          new Date(proc.term) < new Date()
+                          new Date(procData.term) < new Date()
                             ? 'primary.error.text'
                             : 'secondary.gray.text'
                         }
                         fontSize="lg"
                         fontWeight={
-                          new Date(proc.term) < new Date() ? 'bold' : 'normal'
+                          new Date(procData.term) < new Date()
+                            ? 'bold'
+                            : 'normal'
                         }
                       >
-                        {formatDate(proc.term)}
-                        {new Date(proc.term) < new Date() && ' ⚠️'}
+                        {formatDate(procData.term)}
+                        {new Date(procData.term) < new Date() && ' ⚠️'}
                       </Text>
                     </HStack>
 
@@ -308,7 +319,7 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
                         Criado em:
                       </Text>
                       <Text color="secondary.gray.text">
-                        {formatDate(proc.created_at)}
+                        {formatDate(procData.created_at)}
                       </Text>
                     </HStack>
 
@@ -317,17 +328,21 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
                         Última atualização:
                       </Text>
                       <Text color="secondary.gray.text">
-                        {formatDate(proc.updated_at)}
+                        {formatDate(procData.updated_at)}
                       </Text>
                     </HStack>
                   </VStack>
                 </VStack>
 
                 {/* Eventos (se houver) */}
-                {proc &&
-                  proc.events &&
-                  Array.isArray(proc.events) &&
-                  proc.events.length > 0 && (
+
+                {!isFetchingProc &&
+                  !isFetchingProc &&
+                  !isLoadingProc &&
+                  procData &&
+                  procData.events &&
+                  Array.isArray(procData.events) &&
+                  procData.events.length > 0 && (
                     <>
                       <Separator />
                       <VStack gap={4} align="stretch">
@@ -335,7 +350,7 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
                           <HStack gap={2}>
                             <HiClock size={20} color="#eab308" />
                             <Heading size="md" color="primary.gray.text">
-                              Histórico de Eventos ({proc.events.length})
+                              Histórico de Eventos ({procData.events.length})
                             </Heading>
                           </HStack>
                           {user?.role === 'Admin' && (
@@ -388,7 +403,7 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
                               </Table.Header>
 
                               <Table.Body>
-                                {proc.events.map((event, index) => (
+                                {procData.events.map((event, index) => (
                                   <Table.Row
                                     key={event.id}
                                     _hover={{
@@ -402,7 +417,7 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
                                         color="primary.gray.text"
                                         fontWeight="medium"
                                       >
-                                        {proc.events.length - index}
+                                        {procData.events.length - index}
                                       </Text>
                                     </Table.Cell>
                                     {/* Data/Hora */}
@@ -544,7 +559,7 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
                   )}
 
                 {/* Empty state para eventos */}
-                {(!proc.events || proc.events.length === 0) && (
+                {(!procData.events || procData.events.length === 0) && (
                   <>
                     <Separator />
                     <VStack gap={4} align="stretch">
@@ -603,14 +618,14 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
       )}
 
       {/* Modal de criação de evento */}
-      {proc && (
+      {procData && procData.id && (
         <EventCreateModal
           isCreationProc={false}
           isOpen={createEventModal.open}
           onClose={() => createEventModal.onClose()}
-          procId={Number(procId)}
+          procId={procData.id}
           onSuccess={() => {
-            refetch();
+            refetchProc();
             createEventModal.onClose();
           }}
         />

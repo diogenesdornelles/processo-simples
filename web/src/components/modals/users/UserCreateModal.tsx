@@ -17,6 +17,7 @@ import {
   Field,
   Portal,
   createListCollection,
+  Spinner,
 } from '@chakra-ui/react';
 import { Formik, Form, Field as FormikField } from 'formik';
 import * as Yup from 'yup';
@@ -66,32 +67,31 @@ export function UserCreateModal({
   onClose,
   onSuccess,
 }: UserCreateModalProps) {
-  const mutation = useCreateUser();
+  const mutationCreateUser = useCreateUser();
   const toast = useToast();
   const theme = useColorMode();
 
   const handleSubmit = async (
     values: CreateUser & { cpf: string; sigle: string }
   ) => {
-    const promise = mutation.mutateAsync(values);
-    toast.promise(
-      promise,
-      {
-        title: 'Erro ao criar usuário',
-        description: 'Tente novamente mais tarde.',
+    await mutationCreateUser.mutateAsync(values, {
+      onError: (error: any) => {
+        toast.show(
+          'Erro ao criar usuário',
+          error?.response?.data?.message ||
+            'Ocorreu um erro ao tentar criar o usuário. Tente novamente mais tarde.',
+          'error'
+        );
       },
-      {
-        title: 'Usuário criado com sucesso',
-        description: `Usuário #${values.name} criado com sucesso!`,
+      onSuccess: () => {
+        toast.show(
+          'Usuário criado com sucesso',
+          `Usuário #${values.name} criado com sucesso!`,
+          'success'
+        );
+        onSuccess();
       },
-      {
-        title: 'Criando usuário',
-        description: 'Aguarde enquanto o usuário é criado...',
-      }
-    );
-    if (mutation.isSuccess) {
-      onSuccess();
-    }
+    });
   };
 
   return (
@@ -391,7 +391,8 @@ export function UserCreateModal({
                     color="white"
                     variant="ghost"
                     onClick={onClose}
-                    disabled={isSubmitting}
+                    loading={isSubmitting || mutationCreateUser.isPending}
+                    disabled={isSubmitting || mutationCreateUser.isPending}
                     _hover={{
                       bg: 'primary.purple.bg.hover',
                     }}
@@ -403,13 +404,18 @@ export function UserCreateModal({
                     color="white"
                     colorScheme="blue"
                     type="submit"
-                    loading={isSubmitting}
+                    loading={isSubmitting || mutationCreateUser.isPending}
+                    disabled={isSubmitting || mutationCreateUser.isPending}
                     loadingText="Criando usuário..."
                     _hover={{
                       bg: 'primary.purple.bg.hover',
                     }}
                   >
-                    Criar Usuário
+                    {!mutationCreateUser.isPending ? (
+                      'Criar Usuário'
+                    ) : (
+                      <Spinner />
+                    )}
                   </Button>
                 </HStack>
               </VStack>

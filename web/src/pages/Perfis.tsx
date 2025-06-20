@@ -42,7 +42,14 @@ export default function Perfis() {
   const deleteModal = useDisclosure();
   const createModal = useDisclosure();
 
-  const { data: users, isFetching, refetch, error } = useGetAllUsers();
+  const {
+    data: usersData,
+    isFetching: isFetchingUsers,
+    refetch: refetchUsers,
+    isLoading: isLoadingUsers,
+    isPending: isPendingUsers,
+    error: usersError,
+  } = useGetAllUsers();
 
   const handleView = (userView: UserProps) => {
     if (isAuthenticated) {
@@ -99,7 +106,7 @@ export default function Perfis() {
   const handleRefresh = async () => {
     try {
       toast.show('Atualizando...', 'Buscando dados mais recentes.', 'loading');
-      await refetch();
+      await refetchUsers();
       toast.dismiss();
       toast.show('Lista atualizada!', 'Dados atualizados com sucesso.');
     } catch (err) {
@@ -114,7 +121,7 @@ export default function Perfis() {
 
   return (
     <Container maxW="7xl" py={8}>
-      {error &&
+      {usersError &&
         alert.show(
           'Erro ao carregar perfil',
           'Tente novamente mais tarde.',
@@ -130,7 +137,7 @@ export default function Perfis() {
               </Heading>
             </HStack>
             <Text color="secondary.gray.text">
-              {users?.length || 0} usuários cadastrados
+              {(usersData && usersData?.length) || 0} usuários cadastrados
             </Text>
           </VStack>
 
@@ -138,7 +145,7 @@ export default function Perfis() {
             <Button
               variant="outline"
               onClick={handleRefresh}
-              loading={isFetching}
+              loading={isFetchingUsers || isLoadingUsers || isPendingUsers}
             >
               <IoMdRefresh />
               Atualizar
@@ -176,10 +183,13 @@ export default function Perfis() {
               </Table.Header>
 
               <Table.Body>
-                {users &&
-                  Array.isArray(users) &&
-                  users.length > 0 &&
-                  users.map((user: UserProps) => (
+                {!isFetchingUsers &&
+                  !isLoadingUsers &&
+                  !isPendingUsers &&
+                  usersData &&
+                  Array.isArray(usersData) &&
+                  usersData.length > 0 &&
+                  usersData.map((user: UserProps) => (
                     <Table.Row key={user.id}>
                       <Table.Cell>
                         <HStack gap={3}>
@@ -274,7 +284,7 @@ export default function Perfis() {
                   ))}
               </Table.Body>
             </Table.Root>
-            {users && users.length === 0 && (
+            {usersData && usersData.length === 0 && (
               <Box textAlign="center" py={12}>
                 <Text color="primary.gray.color" fontSize="lg">
                   Nenhum usuário encontrado
@@ -302,7 +312,7 @@ export default function Perfis() {
             onClose={editModal.onClose}
             user={selectedUser}
             onSuccess={() => {
-              refetch();
+              refetchUsers();
               editModal.onClose();
               toast.show('Sucesso!', 'Usuário atualizado');
             }}
@@ -312,7 +322,7 @@ export default function Perfis() {
             onClose={deleteModal.onClose}
             user={selectedUser}
             onSuccess={() => {
-              refetch();
+              refetchUsers();
               deleteModal.onClose();
               toast.show('Sucesso!', 'Usuário deletado');
             }}
@@ -324,7 +334,7 @@ export default function Perfis() {
         isOpen={createModal.open}
         onClose={createModal.onClose}
         onSuccess={() => {
-          refetch();
+          refetchUsers();
           createModal.onClose();
           toast.show('Sucesso!', 'Usuário criado');
         }}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import Modal from 'react-modal';
@@ -11,6 +12,7 @@ import {
   IconButton,
   Alert,
   Badge,
+  Spinner,
 } from '@chakra-ui/react';
 import { ProcProps } from '@/domain/interfaces/proc.interfaces';
 import { useDeleteProc } from '@/services/delete/useDeleteProc';
@@ -35,30 +37,24 @@ export function ProcDeleteModal({
 
   onSuccess,
 }: ProcDeleteModalProps) {
-  const mutation = useDeleteProc();
+  const mutationDeleteProc = useDeleteProc();
   const toast = useToast();
   const theme = useColorMode();
 
   const handleDelete = async () => {
-    const promise = mutation.mutateAsync(proc.id);
-    toast.promise(
-      promise,
-      {
-        title: 'Erro ao deletar processo',
-        description: 'Tente novamente mais tarde.',
+    await mutationDeleteProc.mutateAsync(proc.id, {
+      onError: (error: any) => {
+        toast.show(
+          'Erro ao deletar processo',
+          error?.response?.data?.message ||
+            'Ocorreu um erro ao tentar deletar o processo. Tente novamente mais tarde.',
+          'error'
+        );
       },
-      {
-        title: 'Processo deletado com sucesso',
-        description: `Processo #${proc.number} deletado com sucesso!`,
+      onSuccess: () => {
+        onSuccess();
       },
-      {
-        title: 'Deletando processo',
-        description: 'Aguarde enquanto o processo é deletado...',
-      }
-    );
-    if (mutation.isSuccess) {
-      onSuccess();
-    }
+    });
   };
 
   return (
@@ -239,6 +235,8 @@ export function ProcDeleteModal({
               variant="outline"
               onClick={onClose}
               color="secondary.gray.color"
+              loading={mutationDeleteProc.isPending}
+              disabled={mutationDeleteProc.isPending}
               borderColor="secondary.gray.bg"
               _hover={{
                 bg: 'secondary.gray.bg.hover',
@@ -249,7 +247,8 @@ export function ProcDeleteModal({
             </Button>
             <Button
               onClick={handleDelete}
-              loading={mutation.isPending}
+              loading={mutationDeleteProc.isPending}
+              disabled={mutationDeleteProc.isPending}
               bg="primary.error.bg"
               color="white"
               _hover={{
@@ -257,7 +256,7 @@ export function ProcDeleteModal({
               }}
               minW="120px"
             >
-              Excluir Processo
+              {mutationDeleteProc ? 'Excluir Processo' : <Spinner />}
             </Button>
           </HStack>
         </VStack>

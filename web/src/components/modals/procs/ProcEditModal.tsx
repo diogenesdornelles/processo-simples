@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
@@ -18,6 +17,7 @@ import {
   Field,
   createListCollection,
   ListCollection,
+  Spinner,
 } from '@chakra-ui/react';
 import { Formik, Form, Field as FormikField } from 'formik';
 import * as Yup from 'yup';
@@ -92,15 +92,21 @@ export function ProcEditModal({
   proc,
   onSuccess,
 }: ProcEditModalProps) {
-  const mutation = useUpdateProc();
-  const { data: usersData = [] } = useGetAllUsers();
+  const mutationUpdateProc = useUpdateProc();
+  const {
+    data: usersData,
+    isLoading: isLoadingUsers,
+    isFetching: isFetchingUsers,
+    isPending: isPendingUsers,
+  } = useGetAllUsers();
   const toast = useToast();
   const theme = useColorMode();
   const [userOptionsList, setUserOptionsList] =
     useState<ListCollection<UserOptionItem> | null>(null);
 
   useEffect(() => {
-    if (!usersData) return;
+    if (!usersData || isLoadingUsers || isFetchingUsers || isPendingUsers)
+      return;
     if (!usersData || !Array.isArray(usersData)) return;
     const userOptions = createListCollection({
       items: usersData.map(user => ({
@@ -109,7 +115,7 @@ export function ProcEditModal({
       })),
     });
     setUserOptionsList(userOptions);
-  }, [usersData]);
+  }, [usersData, isFetchingUsers, isLoadingUsers, isPendingUsers]);
 
   const handleSubmit = async (
     values: UpdateProc & {
@@ -121,26 +127,26 @@ export function ProcEditModal({
       term: string;
     }
   ) => {
-    const promise = mutation.mutateAsync({ id: proc.id, proc: values });
-
-    toast.promise(
-      promise,
+    await mutationUpdateProc.mutateAsync(
       {
-        title: 'Erro ao atualizar processo',
-        description: 'Tente novamente mais tarde.',
+        id: proc.id,
+        proc: values,
       },
       {
-        title: 'Processo atualizado com sucesso',
-        description: `Processo #${proc.number} atualizado com sucesso!`,
-      },
-      {
-        title: 'Atualizando processo',
-        description: 'Aguarde enquanto o processo é atualizado...',
+        onError: (error: any) => {
+          toast.show(
+            'Erro ao atualizar processo',
+            error?.response?.data?.message ||
+              'Ocorreu um erro ao tentar atualizar o processo. Tente novamente mais tarde.',
+            'error'
+          );
+        },
+        onSuccess: () => {
+          toast.show('Processo atualizado com sucesso', '', 'success');
+          onSuccess();
+        },
       }
     );
-    if (mutation.isSuccess) {
-      onSuccess();
-    }
   };
 
   const formatDateForInput = (dateString: string) => {
@@ -226,7 +232,10 @@ export function ProcEditModal({
                   <Fieldset.Content>
                     <VStack gap={4}>
                       {/* Usuário Responsável */}
-                      {userOptionsList &&
+                      {!isFetchingUsers &&
+                        !isLoadingUsers &&
+                        !isPendingUsers &&
+                        userOptionsList &&
                         Array.isArray(userOptionsList) &&
                         userOptionsList.length > 0 && (
                           <FormikField name="user_id">
@@ -520,6 +529,20 @@ export function ProcEditModal({
                     onClick={onClose}
                     color="secondary.gray.color"
                     borderColor="secondary.gray.bg"
+                    loading={
+                      isSubmitting ||
+                      mutationUpdateProc.isPending ||
+                      isFetchingUsers ||
+                      isLoadingUsers ||
+                      isPendingUsers
+                    }
+                    disabled={
+                      isSubmitting ||
+                      mutationUpdateProc.isPending ||
+                      isFetchingUsers ||
+                      isLoadingUsers ||
+                      isPendingUsers
+                    }
                     _hover={{
                       bg: 'secondary.gray.bg.hover',
                     }}
@@ -528,14 +551,31 @@ export function ProcEditModal({
                   </Button>
                   <Button
                     type="submit"
-                    loading={isSubmitting}
+                    loading={
+                      isSubmitting ||
+                      mutationUpdateProc.isPending ||
+                      isFetchingUsers ||
+                      isLoadingUsers ||
+                      isPendingUsers
+                    }
+                    disabled={
+                      isSubmitting ||
+                      mutationUpdateProc.isPending ||
+                      isFetchingUsers ||
+                      isLoadingUsers ||
+                      isPendingUsers
+                    }
                     bg="primary.orange.bg"
                     color="primary.orange.color"
                     _hover={{
                       bg: 'primary.orange.bg.hover',
                     }}
                   >
-                    Atualizar Processo
+                    {!mutationUpdateProc.isPending ? (
+                      'Atualizar Processo'
+                    ) : (
+                      <Spinner />
+                    )}
                   </Button>
                 </HStack>
               </VStack>

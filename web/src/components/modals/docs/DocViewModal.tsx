@@ -36,7 +36,6 @@ export function DocViewModal({
   const theme = useColorMode();
 
   const handleDownload = (doc: DocProps) => {
-    // Create a download link for the document
     const link = document.createElement('a');
     link.href = doc.uri;
     link.download = `${doc.name}.${doc.ext}`;

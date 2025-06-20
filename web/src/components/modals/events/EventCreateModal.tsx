@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
@@ -18,6 +17,7 @@ import {
   Portal,
   createListCollection,
   FileUpload,
+  Spinner,
 } from '@chakra-ui/react';
 import { Formik, Form, Field as FormikField } from 'formik';
 import * as Yup from 'yup';
@@ -69,8 +69,8 @@ export function EventCreateModal({
   isCreationProc = false,
 }: EventCreateModalProps) {
   const { user } = useAuth();
-  const createEventMutation = useCreateEvent();
-  const createDocMutation = useCreateDoc();
+  const mutationCreateEvent = useCreateEvent();
+  const mutationCreateDoc = useCreateDoc();
   const toast = useToast();
   const theme = useColorMode();
   const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
@@ -129,67 +129,61 @@ export function EventCreateModal({
         return;
       }
     }
-    const eventPromise = createEventMutation.mutateAsync({
+    console.log('Criando evento com os seguintes dados:', {
       name: values.name,
       proc_id: procId,
       user_id: user.id,
     });
-
-    toast.promise(
-      eventPromise,
+    await mutationCreateEvent.mutateAsync(
       {
-        title: 'Erro ao criar evento',
-        description: 'Tente novamente mais tarde.',
+        name: values.name,
+        proc_id: procId,
+        user_id: user.id,
       },
       {
-        title: 'Evento criado com sucesso',
-        description: `Evento #${createEventMutation.data?.name} criado com sucesso!`,
-      },
-      {
-        title: 'Criando evento',
-        description: 'Aguarde enquanto o evento é criado...',
+        onError: (error: any) => {
+          console.error('Erro ao criar evento:', error);
+          toast.show(
+            'Erro',
+            error?.response?.data?.message || 'Erro ao criar evento',
+            'error'
+          );
+        },
+        onSuccess: data => {
+          console.log('Evento criado com sucesso:', data);
+          toast.show('Sucesso', 'Evento criado com sucesso!', 'success');
+          selectedFiles.map(async selectedFile => {
+            const docData = {
+              name: selectedFile.name || selectedFile.file.name,
+              description: selectedFile.description,
+              file: selectedFile.file,
+              event_id: data.id,
+              active: true,
+            };
+            await mutationCreateDoc.mutateAsync(docData, {
+              onError: (error: any) => {
+                toast.show(
+                  'Erro',
+                  error?.response?.data?.message || 'Erro ao criar documento',
+                  'error'
+                );
+              },
+              onSuccess: () => {
+                toast.show(
+                  'Sucesso',
+                  `Documento #${docData.name} criado com sucesso!`,
+                  'success'
+                );
+              },
+            });
+          });
+        },
+        onSettled: () => {
+          setSelectedFiles([]);
+          onSuccess();
+        },
       }
     );
-    if (createEventMutation.isSuccess && createEventMutation.data) {
-      const docPromises = selectedFiles.map(async selectedFile => {
-        const docData = {
-          name: selectedFile.name || selectedFile.file.name,
-          description: selectedFile.description,
-          file: selectedFile.file,
-          event_id: createEventMutation.data.id,
-          active: true,
-        };
-        return createDocMutation.mutateAsync(docData);
-      });
-
-      docPromises.forEach(async docPromise => {
-        toast.promise(
-          docPromise,
-          {
-            title: 'Erro ao criar documento',
-            description: 'Tente novamente mais tarde.',
-          },
-          {
-            title: 'Documento criado com sucesso',
-            description: `Documento #${createEventMutation.data?.name} criado com sucesso!`,
-          },
-          {
-            title: 'Criando documento',
-            description: 'Aguarde enquanto o documento é criado...',
-          }
-        );
-      });
-    } else {
-      toast.show(
-        'Erro',
-        'Não foi possível criar o evento. Tente novamente mais tarde.',
-        'error'
-      );
-      return;
-    }
-    if (createDocMutation.isSuccess && createEventMutation.isSuccess) {
-      onSuccess();
-    }
   };
 
   const handleClose = () => {
@@ -329,8 +323,8 @@ export function EventCreateModal({
                               collection={eventTypes}
                               disabled={
                                 isSubmitting ||
-                                createEventMutation.isPending ||
-                                createDocMutation.isPending ||
+                                mutationCreateDoc.isPending ||
+                                mutationCreateEvent.isPending ||
                                 !!isCreationProc
                               }
                               value={[field.value]}
@@ -492,7 +486,16 @@ export function EventCreateModal({
                     color="white"
                     variant="ghost"
                     onClick={handleClose}
-                    disabled={isSubmitting}
+                    loading={
+                      isSubmitting ||
+                      mutationCreateDoc.isPending ||
+                      mutationCreateEvent.isPending
+                    }
+                    disabled={
+                      isSubmitting ||
+                      mutationCreateDoc.isPending ||
+                      mutationCreateEvent.isPending
+                    }
                     _hover={{
                       bg: 'primary.purple.bg.hover',
                     }}
@@ -504,13 +507,29 @@ export function EventCreateModal({
                     color="white"
                     colorScheme="blue"
                     type="submit"
-                    loading={isSubmitting}
+                    loading={
+                      isSubmitting ||
+                      mutationCreateDoc.isPending ||
+                      mutationCreateEvent.isPending
+                    }
+                    disabled={
+                      isSubmitting ||
+                      mutationCreateDoc.isPending ||
+                      mutationCreateEvent.isPending
+                    }
                     loadingText="Criando evento..."
                     _hover={{
                       bg: 'primary.purple.bg.hover',
                     }}
                   >
-                    Criar Evento
+                    {!(
+                      mutationCreateDoc.isPending ||
+                      mutationCreateEvent.isPending
+                    ) ? (
+                      'Criar Evento'
+                    ) : (
+                      <Spinner />
+                    )}
                   </Button>
                 </HStack>
               </VStack>

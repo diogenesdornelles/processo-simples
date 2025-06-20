@@ -57,7 +57,14 @@ export default function Procs() {
   const createProcModal = useDisclosure();
   const createEventModal = useDisclosure();
 
-  const { data: procsData, isFetching, refetch, error } = useGetAllProcs();
+  const {
+    data: procsData,
+    isFetching: isFetchingProcs,
+    isPending: isPendingProcs,
+    isLoading: isLoadingProcs,
+    refetch: refetchProcs,
+    error: procsError,
+  } = useGetAllProcs();
 
   const handleView = (proc: ProcProps) => {
     if (isAuthenticated) {
@@ -114,7 +121,7 @@ export default function Procs() {
   const handleRefresh = async () => {
     try {
       toast.show('Atualizando...', 'Buscando dados mais recentes.', 'loading');
-      await refetch();
+      await refetchProcs();
       toast.dismiss();
       toast.show('Lista atualizada!', 'Dados atualizados com sucesso.');
     } catch (err) {
@@ -129,7 +136,7 @@ export default function Procs() {
 
   return (
     <Container maxW="7xl" py={8}>
-      {error &&
+      {procsError &&
         alert.show(
           'Erro ao carregar processos',
           'Tente novamente mais tarde.',
@@ -154,7 +161,7 @@ export default function Procs() {
             <Button
               variant="outline"
               onClick={handleRefresh}
-              loading={isFetching}
+              loading={isFetchingProcs || isPendingProcs || isLoadingProcs}
               color="secondary.gray.text"
               borderColor="secondary.gray.bg"
               _hover={{
@@ -207,7 +214,10 @@ export default function Procs() {
               </Table.Header>
 
               <Table.Body>
-                {procsData &&
+                {!isFetchingProcs &&
+                  !isPendingProcs &&
+                  !isLoadingProcs &&
+                  procsData &&
                   Array.isArray(procsData) &&
                   procsData.length > 0 &&
                   procsData.map((proc: ProcProps) => (
@@ -435,7 +445,7 @@ export default function Procs() {
             onClose={editProcModal.onClose}
             proc={selectedProc}
             onSuccess={() => {
-              refetch();
+              refetchProcs();
               editProcModal.onClose();
             }}
           />
@@ -444,7 +454,7 @@ export default function Procs() {
             onClose={deleteProcModal.onClose}
             proc={selectedProc}
             onSuccess={() => {
-              refetch();
+              refetchProcs();
               deleteProcModal.onClose();
             }}
           />
@@ -464,15 +474,15 @@ export default function Procs() {
         }}
       />
 
-      {/* Modal de criação de evento */}
+      {/* Modal de criação de evento inicial */}
       {newProcId && (
         <EventCreateModal
           isCreationProc={true}
           isOpen={createEventModal.open}
           onClose={() => createEventModal.onClose()}
-          procId={newProcId ? Number(newProcId) : 0}
+          procId={newProcId}
           onSuccess={() => {
-            refetch();
+            refetchProcs();
             createEventModal.onClose();
             setNewProcId(null);
           }}

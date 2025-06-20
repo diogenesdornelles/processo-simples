@@ -11,8 +11,14 @@ export function useCreateDoc() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['doc', 'getAll'] });
       queryClient.invalidateQueries({ queryKey: ['event', 'getAll'] });
-      queryClient.invalidateQueries({ queryKey: ['proc', 'get'], exact: false });
-      queryClient.invalidateQueries({ queryKey: ['event', 'get'], exact: false });
+      queryClient.invalidateQueries({
+        queryKey: ['proc', 'get'],
+        exact: false,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['event', 'get'],
+        exact: false,
+      });
     },
   });
 }
