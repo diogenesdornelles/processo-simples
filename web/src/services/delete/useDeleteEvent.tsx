@@ -7,11 +7,8 @@ export function useDeleteEvent() {
 
   return useMutation({
     mutationFn: (id: number) => Api.event.delete(id),
-    onSuccess: (data, variables) => {
-      // Invalidate and refetch event lists
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['event', 'getAll'] });
-      // Remove specific event from cache
-      queryClient.removeQueries({ queryKey: ['event', 'get', variables] });
     },
   });
 }

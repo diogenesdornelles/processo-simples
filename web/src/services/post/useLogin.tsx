@@ -8,7 +8,6 @@ export function useLogin() {
     mutationFn: (credentials: LoginCredentials) => Api.auth.login(credentials),
     onError: error => {
       console.error('Login failed:', error);
-      // Optionally, you can handle the error here, e.g., show a notification
     },
   });
 }

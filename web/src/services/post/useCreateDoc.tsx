@@ -10,6 +10,9 @@ export function useCreateDoc() {
     mutationFn: (doc: CreateDoc) => Api.doc.create(doc),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['doc', 'getAll'] });
+      queryClient.invalidateQueries({ queryKey: ['event', 'getAll'] });
+      queryClient.invalidateQueries({ queryKey: ['proc', 'get'], exact: false });
+      queryClient.invalidateQueries({ queryKey: ['event', 'get'], exact: false });
     },
   });
 }

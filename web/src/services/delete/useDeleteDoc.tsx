@@ -7,11 +7,8 @@ export function useDeleteDoc() {
 
   return useMutation({
     mutationFn: (id: number) => Api.doc.delete(id),
-    onSuccess: (data, variables) => {
-      // Invalidate and refetch doc lists
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['doc', 'getAll'] });
-      // Remove specific doc from cache
-      queryClient.removeQueries({ queryKey: ['doc', 'get', variables] });
     },
   });
 }

@@ -7,11 +7,8 @@ export function useDeleteProc() {
 
   return useMutation({
     mutationFn: (id: number) => Api.proc.delete(id),
-    onSuccess: (data, variables) => {
-      // Invalidate and refetch proc lists
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['proc', 'getAll'] });
-      // Remove specific proc from cache
-      queryClient.removeQueries({ queryKey: ['proc', 'get', variables] });
     },
   });
 }
