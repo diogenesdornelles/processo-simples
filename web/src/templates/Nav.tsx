@@ -93,7 +93,7 @@ export default function Nav() {
         Home
       </Link>
 
-      {isAuthenticated && (
+      {isAuthenticated && user && user.id && (
         <HStack gap={6}>
           <Link
             color="secondary.gray.color"
@@ -151,7 +151,7 @@ export default function Nav() {
           }}
         />
 
-        {isAuthenticated ? (
+        {isAuthenticated && user && user.id ? (
           <Menu.Root>
             <Menu.Trigger asChild>
               <Button
@@ -257,7 +257,7 @@ export default function Nav() {
           </Button>
         )}
       </HStack>
-      {user && (
+      {isAuthenticated && user && user.id && (
         <UserViewModal
           isOpen={viewModal.open}
           onClose={viewModal.onClose}

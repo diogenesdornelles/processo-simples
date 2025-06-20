@@ -31,12 +31,12 @@ const LoginSchema = Yup.object().shape({
 
 export default function Login() {
   const router = useRouter();
-  const mutation = useLogin();
-  const { login } = useAuth();
+  const mutationLogin = useLogin();
+  const { login, loading, error } = useAuth();
   const toast = useToast();
 
   const handleLoginSubmit = async (values: any) => {
-    await mutation.mutateAsync(values, {
+    await mutationLogin.mutateAsync(values, {
       onError: (error: any) => {
         toast.show(
           'Erro ao efetuar login',
@@ -46,8 +46,16 @@ export default function Login() {
         );
       },
       onSuccess: async values => {
-        toast.show('Login efetuado com sucesso', '', 'success');
         await login(values);
+        if (error.status) {
+          toast.show(
+            'Erro ao obter usuário',
+            error.message || 'Ocorreu um erro ao obter os dados do usuário.',
+            'error'
+          );
+          return;
+        }
+        toast.show('Login efetuado com sucesso', '', 'success');
         router.push('/home');
       },
     });
@@ -142,11 +150,23 @@ export default function Login() {
                     type="submit"
                     w="full"
                     size="lg"
-                    loading={formikProps.isSubmitting || mutation.isPending}
-                    disabled={formikProps.isSubmitting || mutation.isPending}
+                    loading={
+                      formikProps.isSubmitting ||
+                      mutationLogin.isPending ||
+                      loading
+                    }
+                    disabled={
+                      formikProps.isSubmitting ||
+                      mutationLogin.isPending ||
+                      loading
+                    }
                     suppressHydrationWarning
                   >
-                    {!mutation.isPending ? 'Entrar' : <Spinner />}
+                    {!mutationLogin.isPending && !loading ? (
+                      'Entrar'
+                    ) : (
+                      <Spinner />
+                    )}
                   </Button>
 
                   {/* Footer */}

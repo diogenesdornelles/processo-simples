@@ -19,11 +19,11 @@ export function ProtectedRoute({
   redirectTo,
   fallback,
 }: ProtectedRouteProps) {
-  const { user, loading, isAuthenticated } = useAuth();
+  const { user, loading, isAuthenticated, error } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading) {
+    if (!loading && !error.status) {
       if (!isAuthenticated) {
         router.push(redirectTo || '/login');
         return;
@@ -34,7 +34,15 @@ export function ProtectedRoute({
         return;
       }
     }
-  }, [isAuthenticated, user, loading, router, requireAdmin, redirectTo]);
+  }, [
+    isAuthenticated,
+    user,
+    loading,
+    router,
+    requireAdmin,
+    redirectTo,
+    error.status,
+  ]);
 
   if (loading) {
     if (fallback) {

@@ -4,7 +4,7 @@ const SESSION_KEY =
   process.env.NEXT_PUBLIC_AUTH_SESSION || 'default_auth_session';
 
 export const manageSession = {
-  save: async (user: UserProps) => {
+  saveUser: async (user: UserProps) => {
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem(SESSION_KEY, JSON.stringify(user));
@@ -15,7 +15,7 @@ export const manageSession = {
     }
   },
 
-  remove: async () => {
+  removeUser: async () => {
     if (typeof window !== 'undefined') {
       try {
         localStorage.removeItem(SESSION_KEY);
@@ -26,7 +26,7 @@ export const manageSession = {
     }
   },
 
-  get: async (): Promise<UserProps | null> => {
+  getUser: async (): Promise<UserProps | null> => {
     if (typeof window !== 'undefined') {
       try {
         const sessionData = localStorage.getItem(SESSION_KEY);
@@ -46,12 +46,12 @@ export const manageSession = {
     return null;
   },
 
-  clear: async () => {
-    await manageSession.remove();
+  clearUser: async () => {
+    await manageSession.removeUser();
   },
 
-  exists: async (): Promise<boolean> => {
-    const user = await manageSession.get();
+  existsUser: async (): Promise<boolean> => {
+    const user = await manageSession.getUser();
     return user !== null;
   },
 };
