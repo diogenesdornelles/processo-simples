@@ -84,11 +84,6 @@ export function UserCreateModal({
         );
       },
       onSuccess: () => {
-        toast.show(
-          'Usuário criado com sucesso',
-          `Usuário #${values.name} criado com sucesso!`,
-          'success'
-        );
         onSuccess();
       },
     });

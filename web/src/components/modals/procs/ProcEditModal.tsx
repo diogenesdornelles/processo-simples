@@ -142,7 +142,6 @@ export function ProcEditModal({
           );
         },
         onSuccess: () => {
-          toast.show('Processo atualizado com sucesso', '', 'success');
           onSuccess();
         },
       }

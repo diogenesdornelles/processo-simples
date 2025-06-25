@@ -55,6 +55,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const savedToken = await manageToken.get();
     if (savedToken) {
       setToken(savedToken);
+    } else {
+      setToken(null)
     }
     return savedToken;
   }, []);
@@ -97,6 +99,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         await getToken();
         if (token) {
           await getUser();
+        } else {
+          setUser(null);
+          manageSession.clearUser();
         }
       };
       initializeAuth();

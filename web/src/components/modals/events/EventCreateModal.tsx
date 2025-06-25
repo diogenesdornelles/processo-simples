@@ -32,6 +32,7 @@ import { modalStyles } from '@/styles/modalStyles';
 import { useColorMode } from '../../ui/color-mode';
 import { ChangeEvent, useState } from 'react';
 import { HiUpload } from 'react-icons/hi';
+import { sleep } from '@/utils/sleep';
 
 const eventTypes = createListCollection({
   items: [
@@ -129,11 +130,7 @@ export function EventCreateModal({
         return;
       }
     }
-    console.log('Criando evento com os seguintes dados:', {
-      name: values.name,
-      proc_id: procId,
-      user_id: user.id,
-    });
+
     await mutationCreateEvent.mutateAsync(
       {
         name: values.name,
@@ -149,9 +146,13 @@ export function EventCreateModal({
             'error'
           );
         },
-        onSuccess: data => {
-          console.log('Evento criado com sucesso:', data);
-          toast.show('Sucesso', 'Evento criado com sucesso!', 'success');
+        onSuccess: async data => {
+          toast.show(
+            'Sucesso',
+            `Evento #${data.id} criado com sucesso! Salvando documentos...`,
+            'success'
+          );
+          await sleep(1500);
           selectedFiles.map(async selectedFile => {
             const docData = {
               name: selectedFile.name || selectedFile.file.name,
@@ -178,8 +179,9 @@ export function EventCreateModal({
             });
           });
         },
-        onSettled: () => {
+        onSettled: async () => {
           setSelectedFiles([]);
+          await sleep(1000);
           onSuccess();
         },
       }

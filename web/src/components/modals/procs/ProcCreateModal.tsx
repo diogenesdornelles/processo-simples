@@ -33,6 +33,7 @@ import { modalStyles } from '@/styles/modalStyles';
 import { useColorMode } from '../../ui/color-mode';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect, useState } from 'react';
+import { sleep } from '@/utils/sleep';
 
 const statusOptions = createListCollection({
   items: [
@@ -132,12 +133,7 @@ export function ProcCreateModal({
           'error'
         );
       },
-      onSuccess: data => {
-        toast.show(
-          'Processo criado com sucesso',
-          `Processo #${mutationCreateProc.data?.number} criado com sucesso!`,
-          'success'
-        );
+      onSuccess: async data => {
         onSuccess(data.id);
       },
     });

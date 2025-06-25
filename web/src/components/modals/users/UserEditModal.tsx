@@ -87,11 +87,6 @@ export function UserEditModal({
           );
         },
         onSuccess: () => {
-          toast.show(
-            'Usuário atualizado com sucesso',
-            `Usuário #${user.name} atualizado com sucesso!`,
-            'success'
-          );
           onSuccess();
         },
       }

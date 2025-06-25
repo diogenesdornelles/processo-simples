@@ -43,6 +43,7 @@ import {
 } from '@/utils';
 import { useAlert } from '@/hooks/useAlert';
 import img from '@/public/account.png';
+import { sleep } from '@/utils/sleep';
 
 export default function Procs() {
   const toast = useToast();
@@ -444,18 +445,20 @@ export default function Procs() {
             isOpen={editProcModal.open}
             onClose={editProcModal.onClose}
             proc={selectedProc}
-            onSuccess={() => {
-              refetchProcs();
+            onSuccess={async () => {
+              toast.show('Processo atualizado com sucesso', '', 'success');
               editProcModal.onClose();
+              await refetchProcs();
             }}
           />
           <ProcDeleteModal
             isOpen={deleteProcModal.open}
             onClose={deleteProcModal.onClose}
             proc={selectedProc}
-            onSuccess={() => {
-              refetchProcs();
+            onSuccess={async () => {
+              toast.show('Processo deletado com sucesso', '', 'success');
               deleteProcModal.onClose();
+              await refetchProcs();
             }}
           />
         </>
@@ -464,9 +467,15 @@ export default function Procs() {
       <ProcCreateModal
         isOpen={createProcModal.open}
         onClose={createProcModal.onClose}
-        onSuccess={(procId: number) => {
+        onSuccess={async (procId: number) => {
           try {
             setNewProcId(procId);
+            toast.show(
+              'Processo criado com sucesso',
+              'Adicione um evento para validá-lo',
+              'success'
+            );
+            await sleep(1500);
             createEventModal.onOpen();
           } finally {
             createProcModal.onClose();
@@ -481,10 +490,15 @@ export default function Procs() {
           isOpen={createEventModal.open}
           onClose={() => createEventModal.onClose()}
           procId={newProcId}
-          onSuccess={() => {
-            refetchProcs();
+          onSuccess={async () => {
+            toast.show(
+              'Evento criado com sucesso',
+              '',
+              'success'
+            );
             createEventModal.onClose();
             setNewProcId(null);
+            await refetchProcs();
           }}
         />
       )}

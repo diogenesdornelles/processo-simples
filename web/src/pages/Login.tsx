@@ -21,6 +21,7 @@ import { useRouter } from 'next/navigation';
 import { useLogin } from '@/services';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/useToast';
+import { sleep } from '@/utils/sleep';
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email('E-mail inválido').required('E-mail é obrigatório'),
@@ -55,6 +56,7 @@ export default function Login() {
           );
           return;
         }
+        await sleep(1500)
         toast.show('Login efetuado com sucesso', '', 'success');
         router.push('/home');
       },

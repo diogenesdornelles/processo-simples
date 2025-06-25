@@ -311,20 +311,20 @@ export default function Perfis() {
             isOpen={editModal.open}
             onClose={editModal.onClose}
             user={selectedUser}
-            onSuccess={() => {
-              refetchUsers();
+            onSuccess={async () => {
+              toast.show('Usuário atualizado com sucesso', '', 'success');
               editModal.onClose();
-              toast.show('Sucesso!', 'Usuário atualizado');
+              await refetchUsers();
             }}
           />
           <UserDeleteModal
             isOpen={deleteModal.open}
             onClose={deleteModal.onClose}
             user={selectedUser}
-            onSuccess={() => {
-              refetchUsers();
+            onSuccess={async () => {
+              toast.show('Usuário deletado com sucesso', '', 'success');
               deleteModal.onClose();
-              toast.show('Sucesso!', 'Usuário deletado');
+              await refetchUsers();
             }}
           />
         </>
@@ -333,10 +333,10 @@ export default function Perfis() {
       <UserCreateModal
         isOpen={createModal.open}
         onClose={createModal.onClose}
-        onSuccess={() => {
-          refetchUsers();
+        onSuccess={async () => {
+          toast.show('Usuário criado com sucesso', '', 'success');
           createModal.onClose();
-          toast.show('Sucesso!', 'Usuário criado');
+          await refetchUsers();
         }}
       />
     </Container>

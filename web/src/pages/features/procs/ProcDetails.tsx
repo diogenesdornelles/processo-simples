@@ -43,6 +43,7 @@ import { useEffect, useState } from 'react';
 import { useDeleteEvent } from '@/services';
 import { EventCreateModal } from '@/components/modals/events';
 import { DocViewModal } from '@/components/modals/docs/DocViewModal';
+import { sleep } from '@/utils/sleep';
 
 interface ProcDetailsProps {
   procId: string;
@@ -115,8 +116,6 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
     setSelectedEventIndex(eventIndex);
     viewDocModal.onOpen();
   };
-
-  console.log('Proc Details:', procData);
 
   return (
     <Container maxW="5xl" py={8} mb={100}>
@@ -624,9 +623,11 @@ export function ProcDetails({ procId }: ProcDetailsProps) {
           isOpen={createEventModal.open}
           onClose={() => createEventModal.onClose()}
           procId={procData.id}
-          onSuccess={() => {
-            refetchProc();
+          onSuccess={async () => {
+            toast.show('Evento criado com sucesso', '', 'success');
+            await sleep(1000);
             createEventModal.onClose();
+            await refetchProc();
           }}
         />
       )}
