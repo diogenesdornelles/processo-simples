@@ -54,6 +54,9 @@ const CreateUserSchema = Yup.object().shape({
   role: Yup.string()
     .oneOf(['Comum', 'Admin'], 'Perfil inválido')
     .required('Perfil é obrigatório'),
+  password: Yup.string()
+    .min(6, 'Senha deve ter pelo menos 6 caracteres')
+    .required('Senha é obrigatória'),
 });
 
 interface UserCreateModalProps {

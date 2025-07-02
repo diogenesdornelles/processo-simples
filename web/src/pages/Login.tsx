@@ -47,18 +47,27 @@ export default function Login() {
         );
       },
       onSuccess: async values => {
-        await login(values);
+        if (values && values.token && values.user) {
+          await login(values);
+          await sleep(500);
+          toast.show('Login efetuado com sucesso', '', 'success');
+          router.push('/home');
+          return;
+        } else {
+          toast.show(
+            'Erro ao logar',
+            'Verifique suas credenciais e tente novamente.',
+            'error'
+          );
+        }
         if (error.status) {
           toast.show(
             'Erro ao obter usuário',
             error.message || 'Ocorreu um erro ao obter os dados do usuário.',
             'error'
           );
-          return;
         }
-        await sleep(1500)
-        toast.show('Login efetuado com sucesso', '', 'success');
-        router.push('/home');
+        return;
       },
     });
   };
